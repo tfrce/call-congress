@@ -32,7 +32,7 @@ or to member(s) based on zip code:
     /create?campaignId=abc-123&userPhone=1234567890&zipcode=98102
 
 Required Params:
-
+ 
 * **userPhone**
 * **campaignId**
 
