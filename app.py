@@ -367,13 +367,6 @@ def open_website(url, meta):
 
 @app.route('/eff_test')
 def eff_test():
-    callback_url = request.values.get('callback_url', None)
-    meta = request.values.get('meta', None)
-
-    if callback_url:
-        t = Thread(target=open_website, args=[callback_url, meta])
-        t.daemon = True
-        t.start()
     return jsonify(message="success")
 
 
