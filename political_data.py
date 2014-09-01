@@ -1,6 +1,6 @@
 import csv
 import yaml
-
+import random
 
 class PoliticalData():
     def __init__(self):
@@ -46,9 +46,13 @@ class PoliticalData():
     def get_senators(self, districts):
         states = [d['state'] for d in districts]
 
-        return [l for l in self.legislators
+        senators = [l for l in self.legislators
                 if l['chamber'] == 'senate'
                 and l['state'] in states]
+
+        random.shuffle(senators)    # mix it up! always do this :)
+
+        return senators
 
     def get_house_members(self, districts):
         states = [d['state'] for d in districts]
@@ -85,5 +89,8 @@ class PoliticalData():
                 campaign.get('target_house_first'):
             member_ids.extend([s['bioguide_id']
                                for s in self.get_senators(local_districts)])
+
+        if campaign.get('randomize', False):
+            random.shuffle(member_ids)
 
         return member_ids

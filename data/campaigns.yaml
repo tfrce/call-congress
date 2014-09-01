@@ -75,7 +75,7 @@
 
 - id: tdwfb-mobile
   numbers:
-    - 202-552-0505
+    - 650-614-5872
   target_house: true
   target_senate: true
   target_house_first: false
@@ -86,6 +86,7 @@
   msg_rep_intro: We're now connecting you to {{name}}. Press star once you're done.
   msg_between_thanks: http://tfrce.s3.amazonaws.com/tdwfb/msg_between_thanks.mp3
   msg_final_thanks: http://tfrce.s3.amazonaws.com/tdwfb/msg_final_thanks.mp3
+  randomize: true
 
 - id: nn-calltool
   numbers:
@@ -114,6 +115,7 @@
   msg_rep_intro: We're now connecting you to {{name}}. Press star once you're done.
   msg_between_thanks: Thanks
   msg_final_thanks: http://tfrce.s3.amazonaws.com/nn/msg_final_thanks.mp3
+  randomize: true
 
 - id: lofgren-nsa-calltool
   numbers:
@@ -132,6 +134,20 @@
 - id: lofgren-nsa-dial
   numbers:
     - 415-419-8672
+  target_house: true
+  target_senate: false
+  target_house_first: false
+  msg_intro: https://shutthebackdoor.net/call-tool/msg_intro.mp3
+  msg_ask_zip: https://shutthebackdoor.net/call-tool/msg_ask_zip.mp3
+  msg_invalid_zip: https://shutthebackdoor.net/call-tool/msg_invalid_zip.mp3
+  msg_call_block_intro: https://shutthebackdoor.net/call-tool/msg_callblock_intro_dial.mp3
+  msg_rep_intro: We're now connecting you to {{name}}. Press star once you're done.
+  msg_between_thanks: Thanks
+  msg_final_thanks: https://shutthebackdoor.net/call-tool/msg_final_thanks.mp3
+
+- id: defund-the-nsa
+  numbers:
+    - 650-614-5872
   target_house: true
   target_senate: false
   target_house_first: false
