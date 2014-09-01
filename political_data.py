@@ -77,18 +77,20 @@ class PoliticalData():
             member_ids = [individual_target]
             return member_ids
 
+        target_senate = campaign.get('target_senate')
+        target_house_first = campaign.get('target_house_first')
+        target_house = campaign.get('target_house')
+
         # filter list by campaign target_house, target_senate
-        if campaign.get('target_senate') and \
-                not campaign.get('target_house_first'):
+        if target_senate and not target_house_first:
             member_ids.extend([s['bioguide_id']
                                for s in self.get_senators(local_districts)])
 
-        if campaign.get('target_house'):
+        if target_house:
             member_ids.extend([h['bioguide_id'] for h
                                in self.get_house_members(local_districts)])
 
-        if campaign.get('target_senate') and \
-                campaign.get('target_house_first'):
+        if target_senate and target_house_first:
             member_ids.extend([s['bioguide_id']
                                for s in self.get_senators(local_districts)])
 
