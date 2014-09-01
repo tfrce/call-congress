@@ -46,6 +46,8 @@ class PoliticalData():
     def get_senators(self, districts):
         states = [d['state'] for d in districts]
 
+        print "states: %s" % str(states)
+
         senators = [l for l in self.legislators
                 if l['chamber'] == 'senate'
                 and l['state'] in states]
@@ -90,7 +92,7 @@ class PoliticalData():
             member_ids.extend([s['bioguide_id']
                                for s in self.get_senators(local_districts)])
 
-        if campaign.get('randomize', False):
+        if campaign.get('randomize_order', False):
             random.shuffle(member_ids)
 
         return member_ids

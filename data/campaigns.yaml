@@ -86,7 +86,7 @@
   msg_rep_intro: We're now connecting you to {{name}}. Press star once you're done.
   msg_between_thanks: http://tfrce.s3.amazonaws.com/tdwfb/msg_between_thanks.mp3
   msg_final_thanks: http://tfrce.s3.amazonaws.com/tdwfb/msg_final_thanks.mp3
-  randomize: true
+  randomize_order: true
 
 - id: nn-calltool
   numbers:
@@ -115,7 +115,7 @@
   msg_rep_intro: We're now connecting you to {{name}}. Press star once you're done.
   msg_between_thanks: Thanks
   msg_final_thanks: http://tfrce.s3.amazonaws.com/nn/msg_final_thanks.mp3
-  randomize: true
+  randomize_order: true
 
 - id: lofgren-nsa-calltool
   numbers:
