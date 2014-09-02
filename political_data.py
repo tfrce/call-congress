@@ -14,14 +14,16 @@ class PoliticalData():
     campaigns = None
     legislators = None
     districts = None
+    debug_mode = False
 
-    def __init__(self, cache_handler):
+    def __init__(self, cache_handler, debug_mode):
         """
         Load data in database
         """
         legislators = []
 
         self.cache_handler = cache_handler
+        self.debug_mode = debug_mode
 
         with open('data/legislators.csv') as f:
             reader = csv.DictReader(f)
@@ -59,8 +61,6 @@ class PoliticalData():
 
     def get_senators(self, districts):
         states = [d['state'] for d in districts]
-
-        print "states: %s" % str(states)
 
         senators = [l for l in self.legislators
                 if l['chamber'] == 'senate'
@@ -159,7 +159,8 @@ class PoliticalData():
             override = overrides.get(state)
             if override:
                 override['_STATE_ABBREV'] = state
-                print "Found overrides: %s / %s" % (state, str(override))
+                if self.debug_mode:
+                    print "Found overrides: %s / %s" % (state, str(override))
                 return overrides.get(state)
 
         return None
@@ -197,7 +198,8 @@ class PoliticalData():
         
         if overrides_data == None:
             overrides = self.grab_overrides_from_google(spreadsheet_id)
-            # print "GOT DATA FROM GOOGLE: %s" % str(overrides)
+            if self.debug_mode:
+                print "GOT DATA FROM GOOGLE: %s" % str(overrides)
 
             self.cache_handler.set(
                 spreadsheet_key,
@@ -205,7 +207,8 @@ class PoliticalData():
                 self.SPREADSHEET_CACHE_TIMEOUT)
         else:
             overrides = json.loads(overrides_data)
-            # print "GOT DATA FROM CACHE: %s" % str(overrides)
+            if self.debug_mode:
+                print "GOT DATA FROM CACHE: %s" % str(overrides)
         
         self.overrides_data[campaign.get('id')] = overrides
 

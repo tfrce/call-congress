@@ -158,3 +158,20 @@
   msg_rep_intro: We're now connecting you to {{name}}. Press star once you're done.
   msg_between_thanks: Thanks
   msg_final_thanks: https://shutthebackdoor.net/call-tool/msg_final_thanks.mp3
+
+- id: battle-for-the-net
+  numbers:
+    - 650-614-5872
+  target_house: true
+  target_senate: true
+  target_house_first: false
+  msg_intro: http://tfrce.s3.amazonaws.com/tdwfb/msg_intro.mp3
+  msg_ask_zip: http://tfrce.s3.amazonaws.com/tdwfb/msg_ask_zip.mp3
+  msg_invalid_zip: http://tfrce.s3.amazonaws.com/tdwfb/msg_invalid_zip.mp3
+  msg_call_block_intro: http://tfrce.s3.amazonaws.com/tdwfb/msg_call_block_intro_number.mp3
+  msg_rep_intro: We're now connecting you to {{name}}. Press star once you're done.
+  msg_special_call_intro: First we're connecting you to {{name}}. Press star once you're done.
+  msg_between_thanks: http://tfrce.s3.amazonaws.com/tdwfb/msg_between_thanks.mp3
+  msg_final_thanks: http://tfrce.s3.amazonaws.com/tdwfb/msg_final_thanks.mp3
+  randomize_order: true
+  overrides_google_spreadsheet_id: 1SxJWmzjNAnpkcKrMDbbnUJjx4qBX6vsF5MiyOXwf-NM

@@ -15,7 +15,6 @@ class Config(object):
     TW_CLIENT = twilio.rest.TwilioRestClient(
         os.environ.get('TWILIO_DEV_ACCOUNT_SID'),
         os.environ.get('TWILIO_DEV_AUTH_TOKEN'))
-    # TW_NUMBER = '5005550006'  # development number # JL NOTE ~ unnecessary
 
     TASKFORCE_KEY = os.environ.get('TASKFORCE_KEY')
     SUNLIGHTLABS_KEY = os.environ.get('SUNLIGHTLABS_KEY')
@@ -44,7 +43,6 @@ class ConfigProduction(Config):
     TW_CLIENT = twilio.rest.TwilioRestClient(
         os.environ.get('TWILIO_ACCOUNT_SID'),
         os.environ.get('TWILIO_AUTH_TOKEN'))
-    # TW_NUMBER = os.environ.get('TWILIO_NUMBER') # JL NOTE ~ unnecessary
 
     SECRET_KEY = os.environ.get('SECRET_KEY')
 

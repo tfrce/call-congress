@@ -37,7 +37,7 @@ cache_handler = CacheHandler(app.config['REDIS_URL'])
 
 call_methods = ['GET', 'POST']
 
-data = PoliticalData(cache_handler)
+data = PoliticalData(cache_handler, app.debug)
 
 
 def make_cache_key(*args, **kwargs):
