@@ -3,6 +3,7 @@ patch_all()
 
 import random
 import urlparse
+import json
 
 from datetime import datetime, timedelta
 
@@ -18,6 +19,8 @@ from twilio import TwilioRestException
 
 from models import db, aggregate_stats, log_call, call_count
 from political_data import PoliticalData
+from cache_handler import CacheHandler
+
 
 app = Flask(__name__)
 
@@ -28,9 +31,13 @@ sentry = Sentry(app)
 
 db.init_app(app)
 
+# Optional Redis cache, for caching Google spreadsheet campaign overrides
+cache_handler = CacheHandler(app.config['REDIS_URL'])
+
+
 call_methods = ['GET', 'POST']
 
-data = PoliticalData()
+data = PoliticalData(cache_handler)
 
 
 def make_cache_key(*args, **kwargs):
@@ -81,6 +88,10 @@ def parse_params(r):
     if params['zipcode']:
         params['repIds'] = data.locate_member_ids(
             params['zipcode'], campaign)
+
+        # delete the zipcode, since the repIds are in a particular order and
+        # will be passed around from endpoint to endpoint hereafter anyway.
+        del params['zipcode']
 
     if 'random_choice' in campaign:
         # pick a random choice among a selected set of members
@@ -254,28 +265,39 @@ def make_single_call():
     if not params or not campaign:
         abort(404)
 
-    i = int(request.values.get('call_index', 0))
-    params['call_index'] = i
-    member = [l for l in data.legislators
-              if l['bioguide_id'] == params['repIds'][i]][0]
-    congress_phone = member['phone']
-    full_name = unicode("{} {}".format(
-        member['firstname'], member['lastname']), 'utf8')
-
     resp = twilio.twiml.Response()
 
-    if 'voted_with_list' in campaign and \
-            params['repIds'][i] in campaign['voted_with_list']:
-        play_or_say(
-            resp, campaign['msg_repo_intro_voted_with'], name=full_name)
+    i = int(request.values.get('call_index', 0))
+    params['call_index'] = i
+
+    if "SPECIAL_CALL_" in params['repIds'][i]:
+        
+        special = json.loads(params['repIds'][i].replace("SPECIAL_CALL_", ""))
+        to_phone = special['number']
+        full_name = special['name']
+        play_or_say(resp, campaign.get('msg_special_call_intro',
+            campaign['msg_rep_intro']), name=full_name)
+
     else:
-        play_or_say(resp, campaign['msg_rep_intro'], name=full_name)
+
+        member = [l for l in data.legislators
+                  if l['bioguide_id'] == params['repIds'][i]][0]
+        to_phone = member['phone']
+        full_name = unicode("{} {}".format(
+            member['firstname'], member['lastname']), 'utf8')
+
+        if 'voted_with_list' in campaign and \
+                params['repIds'][i] in campaign['voted_with_list']:
+            play_or_say(
+                resp, campaign['msg_repo_intro_voted_with'], name=full_name)
+        else:
+            play_or_say(resp, campaign['msg_rep_intro'], name=full_name)
 
     if app.debug:
         print u'DEBUG: Call #{}, {} ({}) from {} in make_single_call()'.format(
-            i, full_name, congress_phone, params['userPhone'])
+            i, full_name, to_phone, params['userPhone'])
 
-    resp.dial(congress_phone, callerId=params['userPhone'],
+    resp.dial(to_phone, callerId=params['userPhone'],
               timeLimit=app.config['TW_TIME_LIMIT'],
               timeout=app.config['TW_TIMEOUT'], hangupOnStar=True,
               action=url_for('call_complete', **params))
