@@ -175,3 +175,5 @@
   msg_final_thanks: http://tfrce.s3.amazonaws.com/tdwfb/msg_final_thanks.mp3
   randomize_order: true
   overrides_google_spreadsheet_id: 1SxJWmzjNAnpkcKrMDbbnUJjx4qBX6vsF5MiyOXwf-NM
+  skip_star_confirm: true
+  call_human_check: false

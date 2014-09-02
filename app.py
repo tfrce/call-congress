@@ -181,6 +181,7 @@ def call_user():
             to=params['userPhone'],
             from_=random.choice(campaign['numbers']),
             url=full_url_for("connection", **params),
+            if_machine='Hangup' if campaign.get('call_human_check') else None, 
             timeLimit=app.config['TW_TIME_LIMIT'],
             timeout=app.config['TW_TIMEOUT'],
             status_callback=full_url_for("call_complete_status", **params))
@@ -217,6 +218,11 @@ def connection():
         resp = twilio.twiml.Response()
 
         play_or_say(resp, campaign['msg_intro'])
+
+        if campaign.get('skip_star_confirm'):
+            resp.redirect(url_for('make_single_call', **params))
+            
+            return str(resp)
 
         action = url_for("_make_calls", **params)
 

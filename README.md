@@ -54,6 +54,8 @@ Currently stored in ``/data/campaigns.yaml``, each campaign has the following op
 * **repIds** (optional) list of rep. IDs to target
 * **randomize_order** (optional, default false) randomize the order of the phone calls
 * **overrides_google_spreadsheet_id** (optional) ID of publicly published Google Spreadsheet which can override the default campaign behaviors on a per-state basis (see [**section below**](#overriding-the-default-behaviors-with-a-google-spreadsheet))
+* **skip_star_confirm** (optional, default false) Whether to skip the "press star to confirm" step for campaigns which don't gather zipcode
+* **call_human_check** (optional, default false) Whether to check the recipient is not an answering machine. Note, will add a 3 second delay before your call begins.
 
 Messages: Can be urls for recorded message to play or text for the robot to read. Text can be rendered as a mustache template. The following messages are the defaults and will be inherited by new campaigns unless overwritten.
 
