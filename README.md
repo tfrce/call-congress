@@ -52,6 +52,8 @@ Currently stored in ``/data/campaigns.yaml``, each campaign has the following op
 * **target_senate** include senators in lookups by location
 * **target_house_first** allows the campaign to target house members before senate members (default: target senate first)
 * **repIds** (optional) list of rep. IDs to target
+* **randomize_order** (optional, default false) randomize the order of the phone calls
+* **overrides_google_spreadsheet_id** (optional) ID of publicly published Google Spreadsheet which can override the default campaign behaviors on a per-state basis (see [**section below**](#overriding-the-default-behaviors-with-a-google-spreadsheet))
 
 Messages: Can be urls for recorded message to play or text for the robot to read. Text can be rendered as a mustache template. The following messages are the defaults and will be inherited by new campaigns unless overwritten.
 
@@ -64,6 +66,33 @@ Messages: Can be urls for recorded message to play or text for the robot to read
 * msg_final_thanks: Thank you!
 
 
+Overriding the default behaviors with a Google Spreadsheet
+----------------------------------------------------------
+Using the optional _overrides_google_spreadsheet_id_, each campaign can specify
+a remote Google Spreadsheet to pull in for state-specific overrides. This allows
+you to change the campaign's default behaviors on a per-state basis. Currently
+the following features are supported:
+
+* Change the order priority of the calls (House vs. Senate)
+* Always call a particular legislator first (specified by last name)
+* Call an arbitrary name/number before connecting to Congress. For example, you
+  could use this to call a specific public-works department for a given state.
+
+To get an idea of how this works, [**see this example spreadsheet.**](https://docs.google.com/spreadsheets/d/1SxJWmzjNAnpkcKrMDbbnUJjx4qBX6vsF5MiyOXwf-NM/edit?usp=sharing)
+
+Specifically, the Google Spreadsheet must be public, and published (note the
+distinction) and the first row must contain column labels in bold-faced and with
+exactly the precise text as specified here:
+
+1. **State**
+2. **Target Senate**
+3. **Target House**
+4. **Target House First**
+5. **Optional Target Individual first (lastname)**
+6. **Optional Extra First Call Name**
+7. **Optional Extra First Call Number**
+
+
 Account Keys
 ------------
 
@@ -73,6 +102,7 @@ The app uses environment variables to store account keys. For development you wi
 * TWILIO_DEV_ACCOUNT_SID
 * TWILIO_DEV_AUTH_TOKEN
 * TW_NUMBER
+* REDISTOGO_URL (optional Redis URL for caching the Google Spreadsheet data)
 
 and for production:
 
