@@ -62,6 +62,7 @@ Messages: Can be urls for recorded message to play or text for the robot to read
 * msg_invalid_zip: "Sorry, that zip code didn't work. Please try again."
 * msg_call_block_intro: "We'll now connect you to {{n_reps}} representatives. Press # for next rep."
 * msg_rep_intro: "We're now connecting you to {{name}}"
+* msg_special_call_intro: Optional: if an extra first call number is specified in the remote Google Spreadsheet, this text can be used to introduce the extra call. It's optional, and if not specified, we'll fall back to _msg_rep_intro_.
 * msg_between_thanks: You're doing great - here's the next call.
 * msg_final_thanks: Thank you!
 
