@@ -159,7 +159,7 @@
   msg_between_thanks: Thanks
   msg_final_thanks: https://shutthebackdoor.net/call-tool/msg_final_thanks.mp3
 
-- id: battle-for-the-net
+- id: battleforthenet
   numbers:
     - 650-614-5872
   target_house: true

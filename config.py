@@ -27,6 +27,9 @@ class Config(object):
     # limit on the amount of time to ring before giving up
     TW_TIMEOUT = 40  # seconds
 
+    # number of threads to limit asynchronous leaderboard requests
+    FFTF_LB_ASYNC_POOL_SIZE = 8
+
     SECRET_KEY = 'AOUSBDAONPSOMDASIDUBSDOUABER)*#(R&(&@@#))'
 
 

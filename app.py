@@ -20,6 +20,8 @@ from twilio import TwilioRestException
 from models import db, aggregate_stats, log_call, call_count
 from political_data import PoliticalData
 from cache_handler import CacheHandler
+from fftf_leaderboard import FFTFLeaderboard
+from access_control_decorator import crossdomain
 
 
 app = Flask(__name__)
@@ -34,6 +36,8 @@ db.init_app(app)
 # Optional Redis cache, for caching Google spreadsheet campaign overrides
 cache_handler = CacheHandler(app.config['REDIS_URL'])
 
+# FFTF Leaderboard handler. Only used if FFTF Leadboard params are passed in
+leaderboard = FFTFLeaderboard(app.debug, app.config['FFTF_LB_ASYNC_POOL_SIZE'])
 
 call_methods = ['GET', 'POST']
 
@@ -68,7 +72,13 @@ def parse_params(r):
         'userPhone': r.values.get('userPhone'),
         'campaignId': r.values.get('campaignId', 'default'),
         'zipcode': r.values.get('zipcode', None),
-        'repIds': r.values.getlist('repIds')
+        'repIds': r.values.getlist('repIds'),
+
+        # optional values for Fight for the Future Leaderboards
+        # if present, these add extra logging functionality in call_complete
+        'fftfCampaign': r.values.get('fftfCampaign'),
+        'fftfReferer': r.values.get('fftfReferer'),
+        'fftfSession': r.values.get('fftfSession')
     }
 
     # lookup campaign by ID
@@ -120,7 +130,7 @@ def make_calls(params, campaign):
     """
     Connect a user to a sequence of congress members.
     Required params: campaignId, repIds
-    Optional params: zipcode,
+    Optional params: zipcode, fftfCampaign, fftfReferer, fftfSession
     """
     resp = twilio.twiml.Response()
 
@@ -145,6 +155,7 @@ def _make_calls():
 
 
 @app.route('/create', methods=call_methods)
+@crossdomain(origin='*')
 def call_user():
     """
     Makes a phone call to a user.
@@ -154,6 +165,9 @@ def call_user():
     Optional Params:
         zipcode
         repIds
+        fftfCampaign
+        fftfReferer
+        fftfSession
     """
     # parse the info needed to make the call
     params, campaign = parse_params(request)
@@ -181,6 +195,7 @@ def call_user():
 
 
 @app.route('/connection', methods=call_methods)
+@crossdomain(origin='*')
 def connection():
     """
     Call handler to connect a user with their congress person(s).
@@ -189,6 +204,9 @@ def connection():
     Optional Params:
         zipcode
         repIds (if not present go to incoming_call flow and asked for zipcode)
+        fftfCampaign
+        fftfReferer
+        fftfSession
     """
     params, campaign = parse_params(request)
 
@@ -216,6 +234,7 @@ def incoming_call():
     """
     Handles incoming calls to the twilio numbers.
     Required Params: campaignId
+    Optional Params: fftfCampaign, fftfReferer, fftfSession
 
     Each Twilio phone number needs to be configured to point to:
     server.com/incoming_call?campaignId=12345
@@ -314,6 +333,10 @@ def call_complete():
 
     log_call(params, campaign, request)
 
+    # If FFTF Leaderboard params are present, log this call
+    if params['fftfCampaign'] and params['fftfReferer']:
+        leaderboard.log_call(params, campaign, request)
+
     resp = twilio.twiml.Response()
 
     i = int(request.values.get('call_index', 0))
@@ -321,6 +344,10 @@ def call_complete():
     if i == len(params['repIds']) - 1:
         # thank you for calling message
         play_or_say(resp, campaign['msg_final_thanks'])
+
+        # If FFTF Leaderboard params are present, log the call completion status
+        if params['fftfCampaign'] and params['fftfReferer']:
+            leaderboard.log_complete(params, campaign, request)
     else:
         # call the next representative
         params['call_index'] = i + 1  # increment the call counter
@@ -344,7 +371,10 @@ def call_complete_status():
         'phoneNumber': request.values.get('To', ''),
         'callStatus': request.values.get('CallStatus', 'unknown'),
         'repIds': params['repIds'],
-        'campaignId': params['campaignId']
+        'campaignId': params['campaignId'],
+        'fftfCampaign': params['fftfCampaign'],
+        'fftfReferer': params['fftfReferer'],
+        'fftfSession': params['fftfSession']
     })
 
 
