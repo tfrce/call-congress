@@ -7,9 +7,11 @@ import json
 
 class PoliticalData():
 
-    SPREADSHEET_CACHE_TIMEOUT = 4 # seconds
+    SPREADSHEET_CACHE_TIMEOUT = 60 # seconds
 
-    overrides_data = {}
+    overrides_data = {}     # the google spreadsheet overrides for each campaign
+    scrape_times = {}       # the last google scrape timestamps for campaigns
+
     cache_handler = None
     campaigns = None
     legislators = None
@@ -184,7 +186,11 @@ class PoliticalData():
 
     def get_overrides(self, campaign):
 
-        if self.overrides_data.get(campaign.get('id')) == None:
+        # we expire whatever we're holding in memory after the timeout
+        last_scraped = time.time()-self.scrape_times.get(campaign.get('id'), 0)
+        expired = last_scraped > self.SPREADSHEET_CACHE_TIMEOUT
+
+        if self.overrides_data.get(campaign.get('id')) == None or expired:
             self.populate_overrides(campaign)
 
         return self.overrides_data[campaign.get('id')]
@@ -205,6 +211,8 @@ class PoliticalData():
                 spreadsheet_key,
                 json.dumps(overrides),
                 self.SPREADSHEET_CACHE_TIMEOUT)
+
+            self.scrape_times[campaign.get('id')] = time.time()
         else:
             overrides = json.loads(overrides_data)
             if self.debug_mode:
