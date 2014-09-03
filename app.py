@@ -220,7 +220,7 @@ def connection():
         play_or_say(resp, campaign['msg_intro'])
 
         if campaign.get('skip_star_confirm'):
-            resp.redirect(url_for('make_single_call', **params))
+            resp.redirect(url_for('_make_calls', **params))
             
             return str(resp)
 
