@@ -1,3 +1,4 @@
+import hashlib
 import json
 import grequests
 
@@ -21,7 +22,7 @@ class FFTFLeaderboard():
             'campaign_id': campaign['id'],
             'member_id': params['repIds'][i],
             'zipcode': params['zipcode'],
-            'phone_number': params['userPhone'],
+            'phone_number': hashlib.sha256(params['userPhone']).hexdigest(),
             'call_id': request.values.get('CallSid', None),
             'status': request.values.get('DialCallStatus', 'unknown'),
             'duration': request.values.get('DialCallDuration', 0)
