@@ -122,8 +122,14 @@ class PoliticalData():
                                for s in self.get_senators(local_districts)])
 
         if target_house:
-            member_ids.extend([h['bioguide_id'] for h
-                               in self.get_house_members(local_districts)])
+            reps = [h['bioguide_id'] for h
+                               in self.get_house_members(local_districts)]
+
+            if campaign.get('only_call_1_rep', False) and len(reps) > 1:
+                reps = [reps[0]]
+
+            print "got reps: %s" % str(reps)
+            member_ids.extend(reps)
 
         if target_senate and target_house_first:
             member_ids.extend([s['bioguide_id']
@@ -141,13 +147,25 @@ class PoliticalData():
                             member_ids.remove(l['bioguide_id'])     # janky
                             member_ids.insert(0, l['bioguide_id'])  # lol
 
+        def format_special_call(name, number):
+            return "SPECIAL_CALL_%s" % json.dumps({
+                'name': name, 'number': number})
+
         # Finally, for some states we want to call a special name/number first.
         # We are going to shoehorn this data into the existing member_ids
         # paradigm and specially parse it. Super janky, but c'est la vie.
         if first_call_number and first_call_name:
-            shoehorned_data = "SPECIAL_CALL_%s" % json.dumps({
-                'name': first_call_name, 'number': first_call_number})
-            member_ids.insert(0, shoehorned_data)
+            first_call = format_special_call(first_call_name, first_call_number)
+            member_ids.insert(0, first_call)
+
+        if campaign.get('extra_last_call_name') and \
+                campaign.get('extra_last_call_num'):
+            last_call = format_special_call(
+                campaign.get('extra_last_call_name'),
+                str(campaign.get('extra_last_call_num')))
+            member_ids.extend([last_call])
+
+        print member_ids
 
         return member_ids
 

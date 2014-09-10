@@ -179,10 +179,13 @@
   msg_invalid_zip: http://battleforthenet.s3.amazonaws.com/audio/msg_invalid_zip.mp3
   msg_call_block_intro: http://battleforthenet.s3.amazonaws.com/audio/msg_call_block_intro.mp3
   msg_rep_intro: We're now connecting you to {{name}}. Press star once you're done.
-  msg_special_call_intro: First we're connecting you to {{name}}. Press star once you're done.
+  msg_special_call_intro: Finally, we're connecting you to {{name}}. Press star once you're done.
   msg_between_thanks: Thanks.
   msg_final_thanks: http://battleforthenet.s3.amazonaws.com/audio/msg_final_thanks.mp3
   randomize_order: true
   overrides_google_spreadsheet_id: 1SxJWmzjNAnpkcKrMDbbnUJjx4qBX6vsF5MiyOXwf-NM
   skip_star_confirm: true
   call_human_check: false
+  only_call_1_rep: true
+  extra_last_call_name: the White House
+  extra_last_call_num: 2024561111
