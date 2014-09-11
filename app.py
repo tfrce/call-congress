@@ -319,8 +319,8 @@ def make_single_call():
             play_or_say(resp, campaign['msg_rep_intro'], name=full_name)
 
     if app.debug:
-        print u'DEBUG: Call #{}, {} ({}) from {} in make_single_call()'.format(
-            i, full_name, to_phone, params['userPhone'])
+        print u'DEBUG: Call #{}, {} ({}) from {} : make_single_call()'.format(i,
+            full_name.encode('ascii', 'ignore'), to_phone, params['userPhone'])
 
     resp.dial(to_phone, callerId=params['userPhone'],
               timeLimit=app.config['TW_TIME_LIMIT'],
