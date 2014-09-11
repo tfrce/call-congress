@@ -383,6 +383,10 @@ def call_complete_status():
         'fftfSession': params['fftfSession']
     })
 
+@app.route('/hello')
+def hello():
+    return "OHAI"
+
 
 @app.route('/demo')
 def demo():
