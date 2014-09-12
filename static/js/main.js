@@ -104,13 +104,15 @@ $(function () {
     var repId = $(ev.currentTarget).data('bioguide_id'),
         user_phone_number = $('.user-phone-number').val();
 
+    alert(user_phone_number);
+
     $.ajax({
         url: callServer + 'create',
         type: 'POST',
         data: {
             campaignId: campaignId, 
             repIds: repId, 
-            user_phone_number: user_phone_number}
+            userPhone: user_phone_number}
     }).done(function(data){
       console.log(data);
     }).fail(function(data){
@@ -127,7 +129,7 @@ $(function () {
         type: 'POST',
         data: {
             campaignId: campaignId, 
-            user_phone_number: user_phone_number}
+            userPhone: user_phone_number}
     }).done(function(data){
       console.log(data);
       $('.call-now').append('<p>Thank you for calling.</p>')
