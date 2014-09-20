@@ -4,7 +4,6 @@ from distutils.util import strtobool
 
 import twilio.rest
 
-
 class Config(object):
     DEBUG = True
 
@@ -13,8 +12,8 @@ class Config(object):
     APPLICATION_ROOT = 'http://1cf55a5a.ngrok.com'
 
     TW_CLIENT = twilio.rest.TwilioRestClient(
-        os.environ.get('TWILIO_DEV_ACCOUNT_SID'),
-        os.environ.get('TWILIO_DEV_AUTH_TOKEN'))
+        os.environ.get('TWILIO_ACCOUNT_SID'),
+        os.environ.get('TWILIO_AUTH_TOKEN'))
 
     TASKFORCE_KEY = os.environ.get('TASKFORCE_KEY')
     SUNLIGHTLABS_KEY = os.environ.get('SUNLIGHTLABS_KEY')
@@ -43,9 +42,6 @@ class ConfigProduction(Config):
 
     APPLICATION_ROOT = os.environ.get('APPLICATION_ROOT')
 
-    TW_CLIENT = twilio.rest.TwilioRestClient(
-        os.environ.get('TWILIO_ACCOUNT_SID'),
-        os.environ.get('TWILIO_AUTH_TOKEN'))
 
     SECRET_KEY = os.environ.get('SECRET_KEY')
 

@@ -58,9 +58,16 @@ def run(env=None):
         print("[Warning] No environment specified.")
         env = DEVELOPMENT_ENV
 
+    env = str(env)
+
+    if env != DEVELOPMENT_ENV and env != PRODUCTION_ENV:
+        print("[Warning] Invalid environment specified, use {} or {}.".format(
+            DEVELOPMENT_ENV, PRODUCTION_ENV))
+        env = DEVELOPMENT_ENV
+
     create_env()
     print("[Info] Running {} environment.".format(env))
-    if env is DEVELOPMENT_ENV:
+    if env == DEVELOPMENT_ENV:
         virtualenv("python app.py", env)
     else:
         virtualenv("foreman start", env)
@@ -137,6 +144,7 @@ def generate_env_command_prefix(env=None):
             continue
         export_str += "{}={} ".format(variable.upper(), env_variables[variable])
 
+    export_str += "ENV={} ".format(env)
     return export_str
 
 def parse_config(section):
