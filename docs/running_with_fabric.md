@@ -16,7 +16,7 @@ Once you've set up the config file, you should be able to run the application by
 
     $ fab run
 
-If you want to specify that the app should run in development or production, then run the following:
+This command will automatically export the environment variables from your config file. If you want to specify that the app should run in development or production, then run the following:
 
     $ fab run:production
     $ fab run:development
