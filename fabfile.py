@@ -9,6 +9,7 @@ except ImportError:
     import ConfigParser as configparser
 
 from fabric.api import local, task, lcd
+from fabric.colors import red
 
 
 FILE_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -55,19 +56,21 @@ def run(env=None):
     Runs the application in a specified environment
     """
     if env is None:
-        print("[Warning] No environment specified.")
+        print(red("[Warning] ") + "No environment specified.")
         env = DEVELOPMENT_ENV
 
     env = str(env)
-
     if env != DEVELOPMENT_ENV and env != PRODUCTION_ENV:
-        print("[Warning] Invalid environment specified, use {} or {}.".format(
-            DEVELOPMENT_ENV, PRODUCTION_ENV))
+        tag = red("[Warning] ")
+        environments = "{} or {}".format(DEVELOPMENT_ENV, PRODUCTION_ENV)
+        print(tag + "Invalid environment specified, use " + environments)
         env = DEVELOPMENT_ENV
 
     create_env()
     print("[Info] Running {} environment.".format(env))
     if env == DEVELOPMENT_ENV:
+        print(red("[Warning] ") + "ngrok not started automatically, you " + \
+              "need to start it manually")
         virtualenv("python app.py", env)
     else:
         virtualenv("foreman start", env)
@@ -78,7 +81,8 @@ def generate_example_config():
     Generates a default config file at CONFIG_FILE_PATH
     """
     if os.path.isfile(CONFIG_FILE_PATH):
-        print("[Warning] Config file already exists, not generating a new one.")
+        tag = red("[Warning] ")
+        print(tag + "Config file already exists, not generating a new one.")
         return
 
     print("Generating config file at {}".format(CONFIG_FILE_PATH))
@@ -115,7 +119,6 @@ def clean():
     """
     local("rm -rf *.pyc")
 
-
 def virtualenv(command, env=None):
     """
     Runs a command in the virtual environment
@@ -140,7 +143,8 @@ def generate_env_command_prefix(env=None):
     env_variables = parse_config(env)
     for variable in env_variables:
         if not env_variables[variable]:
-            print("[WARNING] {} not set in your config file.".format(variable))
+            tag = red("[Warning] ")
+            print("{}{} not set in your config file.".format(tag, variable))
             continue
         export_str += "{}={} ".format(variable.upper(), env_variables[variable])
 
