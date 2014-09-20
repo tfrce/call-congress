@@ -26,3 +26,4 @@ By default, the app runs in development.
 ## Other Fabric operations
 
 - `fab clean` removes all .pyc files from the project
+- `fab update_data` will download the updated data from the Sunlight Congress API

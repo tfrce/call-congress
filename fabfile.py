@@ -8,11 +8,11 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
-from fabric.api import local, task
+from fabric.api import local, task, lcd
 
 
-CONFIG_FILE_PATH = "{}{}".format(os.path.abspath(os.path.dirname(__file__)),
-                                 "/call_congress.config")
+FILE_ROOT = os.path.abspath(os.path.dirname(__file__))
+CONFIG_FILE_PATH = "{}{}".format(FILE_ROOT, "/call_congress.config")
 
 DEVELOPMENT_ENV = "development"
 PRODUCTION_ENV = "production"
@@ -90,6 +90,15 @@ def generate_example_config():
     with open(CONFIG_FILE_PATH, 'wb') as config_file:
         config.write(config_file)
 
+
+@task
+def update_data():
+    """
+    Updates the districts and legislators CSV files in the `data/` folder
+    """
+    with lcd(FILE_ROOT + "/data"):
+        local('curl -kO "http://unitedstates.sunlightfoundation.com/legislators/legislators.csv"')
+        local('curl -kO "http://assets.sunlightfoundation.com/data/districts.csv"')
 
 @task
 def clean():
