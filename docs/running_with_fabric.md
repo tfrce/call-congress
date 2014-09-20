@@ -2,7 +2,7 @@
 
 First install fabric to your local system, not your virtualenv (`sudo pip install fabric`)
 
-To generate your virtual environment, you can run either create a default environment manually with 
+To generate your virtual environment, you should run the following: 
 
     $ fab create_env
 
