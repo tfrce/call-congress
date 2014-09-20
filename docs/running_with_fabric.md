@@ -27,3 +27,4 @@ By default, the app runs in development.
 
 - `fab clean` removes all .pyc files from the project
 - `fab update_data` will download the updated data from the Sunlight Congress API
+- `fab test` will execute `nosetests` in the virtual environment 

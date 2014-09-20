@@ -102,6 +102,13 @@ def generate_example_config():
     with open(CONFIG_FILE_PATH, 'wb') as config_file:
         config.write(config_file)
 
+@task
+def test():
+    """
+    Runs the test suite locally
+    """
+    virtualenv("nosetests", env="development")
+
 
 @task
 def update_data():
