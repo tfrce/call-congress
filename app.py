@@ -3,6 +3,7 @@ patch_all()
 
 import random
 import urlparse
+import json
 
 from datetime import datetime, timedelta
 
@@ -18,6 +19,10 @@ from twilio import TwilioRestException
 
 from models import db, aggregate_stats, log_call, call_count
 from political_data import PoliticalData
+from cache_handler import CacheHandler
+from fftf_leaderboard import FFTFLeaderboard
+from access_control_decorator import crossdomain
+
 
 app = Flask(__name__)
 
@@ -28,9 +33,15 @@ sentry = Sentry(app)
 
 db.init_app(app)
 
+# Optional Redis cache, for caching Google spreadsheet campaign overrides
+cache_handler = CacheHandler(app.config['REDIS_URL'])
+
+# FFTF Leaderboard handler. Only used if FFTF Leadboard params are passed in
+leaderboard = FFTFLeaderboard(app.debug, app.config['FFTF_LB_ASYNC_POOL_SIZE'])
+
 call_methods = ['GET', 'POST']
 
-data = PoliticalData()
+data = PoliticalData(cache_handler, app.debug)
 
 
 def make_cache_key(*args, **kwargs):
@@ -61,7 +72,13 @@ def parse_params(r):
         'userPhone': r.values.get('userPhone'),
         'campaignId': r.values.get('campaignId', 'default'),
         'zipcode': r.values.get('zipcode', None),
-        'repIds': r.values.getlist('repIds')
+        'repIds': r.values.getlist('repIds'),
+
+        # optional values for Fight for the Future Leaderboards
+        # if present, these add extra logging functionality in call_complete
+        'fftfCampaign': r.values.get('fftfCampaign'),
+        'fftfReferer': r.values.get('fftfReferer'),
+        'fftfSession': r.values.get('fftfSession')
     }
 
     # lookup campaign by ID
@@ -81,6 +98,10 @@ def parse_params(r):
     if params['zipcode']:
         params['repIds'] = data.locate_member_ids(
             params['zipcode'], campaign)
+
+        # delete the zipcode, since the repIds are in a particular order and
+        # will be passed around from endpoint to endpoint hereafter anyway.
+        del params['zipcode']
 
     if 'random_choice' in campaign:
         # pick a random choice among a selected set of members
@@ -109,7 +130,7 @@ def make_calls(params, campaign):
     """
     Connect a user to a sequence of congress members.
     Required params: campaignId, repIds
-    Optional params: zipcode,
+    Optional params: zipcode, fftfCampaign, fftfReferer, fftfSession
     """
     resp = twilio.twiml.Response()
 
@@ -134,6 +155,7 @@ def _make_calls():
 
 
 @app.route('/create', methods=call_methods)
+@crossdomain(origin='*')
 def call_user():
     """
     Makes a phone call to a user.
@@ -143,6 +165,9 @@ def call_user():
     Optional Params:
         zipcode
         repIds
+        fftfCampaign
+        fftfReferer
+        fftfSession
     """
     # parse the info needed to make the call
     params, campaign = parse_params(request)
@@ -156,6 +181,7 @@ def call_user():
             to=params['userPhone'],
             from_=random.choice(campaign['numbers']),
             url=full_url_for("connection", **params),
+            if_machine='Hangup' if campaign.get('call_human_check') else None, 
             timeLimit=app.config['TW_TIME_LIMIT'],
             timeout=app.config['TW_TIMEOUT'],
             status_callback=full_url_for("call_complete_status", **params))
@@ -170,6 +196,7 @@ def call_user():
 
 
 @app.route('/connection', methods=call_methods)
+@crossdomain(origin='*')
 def connection():
     """
     Call handler to connect a user with their congress person(s).
@@ -178,6 +205,9 @@ def connection():
     Optional Params:
         zipcode
         repIds (if not present go to incoming_call flow and asked for zipcode)
+        fftfCampaign
+        fftfReferer
+        fftfSession
     """
     params, campaign = parse_params(request)
 
@@ -188,6 +218,11 @@ def connection():
         resp = twilio.twiml.Response()
 
         play_or_say(resp, campaign['msg_intro'])
+
+        if campaign.get('skip_star_confirm'):
+            resp.redirect(url_for('_make_calls', **params))
+            
+            return str(resp)
 
         action = url_for("_make_calls", **params)
 
@@ -205,6 +240,7 @@ def incoming_call():
     """
     Handles incoming calls to the twilio numbers.
     Required Params: campaignId
+    Optional Params: fftfCampaign, fftfReferer, fftfSession
 
     Each Twilio phone number needs to be configured to point to:
     server.com/incoming_call?campaignId=12345
@@ -254,28 +290,39 @@ def make_single_call():
     if not params or not campaign:
         abort(404)
 
-    i = int(request.values.get('call_index', 0))
-    params['call_index'] = i
-    member = [l for l in data.legislators
-              if l['bioguide_id'] == params['repIds'][i]][0]
-    congress_phone = member['phone']
-    full_name = unicode("{} {}".format(
-        member['firstname'], member['lastname']), 'utf8')
-
     resp = twilio.twiml.Response()
 
-    if 'voted_with_list' in campaign and \
-            params['repIds'][i] in campaign['voted_with_list']:
-        play_or_say(
-            resp, campaign['msg_repo_intro_voted_with'], name=full_name)
+    i = int(request.values.get('call_index', 0))
+    params['call_index'] = i
+
+    if "SPECIAL_CALL_" in params['repIds'][i]:
+        
+        special = json.loads(params['repIds'][i].replace("SPECIAL_CALL_", ""))
+        to_phone = special['number']
+        full_name = special['name']
+        play_or_say(resp, campaign.get('msg_special_call_intro',
+            campaign['msg_rep_intro']), name=full_name)
+
     else:
-        play_or_say(resp, campaign['msg_rep_intro'], name=full_name)
+
+        member = [l for l in data.legislators
+                  if l['bioguide_id'] == params['repIds'][i]][0]
+        to_phone = member['phone']
+        full_name = unicode("{} {}".format(
+            member['firstname'], member['lastname']), 'utf8')
+
+        if 'voted_with_list' in campaign and \
+                params['repIds'][i] in campaign['voted_with_list']:
+            play_or_say(
+                resp, campaign['msg_repo_intro_voted_with'], name=full_name)
+        else:
+            play_or_say(resp, campaign['msg_rep_intro'], name=full_name)
 
     if app.debug:
-        print u'DEBUG: Call #{}, {} ({}) from {} in make_single_call()'.format(
-            i, full_name, congress_phone, params['userPhone'])
+        print u'DEBUG: Call #{}, {} ({}) from {} : make_single_call()'.format(i,
+            full_name.encode('ascii', 'ignore'), to_phone, params['userPhone'])
 
-    resp.dial(congress_phone, callerId=params['userPhone'],
+    resp.dial(to_phone, callerId=params['userPhone'],
               timeLimit=app.config['TW_TIME_LIMIT'],
               timeout=app.config['TW_TIMEOUT'], hangupOnStar=True,
               action=url_for('call_complete', **params))
@@ -292,6 +339,10 @@ def call_complete():
 
     log_call(params, campaign, request)
 
+    # If FFTF Leaderboard params are present, log this call
+    if params['fftfCampaign'] and params['fftfReferer']:
+        leaderboard.log_call(params, campaign, request)
+
     resp = twilio.twiml.Response()
 
     i = int(request.values.get('call_index', 0))
@@ -299,6 +350,10 @@ def call_complete():
     if i == len(params['repIds']) - 1:
         # thank you for calling message
         play_or_say(resp, campaign['msg_final_thanks'])
+
+        # If FFTF Leaderboard params are present, log the call completion status
+        if params['fftfCampaign'] and params['fftfReferer']:
+            leaderboard.log_complete(params, campaign, request)
     else:
         # call the next representative
         params['call_index'] = i + 1  # increment the call counter
@@ -322,8 +377,15 @@ def call_complete_status():
         'phoneNumber': request.values.get('To', ''),
         'callStatus': request.values.get('CallStatus', 'unknown'),
         'repIds': params['repIds'],
-        'campaignId': params['campaignId']
+        'campaignId': params['campaignId'],
+        'fftfCampaign': params['fftfCampaign'],
+        'fftfReferer': params['fftfReferer'],
+        'fftfSession': params['fftfSession']
     })
+
+@app.route('/hello')
+def hello():
+    return "OHAI"
 
 
 @app.route('/demo')

@@ -47,7 +47,7 @@
   numbers:
     - 415-419-8672
   target_house: true
-  target_senate: true
+  target_senate: false
   target_house_first: true
   msg_intro: http://tfrce.s3.amazonaws.com/sft/sft_msg_intro.mp3
   msg_ask_zip: http://tfrce.s3.amazonaws.com/sft/sft_ask_zip.mp3
@@ -75,7 +75,7 @@
 
 - id: tdwfb-mobile
   numbers:
-    - 202-552-0505
+    - 650-614-5872
   target_house: true
   target_senate: true
   target_house_first: false
@@ -86,6 +86,7 @@
   msg_rep_intro: We're now connecting you to {{name}}. Press star once you're done.
   msg_between_thanks: http://tfrce.s3.amazonaws.com/tdwfb/msg_between_thanks.mp3
   msg_final_thanks: http://tfrce.s3.amazonaws.com/tdwfb/msg_final_thanks.mp3
+  randomize_order: true
 
 - id: nn-calltool
   numbers:
@@ -114,6 +115,7 @@
   msg_rep_intro: We're now connecting you to {{name}}. Press star once you're done.
   msg_between_thanks: Thanks
   msg_final_thanks: http://tfrce.s3.amazonaws.com/nn/msg_final_thanks.mp3
+  randomize_order: true
 
 - id: lofgren-nsa-calltool
   numbers:
@@ -142,3 +144,48 @@
   msg_rep_intro: We're now connecting you to {{name}}. Press star once you're done.
   msg_between_thanks: Thanks
   msg_final_thanks: https://shutthebackdoor.net/call-tool/msg_final_thanks.mp3
+
+- id: defund-the-nsa
+  numbers:
+    - 650-614-5872
+  target_house: true
+  target_senate: false
+  target_house_first: false
+  msg_intro: https://shutthebackdoor.net/call-tool/msg_intro.mp3
+  msg_ask_zip: https://shutthebackdoor.net/call-tool/msg_ask_zip.mp3
+  msg_invalid_zip: https://shutthebackdoor.net/call-tool/msg_invalid_zip.mp3
+  msg_call_block_intro: https://shutthebackdoor.net/call-tool/msg_callblock_intro_dial.mp3
+  msg_rep_intro: We're now connecting you to {{name}}. Press star once you're done.
+  msg_between_thanks: Thanks
+  msg_final_thanks: https://shutthebackdoor.net/call-tool/msg_final_thanks.mp3
+
+- id: battleforthenet
+  numbers:
+    - 650-716-1243
+    - 205-683-2590
+    - 480-405-0187
+    - 719-354-2153
+    - 203-487-5661
+    - 239-330-1915
+    - 217-441-2582
+    - 218-729-2044
+    - 612-999-1433
+    - 262-725-0171
+  target_house: true
+  target_senate: true
+  target_house_first: false
+  msg_intro: http://battleforthenet.s3.amazonaws.com/audio/msg_intro.mp3
+  msg_ask_zip: http://battleforthenet.s3.amazonaws.com/audio/msg_ask_zip.mp3
+  msg_invalid_zip: http://battleforthenet.s3.amazonaws.com/audio/msg_invalid_zip.mp3
+  msg_call_block_intro: http://battleforthenet.s3.amazonaws.com/audio/msg_call_block_intro.mp3
+  msg_rep_intro: We're now connecting you to {{name}}. Press star once you're done.
+  msg_special_call_intro: Finally, we're connecting you to {{name}}. Press star once you're done.
+  msg_between_thanks: Thanks.
+  msg_final_thanks: http://battleforthenet.s3.amazonaws.com/audio/msg_final_thanks.mp3
+  randomize_order: true
+  overrides_google_spreadsheet_id: 1SxJWmzjNAnpkcKrMDbbnUJjx4qBX6vsF5MiyOXwf-NM
+  skip_star_confirm: true
+  call_human_check: false
+  only_call_1_rep: true
+  extra_last_call_name: the White House
+  extra_last_call_num: 2024561111
