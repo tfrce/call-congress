@@ -106,8 +106,8 @@
   numbers:
     - 202-552-0272
   target_house: true
-  target_senate: false
-  target_house_first: false
+  target_senate: true
+  target_house_first: true
   msg_intro: http://tfrce.s3.amazonaws.com/nn/msg_intro.mp3
   msg_ask_zip: http://tfrce.s3.amazonaws.com/nn/msg_ask_zip.mp3
   msg_invalid_zip: http://tfrce.s3.amazonaws.com/nn/msg_invalid_zip.mp3
