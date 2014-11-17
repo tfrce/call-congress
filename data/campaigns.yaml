@@ -145,7 +145,7 @@
   msg_between_thanks: Thanks
   msg_final_thanks: https://shutthebackdoor.net/call-tool/msg_final_thanks.mp3
 
-- id: usa-freedom-fp
+- id: usa-freedom-ac
   numbers:
     - 314-254-9254
   target_house: false
