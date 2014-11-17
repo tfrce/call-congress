@@ -145,6 +145,20 @@
   msg_between_thanks: Thanks
   msg_final_thanks: https://shutthebackdoor.net/call-tool/msg_final_thanks.mp3
 
+- id: usa-freedom-fp
+  numbers:
+    - 314-254-9254
+  target_house: false
+  target_senate: true
+  target_house_first: false
+  msg_intro: http://tfrce.s3.amazonaws.com/usa-freedom-fp/usafreedom_intro.mp3
+  msg_ask_zip: https://shutthebackdoor.net/call-tool/msg_ask_zip.mp3
+  msg_invalid_zip: https://shutthebackdoor.net/call-tool/msg_invalid_zip.mp3
+  msg_call_block_intro: http://tfrce.s3.amazonaws.com/usa-freedom-fp/usafreedom_call_block_intro.mp3
+  msg_rep_intro: We're now connecting you to {{name}}. Press star once you're done.
+  msg_between_thanks: http://tfrce.s3.amazonaws.com/usa-freedom-fp/usafreedom_between_thanks.mp3
+  msg_final_thanks: http://tfrce.s3.amazonaws.com/usa-freedom-fp/usafreedom_final_thanks.mp3
+
 - id: defund-the-nsa
   numbers:
     - 650-614-5872
