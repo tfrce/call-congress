@@ -218,3 +218,15 @@
   msg_rep_intro: We're now connecting you to {{name}}. Press star once you're done.
   msg_between_thanks: http://tfrce.s3.amazonaws.com/usa-freedom/msg_between_thanks.mp3
   msg_final_thanks: http://tfrce.s3.amazonaws.com/usa-freedom/msg_final_thanks.mp3
+
+- id: usa-freedom-dp
+  numbers:
+    - 202-552-0252
+  target_house: false
+  target_senate: true
+  target_house_first: false
+  msg_intro: Thanks for using our call tool to call your Senators about the USA Freedom Act. Please press star to continue.
+  msg_call_block_intro: We'll now connect you to your first Senator. Read the script on our website, and press star once you're done and we'll connect you to your second Member of Congress.
+  msg_rep_intro: We're now connecting you to {{name}}. Press star once you're done.
+  msg_between_thanks: http://tfrce.s3.amazonaws.com/usa-freedom/msg_between_thanks.mp3
+  msg_final_thanks: http://tfrce.s3.amazonaws.com/usa-freedom/msg_final_thanks.mp3
