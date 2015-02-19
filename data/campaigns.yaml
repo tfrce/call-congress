@@ -167,7 +167,7 @@
   repIds:
     - P000197
     - H000874
-  msg_intro: http://tfrce.s3.amazonaws.com/housefasttrack/msg_call_block_intro.mp3
+  msg_intro: http://tfrce.s3.amazonaws.com/housefasttrack/msg_intro.mp3
   msg_call_block_intro: http://tfrce.s3.amazonaws.com/housefasttrack/msg_call_block_intro.mp3
   msg_rep_intro: Connecting you to {{name}}. Press star once you're done.
   msg_between_thanks: http://tfrce.s3.amazonaws.com/housefasttrack/msg_between_thanks.mp3
