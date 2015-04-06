@@ -166,7 +166,7 @@ def call_user():
     except TwilioRestException, err:
         result = jsonify(message=err.msg)
         #result = jsonify(message=err.msg.split(':')[1].strip())
-        result.status_code = 500
+        result.status_code = 200
 
     return result
 
