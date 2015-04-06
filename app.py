@@ -370,6 +370,10 @@ def eff_test():
     return jsonify(message="success")
 
 
+@app.route('/loaderio-a0ddcb763334fb52d1e00fa69f9fe1cb')
+def loader_io():
+    return 'loaderio-a0ddcb763334fb52d1e00fa69f9fe1cb'
+
 if __name__ == '__main__':
     # load the debugger config
     app.config.from_object('config.Config')
