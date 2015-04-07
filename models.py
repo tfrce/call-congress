@@ -44,11 +44,12 @@ class Call(db.Model):
         self.member_id = member_id
         self.call_id = call_id
 
-        if phone_number:
-            phone_number = phone_number.replace('-', '').replace('.', '')
-            self.user_id = self.hash_phone(phone_number)
-            self.areacode = phone_number[:3]
-            self.exchange = phone_number[3:6]
+        # Sina disables user ids and phone number logging. a bit late, but nonetheless, yay.
+        # if phone_number:
+        #     phone_number = phone_number.replace('-', '').replace('.', '')
+        #     self.user_id = self.hash_phone(phone_number)
+        #     self.areacode = phone_number[:3]
+        #     self.exchange = phone_number[3:6]
 
         self.zipcode = zipcode
 
