@@ -4,3 +4,4 @@ venv
 *.pyc
 *.db
 .env
+gunicorn.log
