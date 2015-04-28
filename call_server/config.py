@@ -4,9 +4,9 @@ from distutils.util import strtobool
 import twilio.rest
 
 
-class Config(object):
+class DefaultConfig(object):
     DEBUG = True
-    PROJECT_NAME = "Call Server"
+    APP_NAME = "call_server"
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:///dev.db'
 
@@ -24,7 +24,7 @@ class Config(object):
     SECRET_KEY = 'AOUSBDAONPSOMDASIDUBSDOUABER)*#(R&(&@@#))'
 
 
-class ConfigProduction(Config):
+class ProductionConfig(DefaultConfig):
     DEBUG = strtobool(os.environ.get('DEBUG', 'false'))
 
     SENTRY_DSN = os.environ.get('SENTRY_DSN')
@@ -42,7 +42,7 @@ class ConfigProduction(Config):
     SECRET_KEY = os.environ.get('SECRET_KEY')
 
 
-class ConfigTesting(Config):
+class TestingConfig(DefaultConfig):
     TESTING = True
     APPLICATION_ROOT = ''
     SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'

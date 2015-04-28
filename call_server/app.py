@@ -6,7 +6,7 @@ except ImportError:
 
 from flask import Flask
 
-from .config import Config
+from .config import DefaultConfig
 from .admin import admin
 from .user import user
 from .call import call
@@ -29,15 +29,15 @@ def create_app(config=None, app_name=None, blueprints=None):
     """Create the main Flask app."""
 
     if app_name is None:
-        app_name = Config.PROJECT_NAME
+        app_name = DefaultConfig.APP_NAME
     if blueprints is None:
         blueprints = DEFAULT_BLUEPRINTS
 
     app = Flask(app_name)
-    app.config.from_object('config.ConfigProduction')
+    app.config.from_object('call_server.config.ProductionConfig')
 
     configure_extensions(app)
-    configure_blueprints(app)
+    configure_blueprints(app, blueprints)
 
     app.logger.info('application started')
     return app
