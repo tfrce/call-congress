@@ -16,7 +16,7 @@ alembic_config = Config(os.path.realpath(os.path.dirname(__name__)) + "/alembic.
 @manager.command
 def run():
     """Run webserver for local development."""
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=True, use_reloader=True)
 
 
 @manager.command
@@ -47,5 +47,4 @@ def stamp(revision):
     command.stamp(alembic_cfg, revision)
 
 if __name__ == "__main__":
-    print "running debug server"
-    manager.run('')
+    manager.run()
