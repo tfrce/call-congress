@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{%block title%}Campaign Admin{%endblock%}
+
+{%block styles%}
+  <link rel="stylesheet" href="static/css/admin.css" />
+  <link rel="stylesheet" href="static/vendor/chosen/chosen.css" />
+{%endblock%}
+
+{%block head_scripts%}
+  <script src="static/vendor/chosen/chosen.jquery.js"></script>
+  <script src="static/vendor/yamljs/yaml.js"></script>
+  <script src="static/js/admin.js"></script>
+{%endblock%}
+
+{%block body%}
+  <div class="content-container">
+    <div class="admin">
+      <h1>Campaign Admin</h1>
+      <div class="box">
+        <form id="campaign">
+          <fieldset>
+            <legend>Campaign Type</legend>
+            <label><input type="checkbox" name="target_house" value="true" />Target House</label>
+            <label><input type="checkbox" name="only_call_1_rep" value="true" />Only Call One Rep</label>
+            <br/>
+            <label><input type="checkbox" name="target_senate" value="true" />Target Senate</label>
+            <label><input type="checkbox" name="only_call_1_sen" value="true" />Only Call One Senator</label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Optional Overrides</legend>
+            <label>Specific Legislators</label>
+            <select id="legislators" name="repIds" multiple data-placeholder="Select a Legislator...">
+              <option value="0">to be filled in with json</option>
+            </select>
+            <script type="text/template" id="legislatorTemplate">
+              <option value="<%= bioguide_id %>">
+                <% if (chamber === "senate") { %> Sen. <% };
+                   if (chamber === "house") { %> Rep. <% }; %>
+                <%= firstname %> <%= lastname %> (<%= party %>-<%= state %>)
+              </option>
+            </script>
+          </fieldset>
+        </form>
+
+        <label>Campaign Definition</label>
+        <textarea id="yaml" placeholder="" disabled="disabled"></textarea>
+    </div>
+
+  </div>
+{%endblock%}

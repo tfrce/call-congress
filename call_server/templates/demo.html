@@ -1,36 +1,12 @@
-<html xmlns:fb="http://ogp.me/ns/fb#">
-<!-- Begin Wrapper > Header HTML -->
-<!--[if lt IE 7]>              <html lang="en" class="ie6"> <![endif]-->
-<!--[if IE 7]>                 <html lang="en" class="ie7"> <![endif]-->
-<!--[if IE 8]>                 <html lang="en" class="ie8"> <![endif]-->
-<!--[if IE 9 ]>                <html lang="en" class="ie9"> <![endif]-->
-<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en">         <!--<![endif]-->
- <head>
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <meta charset="utf-8">
+{% extends "base.html" %}
 
+{%block title%}Demo for Call Congress{%endblock%}
 
-  <title>Demo for Call Congress</title>
-  <!-- Empty conditional comment hack
-  Prevents lo d stacking in IE8
-  See http://www.phpied.com/conditional-comments-block-downloads/ -->
-  <!--[if IE]><![endif]-->
-  <!-- Chrome Frame for browsers that support it -->
-  <meta http-equiv="X-UA-Compatible" content="chrome=1">
-  <meta name="viewport" content="initial-scale=1.0, width=device-width">
-
-  <link rel="shortcut icon" type="image/ico" href="static/images/favicon.png">
-
-  <!-- coalition edit start -->
-  <link rel="stylesheet" href="static/css/styles.css" />
-  <!-- coalition edit end -->
-
-  <script src="static/js/jquery.min.js"></script>
-  <script src="static/js/lodash.min.js"></script>
+{%block head_scripts%}
   <script src="static/js/main.js"></script>
- </head>
+{%endblock%}
 
- <body>
+{%block body%}
   <div class="content-container">
     <div>
       <h1>Demo for Call Congress</h1>
@@ -125,5 +101,4 @@
         It is open source: <a href="https://github.com/tfrce/call-congress">tfrce/call-congress</a>.
       </div>
     </div>
- </body>
-</html>
+{%endblock%}

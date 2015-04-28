@@ -1,0 +1,34 @@
+<html xmlns:fb="http://ogp.me/ns/fb#">
+<!-- Begin Wrapper > Header HTML -->
+<!--[if lt IE 7]>              <html lang="en" class="ie6"> <![endif]-->
+<!--[if IE 7]>                 <html lang="en" class="ie7"> <![endif]-->
+<!--[if IE 8]>                 <html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9 ]>                <html lang="en" class="ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en">         <!--<![endif]-->
+ <head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+
+
+  <title>{%block title%}{%endblock%}</title>
+  <!-- Empty conditional comment hack
+  Prevents lo d stacking in IE8
+  See http://www.phpied.com/conditional-comments-block-downloads/ -->
+  <!--[if IE]><![endif]-->
+  <!-- Chrome Frame for browsers that support it -->
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="initial-scale=1.0, width=device-width">
+
+  <link rel="shortcut icon" type="image/ico" href="static/images/favicon.png">
+
+  <link rel="stylesheet" href="static/css/styles.css" />
+  {%block styles%}{%endblock%}
+  <script src="static/js/jquery.min.js"></script>
+  <script src="static/js/lodash.min.js"></script>
+  {%block head_scripts%}{%endblock%}
+ </head>
+
+ <body>
+  {%block body%}{%endblock%}
+ </body>
+</html>
