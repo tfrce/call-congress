@@ -1,45 +1,18 @@
-from gevent.monkey import patch_all
-patch_all()
-
 import random
 import urlparse
-import requests
-from threading import Thread
-from datetime import datetime, timedelta
 
 import pystache
 import twilio.twiml
 
-from flask import (abort, after_this_request, Flask, request, render_template,
-                   url_for)
+from flask import abort, after_this_request, Flask, Blueprint, request, url_for
 from flask_cache import Cache
 from flask_jsonpify import jsonify
-from raven.contrib.flask import Sentry
 from twilio import TwilioRestException
 
-from models import db, aggregate_stats, log_call, call_count
-from political_data import PoliticalData
+from models import db, log_call
 
-app = Flask(__name__)
-
-app.config.from_object('config.ConfigProduction')
-
-cache = Cache(app, config={'CACHE_TYPE': 'simple'})
-sentry = Sentry(app)
-
-db.init_app(app)
-
+call = Blueprint('call', __name__)
 call_methods = ['GET', 'POST']
-
-data = PoliticalData()
-
-
-def make_cache_key(*args, **kwargs):
-    path = request.path
-    args = str(hash(frozenset(request.args.items())))
-
-    return (path + args).encode('utf-8')
-
 
 def play_or_say(resp_or_gather, msg_template, **kwds):
     # take twilio response and play or say a mesage
@@ -124,7 +97,7 @@ def make_calls(params, campaign):
     return str(resp)
 
 
-@app.route('/make_calls', methods=call_methods)
+@call.route('/make_calls', methods=call_methods)
 def _make_calls():
     params, campaign = parse_params(request)
 
@@ -134,7 +107,7 @@ def _make_calls():
     return make_calls(params, campaign)
 
 
-@app.route('/create', methods=call_methods)
+@call.route('/create', methods=call_methods)
 def call_user():
     """
     Makes a phone call to a user.
@@ -171,7 +144,7 @@ def call_user():
     return result
 
 
-@app.route('/connection', methods=call_methods)
+@call.route('/connection', methods=call_methods)
 def connection():
     """
     Call handler to connect a user with their congress person(s).
@@ -202,7 +175,7 @@ def connection():
         return intro_zip_gather(params, campaign)
 
 
-@app.route('/incoming_call', methods=call_methods)
+@call.route('/incoming_call', methods=call_methods)
 def incoming_call():
     """
     Handles incoming calls to the twilio numbers.
@@ -220,7 +193,7 @@ def incoming_call():
     return intro_zip_gather(params, campaign)
 
 
-@app.route("/zip_parse", methods=call_methods)
+@call.route("/zip_parse", methods=call_methods)
 def zip_parse():
     """
     Handle a zip code entered by the user.
@@ -249,7 +222,7 @@ def zip_parse():
     return make_calls(params, campaign)
 
 
-@app.route('/make_single_call', methods=call_methods)
+@call.route('/make_single_call', methods=call_methods)
 def make_single_call():
     params, campaign = parse_params(request)
 
@@ -285,7 +258,7 @@ def make_single_call():
     return str(resp)
 
 
-@app.route('/call_complete', methods=call_methods)
+@call.route('/call_complete', methods=call_methods)
 def call_complete():
     params, campaign = parse_params(request)
 
@@ -312,7 +285,7 @@ def call_complete():
     return str(resp)
 
 
-@app.route('/call_complete_status', methods=call_methods)
+@call.route('/call_complete_status', methods=call_methods)
 def call_complete_status():
     # asynch callback from twilio on call complete
     params, _ = parse_params(request)
@@ -326,56 +299,3 @@ def call_complete_status():
         'repIds': params['repIds'],
         'campaignId': params['campaignId']
     })
-
-
-@app.route('/demo')
-def demo():
-    return render_template('demo.html')
-
-
-@cache.cached(timeout=60)
-@app.route('/count')
-def count():
-    @after_this_request
-    def add_expires_header(response):
-        expires = datetime.utcnow()
-        expires = expires + timedelta(seconds=60)
-        expires = datetime.strftime(expires, "%a, %d %b %Y %H:%M:%S GMT")
-
-        response.headers['Expires'] = expires
-
-        return response
-
-    campaign = request.values.get('campaign', 'default')
-
-    return jsonify(campaign=campaign, count=call_count(campaign))
-
-
-@cache.cached(timeout=60, key_prefix=make_cache_key)
-@app.route('/stats')
-def stats():
-    password = request.values.get('password', None)
-    campaign = request.values.get('campaign', 'default')
-
-    if password == app.config['SECRET_KEY']:
-        return jsonify(aggregate_stats(campaign))
-    else:
-        return jsonify(error="access denied")
-
-def open_website(url, meta):
-    return  requests.post(url, params={'description': 'Call succesfully completed', 'meta': meta})
-
-@app.route('/eff_test')
-def eff_test():
-    return jsonify(message="success")
-
-
-@app.route('/loaderio-a0ddcb763334fb52d1e00fa69f9fe1cb/')
-def loader_io():
-    return 'loaderio-a0ddcb763334fb52d1e00fa69f9fe1cb'
-
-if __name__ == '__main__':
-    # load the debugger config
-    app.config.from_object('config.Config')
-    app.run(host='0.0.0.0')
-

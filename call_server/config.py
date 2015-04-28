@@ -1,5 +1,4 @@
 import os
-
 from distutils.util import strtobool
 
 import twilio.rest
@@ -7,24 +6,20 @@ import twilio.rest
 
 class Config(object):
     DEBUG = True
+    PROJECT_NAME = "Call Server"
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:///dev.db'
-
-    APPLICATION_ROOT = 'http://1cf55a5a.ngrok.com'
 
     TW_CLIENT = twilio.rest.TwilioRestClient(
         os.environ.get('TWILIO_DEV_ACCOUNT_SID'),
         os.environ.get('TWILIO_DEV_AUTH_TOKEN'))
-    TW_NUMBER = '5005550006'  # development number
-
-    TASKFORCE_KEY = os.environ.get('TASKFORCE_KEY')
-    SUNLIGHTLABS_KEY = os.environ.get('SUNLIGHTLABS_KEY')
-    print SUNLIGHTLABS_KEY 
     # limit on the length of the call
     TW_TIME_LIMIT = 60 * 20  # 4 minutes
 
     # limit on the amount of time to ring before giving up
     TW_TIMEOUT = 40  # seconds
+
+    SUNLIGHTLABS_KEY = os.environ.get('SUNLIGHTLABS_KEY')
 
     SECRET_KEY = 'AOUSBDAONPSOMDASIDUBSDOUABER)*#(R&(&@@#))'
 
@@ -51,3 +46,5 @@ class ConfigTesting(Config):
     TESTING = True
     APPLICATION_ROOT = ''
     SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
+    APPLICATION_ROOT = 'http://1cf55a5a.ngrok.com'
+    TW_NUMBER = '5005550006'  # development number
