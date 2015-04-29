@@ -1,0 +1,23 @@
+{
+  "name": "call-congress",
+  "version": "0.0.0",
+  "homepage": "https://github.com/EFForg/call-congress",
+  "description": "a simple server that connects calls between citizens and their representatives using the Twilio API",
+  "authors": [
+    "Josh Levinger <josh@spacedog.xyz>",
+    "Sina Khanifar <sina.khanifar@gmail.com>",
+    "Beau Gunderson <beau@beaugunderson.com>",
+    "Adam Greenhall <hello@adamgreenhall.com>",
+    "Thomas Davis <thomasalwyndavis@gmail.com>"
+  ],
+  "main": "call_server/app.py",
+  "license": "AGPL",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

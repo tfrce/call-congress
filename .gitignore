@@ -5,3 +5,4 @@ venv
 *.db
 .env
 gunicorn.log
+*/bower_components
