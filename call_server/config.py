@@ -7,7 +7,9 @@ class DefaultConfig(object):
     TESTING = False
     APP_NAME = "call_server"
 
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///dev.db'
+    APPLICATION_ROOT = os.path.abspath(os.curdir)
+    SQLALCHEMY_DATABASE_URI = 'sqlite:////%s/dev.db' % APPLICATION_ROOT
+    SQLALCHEMY_ECHO = False
 
     BABEL_DEFAULT_LOCALE = 'en'
     BABEL_DEFAULT_TIMEZONE = 'UTC'
@@ -53,12 +55,13 @@ class ProductionConfig(DefaultConfig):
 class DevelopmentConfig(DefaultConfig):
     TESTING = False
     DEBUG = True
+    DEBUG_INFO = os.environ.get('DEBUG_INFO')
 
 
 class TestingConfig(DefaultConfig):
     TESTING = True
     APPLICATION_ROOT = ''
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite://'  # keep testing db in memory
     APPLICATION_ROOT = 'http://1cf55a5a.ngrok.com'
     TW_NUMBER = '5005550006'  # development number
 

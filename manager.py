@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess
 from functools import wraps
 
@@ -8,9 +9,11 @@ from alembic.config import Config
 from flask.ext.assets import ManageAssets
 
 from call_server.app import create_app
-from call_server.extensions import assets
+from call_server.config import DevelopmentConfig
+from call_server.extensions import assets, db
 
-app = create_app()
+app = create_app(config=DevelopmentConfig)
+app.db = db
 manager = Manager(app)
 
 alembic_config = Config(os.path.realpath(os.path.dirname(__name__)) + "/alembic.ini")
@@ -28,7 +31,9 @@ def reset_assets(func):
 @manager.command
 def run():
     """Run webserver for local development."""
+    print ' * Database is %s' % (app.db.engine.url)
     app.run(debug=True, use_reloader=True)
+    print 'goodbye'
 
 
 @manager.command
@@ -46,6 +51,9 @@ def migrate(direction):
         command.upgrade(alembic_config, "head")
     elif direction == "down":
         command.downgrade(alembic_config, "-1")
+    else:
+        app.logger.error('invalid direction. (up/down)')
+        sys.exit(-1)
 
 
 @manager.command

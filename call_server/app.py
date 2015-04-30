@@ -6,6 +6,8 @@
 #     if not DEBUG:
 #         print "unable to apply gevent monkey.patch_all"
 
+import logging
+
 from flask import Flask, g, request, session
 from flask.ext.assets import Bundle
 
@@ -36,8 +38,8 @@ def create_app(config=None, app_name=None, blueprints=None):
         blueprints = DEFAULT_BLUEPRINTS
 
     app = Flask(app_name)
+    # configure app from object or environment
     configure_app(app, config)
-
     # init extensions once we have app context
     init_extensions(app)
     # then blueprints, for url/view routing
@@ -48,28 +50,29 @@ def create_app(config=None, app_name=None, blueprints=None):
     configure_login(app)
     configure_assets(app)
 
+    configure_logging(app)
     app.logger.info('call_server started')
+    app.logger.info('db at %s' % db.engine.url)
     return app
 
 
 def configure_app(app, config=None):
-    """Different ways of configurations."""
+    """Configure app by object, instance folders or environment variables"""
 
     # http://flask.pocoo.org/docs/api/#configuration
     app.config.from_object(DefaultConfig)
+    if config:
+        app.config.from_object(config)
 
     # http://flask.pocoo.org/docs/config/#instance-folders
     # app.config.from_pyfile('instance/app.cfg')
 
-    if config:
-        app.config.from_object(config)
-
-    # Use instance folder instead of env variables to make deployment easier.
-    #app.config.from_envvar('%s_APP_CONFIG' % DefaultConfig.PROJECT.upper(), silent=True)
+    # app.config.from_envvar('%s_APP_CONFIG' % DefaultConfig.PROJECT.upper(), silent=True)
 
 
 def init_extensions(app):
     db.init_app(app)
+    db.app = app
     babel.init_app(app)
     login_manager.init_app(app)
     cache.init_app(app)
@@ -119,7 +122,6 @@ def configure_assets(app):
                            'bower_components/bootstrap/dist/css/bootstrap-theme.css',
                            filters='cssmin', output='css/bootstrap.css')
     assets.register('bootstrap_css', bootstrap_css)
-
     app.logger.info('registered assets %s' % assets._named_bundles.keys())
 
 

@@ -21,6 +21,7 @@ target_metadata = None
 from call_server import create_app
 from call_server.extensions import db
 app = create_app()
+db.app = app
 config.set_main_option("sqlalchemy.url", app.config["SQLALCHEMY_DATABASE_URI"])
 
 target_metadata = db.Model.metadata
