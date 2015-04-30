@@ -11,3 +11,9 @@ login_manager = LoginManager()
 
 from flask.ext.assets import Environment
 assets = Environment()
+
+from flask.ext.babel import Babel
+babel = Babel()
+
+from flask.ext.mail import Mail
+mail = Mail()

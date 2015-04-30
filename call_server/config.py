@@ -10,6 +10,11 @@ class DefaultConfig(object):
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:///dev.db'
 
+    BABEL_DEFAULT_LOCALE = 'en'
+    BABEL_DEFAULT_TIMEZONE = 'UTC'
+    ACCEPT_LANGUAGES = {'en': 'English',
+                        'es': 'Spansih'}
+
     TW_CLIENT = twilio.rest.TwilioRestClient(
         os.environ.get('TWILIO_DEV_ACCOUNT_SID'),
         os.environ.get('TWILIO_DEV_AUTH_TOKEN'))

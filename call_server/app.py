@@ -6,7 +6,7 @@
 #     if not DEBUG:
 #         print "unable to apply gevent monkey.patch_all"
 
-from flask import Flask
+from flask import Flask, g, request, session
 from flask.ext.assets import Bundle
 
 from .config import DefaultConfig
@@ -16,7 +16,7 @@ from .call import call
 from .campaign import campaign
 from .api import api
 
-from extensions import cache, db, assets
+from extensions import cache, db, babel, assets, login_manager
 
 DEFAULT_BLUEPRINTS = (
     admin,
@@ -38,23 +38,59 @@ def create_app(config=None, app_name=None, blueprints=None):
     app = Flask(app_name)
     app.config.from_object('call_server.config.DefaultConfig')
 
-    configure_extensions(app)
-    configure_blueprints(app, blueprints)
+    # init extensions once we have app context
+    init_extensions(app)
+    # then blueprints, for url/view routing
+    register_blueprints(app, blueprints)
+
+    # then extension specific configurations
+    configure_babel(app)
+    configure_login(app)
     configure_assets(app)
 
     app.logger.info('call_server started')
     return app
 
 
-def configure_extensions(app):
+def init_extensions(app):
     db.init_app(app)
+    babel.init_app(app)
+    login_manager.init_app(app)
     cache.init_app(app)
     assets.init_app(app)
 
 
-def configure_blueprints(app, blueprints):
+def register_blueprints(app, blueprints):
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
+
+
+def configure_babel(app):
+    @babel.localeselector
+    def get_locale():
+        #TODO, first check user config?
+        g.accept_languages = app.config.get('ACCEPT_LANGUAGES')
+        accept_languages = g.accept_languages.keys()
+        browser_default = request.accept_languages.best_match(accept_languages)
+        if 'language' in session:
+            language = session['language']
+            #current_app.logger.debug('lang from session: %s' % language)
+            if not language in accept_languages:
+                #clear it
+                #current_app.logger.debug('invalid %s, clearing' % language)
+                session['language'] = None
+                language = browser_default
+        else:
+            language = browser_default
+            #current_app.logger.debug('lang from browser: %s' % language)
+        session['language'] = language  # save it to session
+
+        #and to user model?
+        return language
+
+
+def configure_login(app):
+    login_manager.login_view = "user.login"
 
 
 def configure_assets(app):
