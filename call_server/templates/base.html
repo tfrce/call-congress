@@ -23,8 +23,15 @@
 
   <link rel="stylesheet" href="static/css/styles.css" />
   {%block styles%}{%endblock%}
-  <script src="static/js/jquery.min.js"></script>
-  <script src="static/js/lodash.min.js"></script>
+  {% assets "vendor_js" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+
+  {% assets "admin_js" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+
+
   {%block head_scripts%}{%endblock%}
  </head>
 

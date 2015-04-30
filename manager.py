@@ -4,6 +4,7 @@ import subprocess
 from flask.ext.script import Manager
 from alembic import command
 from alembic.config import Config
+from flask.ext.assets import ManageAssets
 
 from call_server.app import create_app
 
@@ -11,6 +12,8 @@ app = create_app()
 manager = Manager(app)
 
 alembic_config = Config(os.path.realpath(os.path.dirname(__name__)) + "/alembic.ini")
+
+manager.add_command("assets", ManageAssets())
 
 
 @manager.command

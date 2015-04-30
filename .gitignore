@@ -5,4 +5,5 @@ venv
 *.db
 .env
 gunicorn.log
-*/bower_components
+call_server/static/bower_components
+call_server/static/.webassets-cache

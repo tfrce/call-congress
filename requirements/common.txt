@@ -1,4 +1,5 @@
 Flask==0.10.1
+Flask-Assets==0.10
 Flask-Cache==0.12
 Flask-Jsonpify==1.1
 Flask-Login==0.2.11
