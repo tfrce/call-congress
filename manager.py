@@ -25,7 +25,7 @@ def run():
 @manager.command
 def alembic():
     """Run in local machine."""
-    subprocess.call(["venv/bin/alembic", "init", "alembic"])
+    subprocess.call([".venv/bin/alembic", "init", "alembic"])
 
 
 @manager.command
