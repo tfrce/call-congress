@@ -23,6 +23,8 @@ class DefaultConfig(object):
 
     SECRET_KEY = 'AOUSBDAONPSOMDASIDUBSDOUABER)*#(R&(&@@#))'
 
+    CACHE_TYPE = 'simple'
+
 
 class ProductionConfig(DefaultConfig):
     DEBUG = strtobool(os.environ.get('DEBUG', 'false'))
@@ -41,6 +43,8 @@ class ProductionConfig(DefaultConfig):
 
     SECRET_KEY = os.environ.get('SECRET_KEY')
 
+    CACHE_TYPE = 'memcached'
+
 
 class TestingConfig(DefaultConfig):
     TESTING = True
@@ -48,3 +52,6 @@ class TestingConfig(DefaultConfig):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
     APPLICATION_ROOT = 'http://1cf55a5a.ngrok.com'
     TW_NUMBER = '5005550006'  # development number
+
+    CACHE_TYPE = 'null'
+    CACHE_NO_NULL_WARNING = True
