@@ -17,15 +17,15 @@
 
   <link rel="shortcut icon" type="image/ico" href="static/images/favicon.png">
 
-  <link rel="stylesheet" href="static/css/styles.css" />
-  {%block styles%}{%endblock%}
   {% assets "vendor_js" %}
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
   {% endassets %}
 
-  {% assets "admin_js" %}
-    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% assets "bootstrap_css" %}
+    <link rel="stylesheet" src="{{ ASSET_URL }}">
   {% endassets %}
+
+  {%block styles%}{%endblock%}
 
 
   {%block head_scripts%}{%endblock%}

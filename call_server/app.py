@@ -112,5 +112,21 @@ def configure_login(app):
 def configure_assets(app):
     vendor_js = Bundle('bower_components/jquery/dist/jquery.js',
                        'bower_components/bootstrap/dist/js/bootstrap.min.js',
-                       filters='rjsmin', output='static/js/vendor.js')
+                       filters='rjsmin', output='js/vendor.js')
     assets.register('vendor_js', vendor_js)
+
+    bootstrap_css = Bundle('bower_components/bootstrap/dist/css/bootstrap.css',
+                           'bower_components/bootstrap/dist/css/bootstrap-theme.css',
+                           filters='cssmin', output='css/bootstrap.css')
+    assets.register('bootstrap_css', bootstrap_css)
+
+    app.logger.info('registered assets %s' % assets._named_bundles.keys())
+
+
+def configure_logging(app):
+    if app.config.get('DEBUG_INFO'):
+        app.logger.setLevel(logging.INFO)
+    elif app.config.get('DEBUG'):
+        app.logger.setLevel(logging.WARNING)
+    else:
+        app.logger.setLevel(logging.ERROR)

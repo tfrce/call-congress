@@ -27,10 +27,14 @@ To install locally and run in debug mode use:
     # create ENV variables
     virtualenv .venv
     source .venv/bin/activate
-    pip install -r requirements.txt
+    pip install -r requirements/development.txt
 
     # create the database
     python manage.py migrate up
+
+    # compile assets
+    bower install
+    python manage.py assets build
  
     # run local server for debugging
     python manage.py run

@@ -19,10 +19,10 @@ manager.add_command("assets", ManageAssets())
 
 
 def reset_assets(func):
-    @wraps(func)
-    def func_wrapper(name):
-        assets._named_bundles = {}
-    return func_wrapper
+    """Reset assets named bundles to {} before running command.
+    This command should really be run with TestingConfig context"""
+    print "resetting assets"
+    assets._named_bundles = {}
 
 
 @manager.command
@@ -38,9 +38,10 @@ def alembic():
 
 
 @manager.command
-@reset_assets
 def migrate(direction):
     """Migrate db revision"""
+    reset_assets()
+    print "migrating %s database at %s" % (direction, app.db.engine.url)
     if direction == "up":
         command.upgrade(alembic_config, "head")
     elif direction == "down":
@@ -48,16 +49,16 @@ def migrate(direction):
 
 
 @manager.command
-@reset_assets
 def migration(message):
     """Create migration file"""
+    reset_assets()
     command.revision(alembic_config, autogenerate=True, message=message)
 
 
 @manager.command
-@reset_assets
 def stamp(revision):
     """Fake a migration to a particular revision"""
+    reset_assets()
     alembic_cfg = Config("alembic.ini")
     command.stamp(alembic_cfg, revision)
 
