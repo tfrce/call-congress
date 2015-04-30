@@ -1,0 +1,10 @@
+{% from "macros/_form.html" import render_form %}
+
+{% set page_title = _("Sign in") %}
+
+{% extends "layouts/base.html" %}
+
+{% block body %}
+<h2>{{ _('Sign in') }} <small>{%trans%}Don't have an account? {%endtrans%}<a href="{{ url_for('user.signup') }}">{{ _('Sign up')}}</a>, {{_('please')}}. </small></h2>
+{{ render_form(url_for('user.login'), form)}}
+{% endblock %}

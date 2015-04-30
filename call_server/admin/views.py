@@ -1,13 +1,10 @@
-from flask import Blueprint, render_template, jsonify
+from flask import Blueprint, render_template
+from flask.ext.login import login_required
 
 admin = Blueprint('admin', __name__)
 
 
 @admin.route('/admin')
-def admin_home():
-    return render_template('admin.html')
-
-
-@admin.route('/admin/legislators.json')
-def admin_legislators():
-    return jsonify(data.legislators)
+@login_required
+def admin_dash():
+    return render_template('admin/dashboard.html')
