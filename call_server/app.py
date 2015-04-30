@@ -36,7 +36,7 @@ def create_app(config=None, app_name=None, blueprints=None):
         blueprints = DEFAULT_BLUEPRINTS
 
     app = Flask(app_name)
-    app.config.from_object('call_server.config.DefaultConfig')
+    configure_app(app, config)
 
     # init extensions once we have app context
     init_extensions(app)
@@ -50,6 +50,22 @@ def create_app(config=None, app_name=None, blueprints=None):
 
     app.logger.info('call_server started')
     return app
+
+
+def configure_app(app, config=None):
+    """Different ways of configurations."""
+
+    # http://flask.pocoo.org/docs/api/#configuration
+    app.config.from_object(DefaultConfig)
+
+    # http://flask.pocoo.org/docs/config/#instance-folders
+    # app.config.from_pyfile('instance/app.cfg')
+
+    if config:
+        app.config.from_object(config)
+
+    # Use instance folder instead of env variables to make deployment easier.
+    #app.config.from_envvar('%s_APP_CONFIG' % DefaultConfig.PROJECT.upper(), silent=True)
 
 
 def init_extensions(app):

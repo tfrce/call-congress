@@ -1,11 +1,10 @@
 import os
-from distutils.util import strtobool
-
 import twilio.rest
 
 
 class DefaultConfig(object):
     DEBUG = True
+    TESTING = False
     APP_NAME = "call_server"
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:///dev.db'
@@ -32,7 +31,7 @@ class DefaultConfig(object):
 
 
 class ProductionConfig(DefaultConfig):
-    DEBUG = strtobool(os.environ.get('DEBUG', 'false'))
+    DEBUG = False
 
     SENTRY_DSN = os.environ.get('SENTRY_DSN')
 
@@ -49,6 +48,11 @@ class ProductionConfig(DefaultConfig):
     SECRET_KEY = os.environ.get('SECRET_KEY')
 
     CACHE_TYPE = 'memcached'
+
+
+class DevelopmentConfig(DefaultConfig):
+    TESTING = False
+    DEBUG = True
 
 
 class TestingConfig(DefaultConfig):

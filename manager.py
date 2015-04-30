@@ -1,5 +1,6 @@
 import os
 import subprocess
+from functools import wraps
 
 from flask.ext.script import Manager
 from alembic import command
@@ -7,6 +8,7 @@ from alembic.config import Config
 from flask.ext.assets import ManageAssets
 
 from call_server.app import create_app
+from call_server.extensions import assets
 
 app = create_app()
 manager = Manager(app)
@@ -14,6 +16,13 @@ manager = Manager(app)
 alembic_config = Config(os.path.realpath(os.path.dirname(__name__)) + "/alembic.ini")
 
 manager.add_command("assets", ManageAssets())
+
+
+def reset_assets(func):
+    @wraps(func)
+    def func_wrapper(name):
+        assets._named_bundles = {}
+    return func_wrapper
 
 
 @manager.command
@@ -29,6 +38,7 @@ def alembic():
 
 
 @manager.command
+@reset_assets
 def migrate(direction):
     """Migrate db revision"""
     if direction == "up":
@@ -38,12 +48,14 @@ def migrate(direction):
 
 
 @manager.command
+@reset_assets
 def migration(message):
     """Create migration file"""
     command.revision(alembic_config, autogenerate=True, message=message)
 
 
 @manager.command
+@reset_assets
 def stamp(revision):
     """Fake a migration to a particular revision"""
     alembic_cfg = Config("alembic.ini")
