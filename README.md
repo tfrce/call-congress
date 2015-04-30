@@ -43,76 +43,16 @@ Optional Params: *(either or)*
 
 Campaign Configuration
 ----------------------
-Currently stored in ``/data/campaigns.yaml``, each campaign has the following optional fields. Defaults are given by the ``default`` campaign.
 
-* **id**
-* **number** (Twilio phone number)
-* **target_house** include house members in lookups by location
-* **target_senate** include senators in lookups by location
-* **target_house_first** allows the campaign to target house members before senate members (default: target senate first)
-* **repIds** (optional) list of rep. IDs to target
-
-Messages: Can be urls for recorded message to play or text for the robot to read. Text can be rendered as a mustache template. The following messages are the defaults and will be inherited by new campaigns unless overwritten.
-
-* msg_intro: Hi. Welcome to call congress.
-* msg_ask_zip: Please enter your zip code so we can lookup your Congress person.
-* msg_invalid_zip: "Sorry, that zip code didn't work. Please try again."
-* msg_call_block_intro: "We'll now connect you to {{n_reps}} representatives. Press # for next rep."
-* msg_rep_intro: "We're now connecting you to {{name}}"
-* msg_between_thanks: You're doing great - here's the next call.
-* msg_final_thanks: Thank you!
+# todo update for new web interface
 
 
-Account Keys
-------------
-
-The app uses environment variables to store account keys. For development you will need to set:
-
-* SUNLIGHTLABS_KEY
-* TWILIO_DEV_ACCOUNT_SID
-* TWILIO_DEV_AUTH_TOKEN
-* TW_NUMBER
-
-and for production:
-
-* SUNLIGHTLABS_KEY
-* TWILIO_ACCOUNT_SID
-* TWILIO_AUTH_TOKEN
-* APPLICATION_ROOT (url for application server)
-* TASKFORCE_KEY (used for querying statistics)
-
-Development mode
+Installation Instructions
 -------------------
-To install locally and run in debug mode use:
+Read detailed instrustions at [installation.md](installation.md)
 
-    # create ENV variables
-    virtualenv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
 
-    python app.py
-    # for testing twilio, need internet-visible urls to do call handling
-    ngrok -subdomain="1cf55a5a" 5000
-
-When the dev server is running, the demo front-end will be accessible at [http://localhost:5000/demo](http://localhost:5000/demo).
-
-Unit tests can also be run, using:
-
-    python test_server.py
-
-Production server
-------------------
-To run in production:
-
-    # create ENV variables
-    # open correct port
-    iptables -A INPUT -p tcp --dport 80 -j ACCEPT
-    # initialize the database
-    python models.py
-    # run server - will charge real $ and connect real calls
-    foreman start
-
-Updating for changes in congress
+Updating political data
 --------------------------------
 Just download the latest data from Sunlight Congress API using:
 
