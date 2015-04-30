@@ -1,8 +1,10 @@
-try:
-    from gevent.monkey import patch_all
-    patch_all()
-except ImportError:
-    print "unable to apply gevent monkey.patch_all"
+#TODO, figure out how to load gevent monkey patch only in production
+# try:
+#     from gevent.monkey import patch_all
+#     patch_all()
+# except ImportError:
+#     if not DEBUG:
+#         print "unable to apply gevent monkey.patch_all"
 
 from flask import Flask
 from flask.ext.assets import Bundle
