@@ -49,7 +49,7 @@ Campaign Configuration
 
 Installation Instructions
 -------------------
-Read detailed instrustions at [installation.md](installation.md)
+Read detailed instrustions at [INSTALLATION.md](INSTALLATION.md)
 
 
 Updating political data
