@@ -4,6 +4,11 @@ from flask.ext.login import login_required
 admin = Blueprint('admin', __name__)
 
 
+@admin.route('/')
+def index():
+    return render_template('admin/index.html')
+
+
 @admin.route('/admin')
 @login_required
 def admin_dash():

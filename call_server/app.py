@@ -13,7 +13,7 @@ from flask.ext.assets import Bundle
 
 from .config import DefaultConfig
 from .admin import admin
-from .user import user
+from .user import User, user
 from .call import call
 from .campaign import campaign
 from .api import api
@@ -109,7 +109,12 @@ def configure_babel(app):
 
 
 def configure_login(app):
-    login_manager.login_view = "user.login"
+    login_manager.login_view = 'user.login'
+    login_manager.refresh_view = 'user.reauth'
+
+    @login_manager.user_loader
+    def load_user(id):
+        return User.query.get(id)
 
 
 def configure_assets(app):

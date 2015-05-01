@@ -14,20 +14,20 @@ from .forms import SignupForm, LoginForm, RecoverPasswordForm, ReauthForm, Chang
 user = Blueprint('user', __name__)
 
 
-@user.route('/')
+@user.route('/users')
 def index():
     if current_user.is_authenticated():
         return redirect(url_for('user.index'))
 
     page = int(request.args.get('page', 1))
     pagination = User.query.paginate(page=page, per_page=10)
-    return render_template('index.html', pagination=pagination)
+    return render_template('user/index.html', pagination=pagination)
 
 
 @user.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated():
-        return redirect(url_for('user.index'))
+        return redirect(url_for('admin.admin_dash'))
 
     form = LoginForm(login=request.args.get('login', None),
                      next=request.args.get('next', None))
@@ -40,9 +40,9 @@ def login():
             remember = request.form.get('remember') == 'y'
             if login_user(user, remember=remember):
                 flash(_("Logged in"), 'success')
-            return redirect(form.next.data or url_for('user.index'))
+            return redirect(form.next.data or url_for('admin.admin_dash'))
         else:
-            flash(_('Sorry, invalid login'), 'error')
+            flash(_('Sorry, invalid login'), 'warning')
 
     return render_template('user/login.html', form=form)
 
@@ -60,7 +60,7 @@ def reauth():
             flash(_('Reauthenticated.'), 'success')
             return redirect('/change_password')
 
-        flash(_('Password is wrong.'), 'error')
+        flash(_('Password is wrong.'), 'warning')
     return render_template('user/reauth.html', form=form)
 
 
@@ -69,19 +69,18 @@ def reauth():
 def logout():
     logout_user()
     flash(_('Logged out'), 'success')
-    return redirect(url_for('user.index'))
+    return redirect(url_for('admin.index'))
 
 
 @user.route('/signup', methods=['GET', 'POST'])
 def signup():
     if current_user.is_authenticated():
-        return redirect(url_for('user.index'))
+        return redirect(url_for('admin.admin_dash'))
 
     form = SignupForm(next=request.args.get('next'))
 
     if form.validate_on_submit():
         user = User()
-        user.user_detail = UserDetail()
         form.populate_obj(user)
 
         db.session.add(user)
@@ -155,4 +154,4 @@ def lang():
     session['language'] = request.form['language']
     new_language = current_app.config['ACCEPT_LANGUAGES'][request.form['language']]
     flash(_('Language changed to ')+new_language, 'success')
-    return redirect(url_for('user.index'))
+    return redirect(url_for('admin.admin_dash'))
