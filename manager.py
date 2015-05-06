@@ -31,9 +31,7 @@ def reset_assets(func):
 @manager.command
 def run():
     """Run webserver for local development."""
-    print ' * Database is %s' % (app.db.engine.url)
     app.run(debug=True, use_reloader=True)
-    print 'goodbye'
 
 
 @manager.command

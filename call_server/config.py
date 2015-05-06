@@ -57,7 +57,7 @@ class ProductionConfig(DefaultConfig):
 class DevelopmentConfig(DefaultConfig):
     TESTING = False
     DEBUG = True
-    DEBUG_INFO = os.environ.get('DEBUG_INFO')
+    DEBUG_INFO = False
 
 
 class TestingConfig(DefaultConfig):

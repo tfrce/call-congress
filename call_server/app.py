@@ -45,12 +45,13 @@ def create_app(config=None, app_name=None, blueprints=None):
     # then blueprints, for url/view routing
     register_blueprints(app, blueprints)
 
+    configure_logging(app)
+
     # then extension specific configurations
     configure_babel(app)
     configure_login(app)
     configure_assets(app)
 
-    configure_logging(app)
     app.logger.info('call_server started')
     app.logger.info('db at %s' % db.engine.url)
     return app
