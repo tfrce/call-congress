@@ -69,54 +69,6 @@
 </div>
 {% endmacro %}
 
-{% macro render_inline_form(field, inline_form) %}
-<div class="control-group{% if field.errors %} error{% endif %}">
-    <label class="control-label {%if field.flags.required%}required{%endif%}" 
-        for="{{ field.id }}">
-        {{ field.label }}
-    </label>
-    <div class="controls form-inline">
-        {{ field }}
-        {# show add button to open modal #}
-        <a class="btn btn-success" data-toggle="modal" data-target="#{{field.name}}-modal">+</a>
-         <span class="help-inline">{{ field.description }}</span>
-        {% if field.errors -%}
-            {% for error in field.errors -%}
-            <span class="help-block error">{{ error }}</span>
-            {%- endfor %}
-        {%- endif %}
-    </div>
-</div>
-
-{# render bootstrap modal to submit inline form via ajax #}
-  <!-- Modal -->
-  <div class="modal fade" id="{{field.name}}-modal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
-    <div class="modal-dialog inline-form" data-url="{{inline_form.description}}" data-prefix="{{inline_form.name}}{{inline_form.separator}}">
-        {# POST url is in the overloaded description attribute #}
-        {# strip the prefix off each input before posting #}
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">Add {{field.name}}</h4>
-        </div>
-        <div class="modal-body">
-            {% for field in inline_form%}
-                {% if field.type not in ["HiddenField","CSRFTokenField","SubmitField"] %}
-                    {{ render_field(form, field) }}
-                {%endif%}
-            {%endfor%}
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" data-submit="modal" id="modal-save">Save {{field.name}}</button>
-        </div>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->
-{# end modal #}
-
-{% endmacro %}
-
 {% macro render_input(field) %}
 <div class="control-group{% if field.errors %} error{% endif %}">
     <label class="control-label {%if field.flags.required%}required{%endif%}" 
