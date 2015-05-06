@@ -2,7 +2,7 @@
 
 {% set page_title = _("Sign in") %}
 
-{% extends "layouts/base.html" %}
+{% extends "layouts/base_admin.html" %}
 
 {% block body %}
 <h2>{{ _('Sign in') }} <small>{%trans%}Don't have an account? {%endtrans%}<a href="{{ url_for('user.signup') }}">{{ _('Sign up')}}</a>, {{_('please')}}. </small></h2>
