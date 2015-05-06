@@ -18,7 +18,7 @@ from .call import call
 from .campaign import campaign
 from .api import api
 
-from extensions import cache, db, babel, assets, login_manager
+from extensions import cache, db, babel, assets, login_manager, csrf
 
 DEFAULT_BLUEPRINTS = (
     admin,
@@ -74,10 +74,16 @@ def configure_app(app, config=None):
 def init_extensions(app):
     db.init_app(app)
     db.app = app
-    babel.init_app(app)
-    login_manager.init_app(app)
-    cache.init_app(app)
+
     assets.init_app(app)
+    babel.init_app(app)
+    cache.init_app(app)
+    csrf.init_app(app)
+    login_manager.init_app(app)
+
+    if app.config.get('DEBUG'):
+        from flask.ext.debugtoolbar import DebugToolbarExtension
+        DebugToolbarExtension(app)
 
 
 def register_blueprints(app, blueprints):
@@ -112,6 +118,7 @@ def configure_babel(app):
 def configure_login(app):
     login_manager.login_view = 'user.login'
     login_manager.refresh_view = 'user.reauth'
+    login_manager.session_protection = 'basic'
 
     @login_manager.user_loader
     def load_user(id):

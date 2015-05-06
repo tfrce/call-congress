@@ -7,8 +7,7 @@ class DefaultConfig(object):
     TESTING = False
     APP_NAME = "call_server"
 
-    APPLICATION_ROOT = os.path.abspath(os.curdir)
-    SQLALCHEMY_DATABASE_URI = 'sqlite:////%s/dev.db' % APPLICATION_ROOT
+    SQLALCHEMY_DATABASE_URI = 'sqlite:////%s/dev.db' % os.path.abspath(os.curdir)
     SQLALCHEMY_ECHO = False
 
     BABEL_DEFAULT_LOCALE = 'en'
@@ -37,7 +36,7 @@ class DefaultConfig(object):
 class ProductionConfig(DefaultConfig):
     DEBUG = False
 
-    APPLICATION_ROOT = os.environ.get('APPLICATION_ROOT')
+    APPLICATION_ROOT = os.environ.get('APPLICATION_ROOT', None)
 
     CACHE_TYPE = 'memcached'
 
@@ -58,11 +57,15 @@ class DevelopmentConfig(DefaultConfig):
     TESTING = False
     DEBUG = True
     DEBUG_INFO = False
+    WTF_CSRF_ENABLED = True
+    DEBUG_TB_INTERCEPT_REDIRECTS = False
+    SERVER_NAME = 'localhost:5000'
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'NotARealSecretKey,YouShouldSetOneInYour.Env')
 
 
 class TestingConfig(DefaultConfig):
     TESTING = True
-    APPLICATION_ROOT = ''
+    WTF_CSRF_ENABLED = False
     SQLALCHEMY_DATABASE_URI = 'sqlite://'  # keep testing db in memory
     APPLICATION_ROOT = 'http://1cf55a5a.ngrok.com'
     TW_NUMBER = '5005550006'  # development number
