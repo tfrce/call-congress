@@ -27,26 +27,28 @@
 
  <body>
   {%block navbar%}
-  <div class="container">
+  <div class="container-fluid">
     <nav class="navbar navbar-default navbar-static-top">
-        {% if current_user.is_authenticated() %}
-        <ul class="nav navbar-nav">
-          <li><a href="/admin">Dashboard</a></li>
-          <li><a href="/admin/campaigns">Campaigns</a></li>
-          <li><a href="/admin/statistics">Statistics</a></li>
-          <li><a href="/admin/system">System</a></li>
-        </ul>
-        <ul class="nav navbar-nav pull-right">
-          <li><span><a class="btn btn-success" href="{{ url_for('user.logout') }}"><strong>{{ _('Sign out') }}</strong></a></span></li>
-        </ul>
-        {% else %}
-        <ul class="nav navbar-nav pull-right">
-          <li><span><a class="btn btn-success" href="{{ url_for('user.signup') }}"><strong>{{ _('Sign up') }}</strong></a></span></li>
-          <li><span><a class="btn btn-default" href="{{ url_for('user.login') }}">{{ _('Sign in') }}</a></span></li>
-        </ul>
-        {% endif %}
-        </ul>
-      </nav>
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">Call Power</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="{{ url_for('admin.admin_dash') }}">{{ _('Login') }}</a></li>
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+    </nav>
   {%endblock%}
 
     {% block flash_message %}
