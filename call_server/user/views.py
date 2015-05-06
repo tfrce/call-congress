@@ -40,6 +40,8 @@ def login():
             remember = request.form.get('remember') == 'y'
             if login_user(user, remember=remember):
                 flash(_("Logged in"), 'success')
+            else:
+                flash(_("Unable to log in"), 'warning')
             return redirect(form.next.data or url_for('admin.admin_dash'))
         else:
             flash(_('Sorry, invalid login'), 'warning')
@@ -58,9 +60,9 @@ def reauth():
         if user and authenticated:
             confirm_login()
             flash(_('Reauthenticated.'), 'success')
-            return redirect('/change_password')
+            return redirect(form.next.data or url_for('user.change_password'))
 
-        flash(_('Password is wrong.'), 'warning')
+        flash(_('Password is incorrect.'), 'warning')
     return render_template('user/reauth.html', form=form)
 
 
@@ -131,7 +133,7 @@ def reset_password():
         user = User.query.filter_by(email=form.email.data).first()
 
         if user:
-            flash(_('Please see your email for instructions on how to access your account'), 'success')
+            flash(_('Please check your email for instructions on how to access your account'), 'success')
 
             user.activation_key = str(uuid4())
             db.session.add(user)
@@ -147,6 +149,12 @@ def reset_password():
             flash(_('Sorry, no user found for that email address'), 'error')
 
     return render_template('user/reset_password.html', form=form)
+
+
+@user.route('/profile')
+def profile(user_id):
+    user = User.get_by_id(user_id)
+    return render_template('user/profile.html', user=user)
 
 
 @user.route('/lang/', methods=['POST'])

@@ -30,7 +30,7 @@
               {% if current_user.is_authenticated() %}
               <li><a href="{{ url_for('user.profile') }}">{{ _('Profile') }}</a></li>
               <li><a href="{{ url_for('user.change_password') }}">{{ _('Change Password') }}</a></li>
-              <li><a href="{{ url_for('user.logout') }}">{{ _('Log ou t') }}</a></li>
+              <li><a href="{{ url_for('user.logout') }}">{{ _('Log out') }}</a></li>
               {% else %}
               <li><a href="{{ url_for('user.login') }}">{{ _('Log in') }}</a></li>
               <li><a href="{{ url_for('user.signup') }}">{{ _('Sign up') }}</a></li>
