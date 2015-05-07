@@ -21,7 +21,7 @@ alembic_config = Config(os.path.realpath(os.path.dirname(__name__)) + "/alembic.
 manager.add_command("assets", ManageAssets())
 
 
-def reset_assets(func):
+def reset_assets():
     """Reset assets named bundles to {} before running command.
     This command should really be run with TestingConfig context"""
     print "resetting assets"
