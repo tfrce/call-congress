@@ -26,7 +26,6 @@ def upgrade():
     sa.Column('activation_key', sa.String(length=100), nullable=True),
     sa.Column('created_time', sa.DateTime(), nullable=True),
     sa.Column('last_accessed', sa.DateTime(), nullable=True),
-    sa.Column('avatar', sa.String(length=100), nullable=True),
     sa.Column('password', sa.String(length=300), nullable=False),
     sa.Column('role_code', sa.SmallInteger(), nullable=True),
     sa.Column('status_code', sa.SmallInteger(), nullable=True),
