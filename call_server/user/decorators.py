@@ -3,7 +3,7 @@ from functools import wraps
 from flask import abort
 from flask.ext.login import current_user
 
-from contants import ADMIN
+from constants import ADMIN
 
 
 def admin_required(f):

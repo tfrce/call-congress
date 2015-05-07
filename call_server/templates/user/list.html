@@ -1,0 +1,32 @@
+{% block body %}
+<div class="container">
+    <h2 class="pull-left">{{ _('Manage Users') }}</h2>
+    <div class="pull-right">
+        <a class="btn btn-success" href="{{ url_for('user.add_user') }}"><strong>{{ _('Add') }} +</strong></a>
+    </div>
+    <table class='table table-bordered table-hover'>
+        <thead>
+            <tr>
+                <th>{{ _('Name') }}</th>
+                <th>{{ _('Email') }}</th>
+                <th>{{ _('Phone') }}</th>
+                <th>{{ _('Role') }}</th>
+                <th>{{ _('Last Accessed') }}</th>
+                <th>{{ _('Status') }}</th>
+                <th>{{ _('Edit') }}</th>
+            </tr>
+        </thead>
+        {% for u in users %}
+        <tr>
+            <td>{{ u.name }} </td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.phone }}</td>
+            <td>{{ u.role }}</td>
+            <td>{{ u.last_accessed }}</td>
+            <td>{{ u.status }}</td>
+            <td><a href="{{ url_for('user.profile', user_id=u.id) }}">{{ _('Edit') }}</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

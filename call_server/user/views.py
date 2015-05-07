@@ -10,24 +10,26 @@ from ..extensions import db, mail, login_manager
 
 from .models import User
 from .forms import UserForm, LoginForm, RecoverPasswordForm, ReauthForm, ChangePasswordForm
+from .decorators import admin_required
 
-user = Blueprint('user', __name__)
+user = Blueprint('user', __name__, url_prefix='/user')
 
 
-@user.route('/users')
+@user.route('/')
+@admin_required
 def index():
     if current_user.is_authenticated():
         return redirect(url_for('user.index'))
 
     page = int(request.args.get('page', 1))
     pagination = User.query.paginate(page=page, per_page=10)
-    return render_template('user/index.html', pagination=pagination)
+    return render_template('user/list.html', pagination=pagination)
 
 
 @user.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated():
-        return redirect(url_for('admin.admin_dash'))
+        return redirect(url_for('admin.dashboard'))
 
     form = LoginForm(login=request.args.get('login', None),
                      next=request.args.get('next', None))
@@ -42,7 +44,7 @@ def login():
                 flash(_("Logged in"), 'success')
             else:
                 flash(_("Unable to log in"), 'warning')
-            return redirect(form.next.data or url_for('admin.admin_dash'))
+            return redirect(form.next.data or url_for('admin.dashboard'))
         else:
             flash(_('Sorry, invalid login'), 'warning')
 
@@ -71,13 +73,13 @@ def reauth():
 def logout():
     logout_user()
     flash(_('Logged out'), 'success')
-    return redirect(url_for('admin.index'))
+    return redirect(url_for('site.index'))
 
 
 @user.route('/signup', methods=['GET', 'POST'])
 def signup():
     if current_user.is_authenticated():
-        return redirect(url_for('admin.admin_dash'))
+        return redirect(url_for('admin.dashboard'))
 
     form = UserForm(next=request.args.get('next'))
 
@@ -95,6 +97,7 @@ def signup():
 
 
 @user.route('/change_password', methods=['GET', 'POST'])
+# not login_required, because user could be auth'ing by activation_key
 def change_password():
     user = None
     if current_user.is_authenticated():
@@ -126,6 +129,7 @@ def change_password():
 
 
 @user.route('/reset_password', methods=['GET', 'POST'])
+# not login_required, because user doesn't know password
 def reset_password():
     form = RecoverPasswordForm()
 
@@ -153,6 +157,7 @@ def reset_password():
 
 @user.route('/profile', methods=['GET', 'POST'], defaults={'user_id': None})
 @user.route('/profile/<int:user_id>/edit', methods=['GET', 'POST'])
+@login_required
 def profile(user_id):
     if user_id:
         edit = True
@@ -181,4 +186,4 @@ def lang():
     session['language'] = request.form['language']
     new_language = current_app.config['ACCEPT_LANGUAGES'][request.form['language']]
     flash(_('Language changed to ')+new_language, 'success')
-    return redirect(url_for('admin.admin_dash'))
+    return redirect(url_for('admin.dashboard'))
