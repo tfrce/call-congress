@@ -1,0 +1,31 @@
+{% set page_title = "Manage Campaigns" %}
+{% extends "layouts/base_admin.html" %}
+
+{% block body %}
+<div class="container">
+    <h2 class="pull-left">{{ _('Manage Campaigns') }}</h2>
+    <div class="pull-right">
+        <a class="btn btn-success" href="{{ url_for('campaign.new') }}"><strong>{{ _('Add') }} +</strong></a>
+    </div>
+    <table class="table" id="campaigns-list">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Targets</th>
+                <th>Calls</th>
+                <th>Live</th>
+            </tr>
+        </thead>
+        {% for c in campaigns %}
+        <tr>
+            <td>{{c.title}}</td>
+            <td>{{c.type}}</td>
+            <td>{{c.targets}}</td>
+            <td>{{c.calls}}</td>
+            <td>{{c.live}}</td>
+        </tr>
+        {%endfor%}
+    </table>
+</div>
+{% endblock %}

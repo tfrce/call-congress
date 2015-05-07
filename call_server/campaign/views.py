@@ -2,6 +2,11 @@ from flask import (Blueprint, render_template, current_app, request,
                    flash, url_for, redirect, session, abort)
 from flask.ext.login import login_required
 
+from ..extensions import db
+
+from .models import Campaign
+from .forms import CampaignForm
+
 campaign = Blueprint('campaign', __name__, url_prefix='/campaign')
 
 
@@ -16,10 +21,27 @@ def index():
 @campaign.route('/new')
 @login_required
 def new():
-    return render_template('campaign/new.html')
+    form = CampaignForm()
+
+    if form.validate_on_submit():
+        campaign = Campaign()
+        form.populate_obj(campaign)
+
+        db.session.add(campaign)
+        db.session.commit()
+
+        flash('Campaign created.', 'success')
+
+    return render_template('campaign/form.html', form=form)
 
 
 @campaign.route('/<int:user_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit():
     return render_template('campaign/new.html')
+
+
+@campaign.route('/<int:user_id>/record', methods=['GET', 'POST'])
+@login_required
+def record():
+    return render_template('campaign/record.html')
