@@ -1,0 +1,13 @@
+{% extends 'layouts/base_admin.html' %}
+{% from "macros/_form.html" import render_form %}
+
+{% block body %}
+<div class="profile">
+    <h2>{{ _('Public Profile') }}</h2>
+    {% if not edit %}
+    {{ render_form(url_for('user.profile'), form) }}
+    {% else %}
+    {{ render_form(url_for('user.profile', user_id=user.id), form) }}
+    {% endif %}
+</div>
+{% endblock %}

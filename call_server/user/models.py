@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import Column
+from sqlalchemy_utils.types import phone_number
 from werkzeug import generate_password_hash, check_password_hash
 from flask.ext.login import UserMixin
 
@@ -21,7 +22,7 @@ class User(db.Model, UserMixin):
     created_time = Column(db.DateTime, default=datetime.utcnow)
     last_accessed = Column(db.DateTime)
 
-    avatar = Column(db.String(STRING_LEN))
+    phone = Column(phone_number.PhoneNumberType())
 
     _password = Column('password', db.String(STRING_LEN*3), nullable=False)
 

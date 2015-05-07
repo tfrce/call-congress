@@ -9,7 +9,7 @@ from flask.ext.login import login_required, login_user, current_user, logout_use
 from ..extensions import db, mail, login_manager
 
 from .models import User
-from .forms import SignupForm, LoginForm, RecoverPasswordForm, ReauthForm, ChangePasswordForm
+from .forms import UserForm, LoginForm, RecoverPasswordForm, ReauthForm, ChangePasswordForm
 
 user = Blueprint('user', __name__)
 
@@ -79,7 +79,7 @@ def signup():
     if current_user.is_authenticated():
         return redirect(url_for('admin.admin_dash'))
 
-    form = SignupForm(next=request.args.get('next'))
+    form = UserForm(next=request.args.get('next'))
 
     if form.validate_on_submit():
         user = User()
@@ -151,10 +151,29 @@ def reset_password():
     return render_template('user/reset_password.html', form=form)
 
 
-@user.route('/profile')
+@user.route('/profile', methods=['GET', 'POST'], defaults={'user_id': None})
+@user.route('/profile/<int:user_id>/edit', methods=['GET', 'POST'])
 def profile(user_id):
-    user = User.get_by_id(user_id)
-    return render_template('user/profile.html', user=user)
+    if user_id:
+        edit = True
+        user = User.query.get(user_id)
+    else:
+        edit = False
+        user = User.query.filter_by(name=current_user.name).first_or_404()
+
+    form = UserForm(obj=user,
+                    next=request.args.get('next'))
+
+    if form.validate_on_submit():
+        user = User()
+        form.populate_obj(user)
+
+        db.session.add(user)
+        db.session.commit()
+
+        flash('User profile updated.', 'success')
+
+    return render_template('user/profile.html', user=user, form=form, edit=edit)
 
 
 @user.route('/lang/', methods=['POST'])
