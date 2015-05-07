@@ -128,13 +128,14 @@ def configure_login(app):
 def configure_assets(app):
     vendor_js = Bundle('bower_components/jquery/dist/jquery.js',
                        'bower_components/bootstrap/dist/js/bootstrap.min.js',
-                       filters='rjsmin', output='js/vendor.js')
+                       filters='rjsmin', output='dist/js/vendor.js')
     assets.register('vendor_js', vendor_js)
 
-    bootstrap_css = Bundle('bower_components/bootstrap/dist/css/bootstrap.css',
-                           'bower_components/bootstrap/dist/css/bootstrap-theme.css',
-                           filters='cssmin', output='css/bootstrap.css')
-    assets.register('bootstrap_css', bootstrap_css)
+    vendor_css = Bundle('bower_components/bootstrap/dist/css/bootstrap.css',
+                        'bower_components/bootstrap/dist/css/bootstrap-theme.css',
+                        filters='cssmin', output='dist/css/vendor.css')
+    assets.register('vendor_css', vendor_css)
+
     app.logger.info('registered assets %s' % assets._named_bundles.keys())
 
 

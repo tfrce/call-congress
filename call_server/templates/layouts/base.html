@@ -15,7 +15,9 @@
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
   {% endassets %}
 
-  {% assets "bootstrap_css" %}
+  {% assets "vendor_css" %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}">
+  {% endassets %}
     <link rel="stylesheet" href="{{ ASSET_URL }}">
   {% endassets %}
 
