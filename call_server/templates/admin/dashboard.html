@@ -6,4 +6,42 @@
 
 {% block body %}
 <h1>Dashboard</h1>
+
+<div class="col-md-8">
+  <div class="panel panel-default">
+    <div class="panel-heading"><h3 class="panel-title">Campaigns</h3></div>
+    <table class="table" id="campaigns-list">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Targets</th>
+                <th>Calls</th>
+                <th>Live</th>
+            </tr>
+        </thead>
+        {% for c in campaigns %}
+        <tr>
+            <td>{{c.title}}</td>
+            <td>{{c.type}}</td>
+            <td>{{c.targets}}</td>
+            <td>{{c.calls}}</td>
+            <td>{{c.live}}</td>
+        </tr>
+        {%endfor%}
+    </table>
+    <div class="panel-body">
+        <a class="btn btn-primary" href="{{ url_for('campaign.new') }}">New Campaign</a>
+    </div>
+  </div>
+</div>
+
+<div class="stats col-md-4">
+    <div class="panel panel-default">
+    <div class="panel-heading"><h3 class="panel-title">Usage Statistics</h3></div>
+    <div class="panel-body">
+
+    </div>
+  </div>
+</div>
 {% endblock %}
