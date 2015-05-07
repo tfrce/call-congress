@@ -12,6 +12,8 @@ from flask import Flask, g, request, session
 from flask.ext.assets import Bundle
 
 from .config import DefaultConfig
+
+from .site import site
 from .admin import admin
 from .user import User, user
 from .call import call
@@ -21,6 +23,7 @@ from .api import api
 from extensions import cache, db, babel, assets, login_manager, csrf
 
 DEFAULT_BLUEPRINTS = (
+    site,
     admin,
     user,
     call,
