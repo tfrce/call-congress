@@ -1,4 +1,4 @@
-"""create phonenumber field
+"""Create phone field on user
 
 Revision ID: 4eb4c2449a5b
 Revises: 3041ee8e1af7

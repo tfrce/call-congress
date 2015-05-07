@@ -1,4 +1,5 @@
-"""create user models
+"""Create user model
+First revision
 
 Revision ID: 3041ee8e1af7
 Revises: 
