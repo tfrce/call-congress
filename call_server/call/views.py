@@ -9,7 +9,7 @@ from flask_cache import Cache
 from flask_jsonpify import jsonify
 from twilio import TwilioRestException
 
-from models import db, log_call
+from .models import Call
 
 call = Blueprint('call', __name__)
 call_methods = ['GET', 'POST']

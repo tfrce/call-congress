@@ -1,0 +1,1 @@
+STRING_LEN = 100
