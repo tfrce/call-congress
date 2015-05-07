@@ -19,6 +19,8 @@ class DefaultConfig(object):
 
     CSRF_ENABLED = False
 
+    SITENAME = os.environ.get('SITENAME')
+
     TW_CLIENT = twilio.rest.TwilioRestClient(
         os.environ.get('TWILIO_DEV_ACCOUNT_SID'),
         os.environ.get('TWILIO_DEV_AUTH_TOKEN'))
@@ -46,7 +48,6 @@ class ProductionConfig(DefaultConfig):
     TW_NUMBER = os.environ.get('TWILIO_NUMBER')
 
     SECRET_KEY = os.environ.get('SECRET_KEY')
-
     SENTRY_DSN = os.environ.get('SENTRY_DSN')
 
     SQLALCHEMY_POOL_RECYCLE = 60 * 60  # 1 hour

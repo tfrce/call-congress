@@ -55,6 +55,8 @@ def create_app(config=None, app_name=None, blueprints=None):
     configure_login(app)
     configure_assets(app)
 
+    context_processors(app)
+
     app.logger.info('call_server started')
     app.logger.info('db at %s' % db.engine.url)
     return app
@@ -143,6 +145,12 @@ def configure_assets(app):
                        filters='cssmin', output='dist/css/style.css')
     assets.register('style_css', style_css)
     app.logger.info('registered assets %s' % assets._named_bundles.keys())
+
+
+def context_processors(app):
+    @app.context_processor
+    def inject_sitename():
+        return dict(SITENAME=app.config.get('SITENAME', 'Call Power'))
 
 
 def configure_logging(app):
