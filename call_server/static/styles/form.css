@@ -1,0 +1,4 @@
+.control-label.required:after { 
+   content:"*";
+   color:red;
+}

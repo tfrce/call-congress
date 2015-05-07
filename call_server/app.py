@@ -136,6 +136,9 @@ def configure_assets(app):
                         filters='cssmin', output='dist/css/vendor.css')
     assets.register('vendor_css', vendor_css)
 
+    style_css = Bundle('styles/*.css',
+                       filters='cssmin', output='dist/css/style.css')
+    assets.register('style_css', style_css)
     app.logger.info('registered assets %s' % assets._named_bundles.keys())
 
 
