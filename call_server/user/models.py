@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from sqlalchemy import Column
 from sqlalchemy_utils.types import phone_number
 from werkzeug import generate_password_hash, check_password_hash
 from flask.ext.login import UserMixin
@@ -14,17 +13,17 @@ from .constants import (USER_ROLE, ADMIN, STAFF,
 class User(db.Model, UserMixin):
     __tablename__ = 'user_user'
 
-    id = Column(db.Integer, primary_key=True)
-    name = Column(db.String(STRING_LEN), nullable=False, unique=True)
-    email = Column(db.String(STRING_LEN), nullable=False, unique=True)
-    openid = Column(db.String(STRING_LEN), unique=True)
-    activation_key = Column(db.String(STRING_LEN))
-    created_time = Column(db.DateTime, default=datetime.utcnow)
-    last_accessed = Column(db.DateTime)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(STRING_LEN), nullable=False, unique=True)
+    email = db.Column(db.String(STRING_LEN), nullable=False, unique=True)
+    openid = db.Column(db.String(STRING_LEN), unique=True)
+    activation_key = db.Column(db.String(STRING_LEN))
+    created_time = db.Column(db.DateTime, default=datetime.utcnow)
+    last_accessed = db.Column(db.DateTime)
 
-    phone = Column(phone_number.PhoneNumberType())
+    phone = db.Column(phone_number.PhoneNumberType())
 
-    _password = Column('password', db.String(STRING_LEN*3), nullable=False)
+    _password = db.Column('password', db.String(STRING_LEN*3), nullable=False)
 
     def __unicode__(self):
         return self.name
@@ -45,7 +44,7 @@ class User(db.Model, UserMixin):
         return check_password_hash(self.password, password)
 
     # One-to-many relationship between users and roles.
-    role_code = Column(db.SmallInteger, default=STAFF)
+    role_code = db.Column(db.SmallInteger, default=STAFF)
 
     @property
     def role(self):
@@ -55,7 +54,7 @@ class User(db.Model, UserMixin):
         return self.role_code == ADMIN
 
     # One-to-many relationship between users and user_statuses.
-    status_code = Column(db.SmallInteger, default=ACTIVE)
+    status_code = db.Column(db.SmallInteger, default=ACTIVE)
 
     @property
     def status(self):
