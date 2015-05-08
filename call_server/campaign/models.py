@@ -12,17 +12,28 @@ class Campaign(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(STRING_LEN), nullable=False, unique=True)
     type = db.Column(db.Integer)
+    allow_call_in = db.Column(db.Boolean)
+
     target_set = db.relationship(u'Target', secondary=u'campaign_target_sets', backref=db.backref('campaigns'))
+    phone_number_set = db.relationship(u'PhoneNumber', secondary=u'campaign_phone_numbers', backref=db.backref('campaigns'))
+
     created_time = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __unicode__(self):
         return self.name
 
 
+# m2m through tables
 t_campaign_target_sets = db.Table(
     u'campaign_target_sets',
     db.Column(u'campaign_id', db.ForeignKey('campaign_campaign.id')),
     db.Column(u'target_id', db.ForeignKey('campaign_target.id'))
+)
+
+t_campaign_phone_numbers = db.Table(
+    u'campaign_phone_numbers',
+    db.Column(u'campaign_id', db.ForeignKey('campaign_campaign.id')),
+    db.Column(u'phone_id', db.ForeignKey('campaign_phone.id'), unique=True)
 )
 
 
@@ -45,3 +56,7 @@ class PhoneNumber(db.Model):
 
     def __unicode__(self):
         return self.phone
+
+    @classmethod
+    def available_numbers(cls, limit=None):
+        return PhoneNumber.query.limit(limit)

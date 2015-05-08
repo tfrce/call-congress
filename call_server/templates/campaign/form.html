@@ -1,4 +1,15 @@
-{% from "macros/_form.html" import render_form %}
+{% from "macros/_form.html" import render_field, render_label,  %}
+
+{% set label_width = 'col-sm-2' %}
+{% set control_width = 'col-sm-6' %}
+{% macro render_field_default(field, offset='') %}
+    {% set control_class = control_width %}
+    {%if offset%}{% set control_class = control_width+' '+offset %}{%endif%}
+    {{ render_field(field, class_={'label':label_width,
+                                   'control':control_class}
+                    ) }}
+{% endmacro %}
+
 
 {% set page_title = _("Campaign") %}
 
@@ -6,5 +17,53 @@
 
 {% block body %}
 <h3>{% if edit %}Edit{%else%}New{%endif%} Campaign</h3>
-{{ render_form('', form)}}
+
+<form class="form-horizontal container" method="POST" action="" >
+    {{ form.hidden_tag() }}
+    <fieldset>
+        <legend>Campaign</legend>
+
+        {{render_field_default(form.name) }}
+
+        {# campaign type including nested #}
+        {% with %}
+            {% set field = form.campaign_type %}
+            {% set nested = form.campaign_nested_type %}
+
+            <div class="form-group{% if field.errors %} error{% endif %}">
+                {{ render_label(field, label_width) }}
+
+                <div class="controls {{control_width}}">
+                {{ field(class_='') }}
+                {{ nested(class_='inline') }}
+                <span class="help-inline">{{ field.description }}</span>
+                {% if field.errors -%}
+                    {% for error in field.errors -%}
+                    <span class="help-block error">{{ error|e }}</span>
+                    {%- endfor %}
+                {%- endif %}
+                </div>
+            </div>
+        {% endwith %}
+    </fieldset>
+
+    <fieldset>
+        <legend>Targeting</legend>
+        {{render_field_default(form.target_by) }}
+        {{render_field_default(form.target_set) }}
+        {{render_field_default(form.target_ordering) }}
+
+        {{render_field_default(form.call_maximum) }}
+        {{render_field_default(form.no_limit, offset='col-sm-offset-2') }}
+    </fieldset>
+
+    <fieldset>
+        <legend>Phone Numbers</legend>
+        {{render_field_default(form.phone_numbers) }}
+        {{render_field_default(form.allow_call_in, offset='col-sm-offset-2') }}
+    </fieldset>
+
+    {{render_field(form.submit, {'group':'pull-right'}) }}
+</form>
+
 {% endblock %}

@@ -1,31 +1,33 @@
-{% macro render_label(field) %}
-<label class="control-label {%if field.flags.required%}required{%endif%}"
+{% macro render_label(field, class_='') %}
+<label class="control-label {{class_}} {%if field.flags.required%}required{%endif%}"
         for="{{ field.id }}">
         {{ field.label.text }}
     </label>
 {% endmacro %}
 
-{% macro render_checkbox(field) %}
-<div class="form-group{% if field.errors %} error{% endif %}">
-    <div class="controls">
-        {{ render_label(field) }}
+{% macro render_checkbox(field, class_={}) %}
+{# for checkbox, label comes before field #}
+<div class="form-group {{class_.get('group', '')}} {% if field.errors %}error{% endif %}">
+    <div class="controls {{class_.get('control', '')}}">
+        {{ field(class_ = class_.get('field', '')) }}
         <span class="help-inline">{{ field.description }}</span>
         {% if field.errors -%}
             {% for error in field.errors -%}
             <span class="help-block error">{{ error|e }}</span>
             {%- endfor %}
         {%- endif %}
+    {{ render_label(field, "inline") }}
     </div>
 </div>
 {% endmacro%}
 
-{% macro render_radio(field) %}
-<div class="form-group{% if field.errors %} error{% endif %}">
-    {{ render_label(field) }}
-    <div class="controls">
+{% macro render_radio(field, class_={}) %}
+<div class="form-group {{class_.get('group', '')}} {% if field.errors %}error{% endif %}">
+    {{ render_label(field, class_.get('label', '')) }}
+    <div class="controls {{class_.get('control', '')}}">
         {% for subfield in field -%}
-        <label for="{{ subfield.id }}" class="radio inline">
-            {{ subfield }} {{ subfield.label.text }}
+        <label for="{{ subfield.id }}" class="radio-inline">
+            {{ subfield(class_ = class_.get('field', '')) }} {{ subfield.label.text }}
         </label>
         {%- endfor %}
         <span class="help-inline">{{ field.description }}</span>
@@ -38,41 +40,11 @@
 </div>
 {% endmacro %}
 
-{% macro render_datepicker(field) %}
-<div class="form-group{% if field.errors %} error{% endif %}">
-    {{ render_label(field) }}
-    <div class="controls">
-        {{ field() }}
-        <span class="help-inline">{{ field.description }}</span>
-        {% if field.errors -%}
-            {% for error in field.errors -%}
-            <span class="help-block error">{{ error }}</span>
-            {%- endfor %}
-        {%- endif %}
-    </div>
-</div>
-{% endmacro %}
-
-{% macro render_textarea(field) %}
-<div class="form-group{% if field.errors %} error{% endif %}">
-    {{ render_label(field) }}
-    <div class="controls">
-        {{ field(class="span6", rows="5") }}
-        <span class="help-inline">{{ field.description }}</span>
-        {% if field.errors -%}
-            {% for error in field.errors -%}
-            <span class="help-block error">{{ error }}</span>
-            {%- endfor %}
-        {%- endif %}
-    </div>
-</div>
-{% endmacro %}
-
-{% macro render_input(field) %}
-<div class="form-group{% if field.errors %} error{% endif %}">
-    {{ render_label(field) }}
-    <div class="controls">
-        {{ field }}
+{% macro render_input(field, class_={}) %}
+<div class="form-group {{class_.get('group', '')}} {% if field.errors %}error{% endif %}">
+    {{ render_label(field, class_.get('label', '')) }}
+    <div class="controls {{class_.get('control', '')}}">
+        {{ field(class_ = class_.get('field', '')) }}
          <span class="help-inline">{{ field.description }}</span>
         {% if field.errors -%}
             {% for error in field.errors -%}
@@ -83,44 +55,23 @@
 </div>
 {% endmacro %}
 
-{% macro render_action(field) %}
-<div class="form-group">
+{% macro render_action(field, class_={}) %}
+<div class="form-group {{class_.get('group', '')}}">
     <div class="form-actions">
-        {{ field(class_="btn btn-primary") }}
+        {{ field(class_="btn btn-primary "+class_.get('field', '')) }}
     </div>
 </div>
 {% endmacro %}
 
-{% macro render_field(form,field) %}
-    {% if field.type != "HiddenField" and field.type != "CSRFTokenField" and not field.name.endswith("_inline") %}
-        {# skip field that end with _inline, we'll render them in render_inline #}
-        {% if field.type == "RadioField" %}
-            {{ render_radio(field) }}
-        {% elif field.type == "BooleanField" %}
-            {{ render_checkbox(field) }}
-        {% elif field.type == "SubmitField" %}
-            {{ render_action(field) }}
-        {% elif field.type == "TextAreaField" %}
-            {{ render_textarea(field) }}
-        {% elif field.type == "DateField" %}
-            {{ render_datepicker(field) }}
-        {% elif field.type == "TextField" %}
-            {% if focus %}
-                {{ render_input(field) }}
-                {% set focus = False %}
-            {% else %}
-                {{ render_input(field) }}
-            {% endif %}
-        {% elif field.type in ["QuerySelectField","QuerySelectMultipleField"] %}
-            {% if field.flags.has_inline_form %}
-                {% set inline_form = form[field.name+"_inline"] %}
-                {{ render_inline_form(field, inline_form) }}
-            {% else %}
-                {{ render_input(field) }}
-            {%endif%}
-        {% else %}
-            {{ render_input(field) }}
-        {% endif %}
+{% macro render_field(field, class_={}) %}
+    {% if field.type == "RadioField" %}
+        {{ render_radio(field, class_) }}
+    {% elif field.type == "BooleanField" %}
+        {{ render_checkbox(field, class_) }}
+    {% elif field.type == "SubmitField" %}
+        {{ render_action(field, class_) }}
+    {% else %}
+        {{ render_input(field, class_) }}
     {% endif %}
 {% endmacro %}
 

@@ -26,4 +26,14 @@ TARGET_BY_CHOICES = (
     ('form_param', 'Form Parameter')
 )
 
+ORDERING_CHOICES = (
+    ('in-order', 'In Order'),
+    ('shuffle', 'Shuffle'),
+)
+
+# empty set of choices, for filling in on client-side
+EMPTY_CHOICES = (
+    ('', ''),
+)
+
 STRING_LEN = 100
