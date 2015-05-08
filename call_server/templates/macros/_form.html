@@ -64,14 +64,17 @@
 {% endmacro %}
 
 {% macro render_field(field, class_={}) %}
-    {% if field.type == "RadioField" %}
-        {{ render_radio(field, class_) }}
-    {% elif field.type == "BooleanField" %}
-        {{ render_checkbox(field, class_) }}
-    {% elif field.type == "SubmitField" %}
-        {{ render_action(field, class_) }}
-    {% else %}
-        {{ render_input(field, class_) }}
+    {% if field.type != "HiddenField" and field.type != "CSRFTokenField"%}
+
+        {% if field.type == "RadioField" %}
+            {{ render_radio(field, class_) }}
+        {% elif field.type == "BooleanField" %}
+            {{ render_checkbox(field, class_) }}
+        {% elif field.type == "SubmitField" %}
+            {{ render_action(field, class_) }}
+        {% else %}
+            {{ render_input(field, class_) }}
+        {% endif %}
     {% endif %}
 {% endmacro %}
 
@@ -87,7 +90,7 @@
         {% endif %}
         {% set focus = True %}
         {% for field in form %}
-            {{ render_field(form, field) }}
+            {{ render_field(field) }}
         {% endfor %}
     </fieldset>
 </form>
