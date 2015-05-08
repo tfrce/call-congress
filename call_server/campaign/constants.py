@@ -15,9 +15,9 @@ CAMPAIGN_CHOICES = (
 )
 CAMPAIGN_NESTED_CHOICES = (
     ('', ''),
-    (EXECUTIVE, ('President', 'Office')),
-    (CONGRESS, ('Senate', 'House')),
-    (STATE, ('Senate', 'House', 'Governor')),
+    (EXECUTIVE, (('president', 'President'), ('office', 'Office'))),
+    (CONGRESS, (('senate', 'Senate'), ('house', 'House'))),
+    (STATE, (('upper', 'Senate'), ('lower', 'House'), ('governor', 'Governor'))),
     (LOCAL, ()),
     (CUSTOM, ()),
 )

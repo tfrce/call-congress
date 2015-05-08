@@ -32,7 +32,7 @@ class DefaultConfig(object):
 
     SECRET_KEY = 'NotARealSecretKey'
 
-    SUNLIGHTLABS_KEY = os.environ.get('SUNLIGHTLABS_KEY')
+    SUNLIGHT_API_KEY = os.environ.get('SUNLIGHT_API_KEY')
 
 
 class ProductionConfig(DefaultConfig):

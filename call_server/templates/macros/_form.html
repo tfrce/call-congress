@@ -9,14 +9,14 @@
 {# for checkbox, label comes before field #}
 <div class="form-group {{class_.get('group', '')}} {% if field.errors %}error{% endif %}">
     <div class="controls {{class_.get('control', '')}}">
-        {{ field(class_ = class_.get('field', '')) }}
+        {{ field(class_ = 'form-control inline '+class_.get('field', '')) }}
+        {{ render_label(field, "inline") }}
         <span class="help-inline">{{ field.description }}</span>
         {% if field.errors -%}
             {% for error in field.errors -%}
             <span class="help-block error">{{ error|e }}</span>
             {%- endfor %}
         {%- endif %}
-    {{ render_label(field, "inline") }}
     </div>
 </div>
 {% endmacro%}
@@ -27,9 +27,10 @@
     <div class="controls {{class_.get('control', '')}}">
         {% for subfield in field -%}
         <label for="{{ subfield.id }}" class="radio-inline">
-            {{ subfield(class_ = class_.get('field', '')) }} {{ subfield.label.text }}
+            {{ subfield(class_ = 'form-control '+class_.get('field', '')) }} {{ subfield.label.text }}
         </label>
         {%- endfor %}
+        <a class="btn btn-default btn-xs radio-inline clear">Clear</a>
         <span class="help-inline">{{ field.description }}</span>
         {% if field.errors -%}
             {% for error in field.errors -%}
@@ -44,7 +45,7 @@
 <div class="form-group {{class_.get('group', '')}} {% if field.errors %}error{% endif %}">
     {{ render_label(field, class_.get('label', '')) }}
     <div class="controls {{class_.get('control', '')}}">
-        {{ field(class_ = class_.get('field', '')) }}
+        {{ field(class_ = 'form-control '+class_.get('field', '')) }}
          <span class="help-inline">{{ field.description }}</span>
         {% if field.errors -%}
             {% for error in field.errors -%}

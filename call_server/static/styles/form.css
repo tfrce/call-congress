@@ -7,18 +7,33 @@
     display: inline-block;
 }
 
-.form-group label {
-    vertical-align: top;
-}
-
 /*.form-horizontal .control-label {
     text-align: left;
 }*/
 
-label.inline {
-    vertical-align: bottom;
-    font-weight:normal;
+label.inline, input.inline {
     display: inline-block;
+    width: auto;
+    vertical-align: middle;
+    font-weight:normal;
+}
+
+select.block {
+    display: block;
+}
+
+input.form-control[type="radio"] {
+    height: auto;
+}
+
+.btn.radio-inline {
+    padding-top: 0; /* reset bootstrap .radio-inline */
+    margin-top: 7px; 
+}
+
+.search-results .btn.close {
+    font-size: 14px;
+    padding-top: 0;
 }
 
 fieldset.border {

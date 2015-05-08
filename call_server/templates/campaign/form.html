@@ -1,4 +1,4 @@
-{% from "macros/_form.html" import render_field, render_label,  %}
+{% from "macros/_form.html" import render_field, render_label, render_input %}
 
 {% set label_width = 'col-sm-2' %}
 {% set control_width = 'col-sm-6' %}
@@ -28,6 +28,7 @@
         {# campaign type including nested #}
         {% with %}
             {% set field = form.campaign_type %}
+            {% set state = form.campaign_state %}
             {% set nested_field = form.campaign_subtype %}
 
             <div class="form-group{% if field.errors %} error{% endif %}">
@@ -35,6 +36,7 @@
 
                 <div class="controls {{control_width}}">
                 {{ field(class_='') }}
+                {{ state(class_='inline hidden') }}
                 {{ nested_field(class_='nested inline', **{'data-nested-choices': CAMPAIGN_NESTED_CHOICES|json} ) }}
                 <span class="help-inline">{{ field.description }}</span>
                 {% if field.errors -%}
@@ -50,9 +52,34 @@
     <fieldset class="border">
         <legend>Targets</legend>
         {{render_field_default(form.target_by) }}
-        {{render_field_default(form.target_set) }}
-        {{render_field_default(form.target_ordering) }}
 
+        <div class="form-group set-target">
+            {{render_label(form.target_set, label_width)}}
+            <div class="controls {{control_width}}">
+                <div class="input-group" id="target_search">
+                    <span class="input-group-addon glyphicon glyphicon-search"></span>
+                    <div class="search-results open">
+                        <input type="text" class="form-control" name="target_search" placeholder="search"/>
+                    </div>
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button">Go</button>
+                    </span>
+                </div>
+
+                {% with %}
+                {% set field=form.target_set %}
+                {{ field(class_="form-control voffset-10") }}
+                <span class="help-inline">{{ field.description }}</span>
+                    {% if field.errors -%}
+                        {% for error in field.errors -%}
+                        <span class="help-block error">{{ error }}</span>
+                        {%- endfor %}
+                    {%- endif %}
+                {% endwith %}
+            </div>
+        </div>
+
+        {{render_field_default(form.target_ordering) }}
         {{render_field_default(form.call_maximum) }}
         {{render_field_default(form.no_limit, offset='col-sm-offset-2') }}
     </fieldset>
@@ -65,5 +92,24 @@
 
     {{render_field(form.submit, {'group':'pull-right'}) }}
 </form>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/template" name="search-results-dropdown">
+    <ul class="dropdown-menu open">
+      <li role="presentation" class="dropdown-header">
+        Search Results <span class="close btn btn-xs">&times;</span>
+      </li>
+    </ul>
+</script>
+
+<script type="text/template" name="search-results-item">
+    <li class="result">
+        <a><span class="text"><%= data.title %> <%= data.first_name %> <%= data.last_name %> (<%= data.party %>-<%= data.state %>)</span>
+        <span class="phone"><%= data.phone %></span></a>
+    </li>
+</script>
 
 {% endblock %}
