@@ -11,22 +11,15 @@
 
   <link rel="shortcut icon" type="image/ico" href="static/images/favicon.png">
 
-  {% assets "vendor_js" %}
-    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
-  {% endassets %}
-
   {% assets "vendor_css" %}
     <link rel="stylesheet" href="{{ ASSET_URL }}">
   {% endassets %}
 
-  {% assets "style_css" %}
+  {% assets "site_css" %}
     <link rel="stylesheet" href="{{ ASSET_URL }}">
   {% endassets %}
 
   {%block styles%}{%endblock%}
-
-
-  {%block head_scripts%}{%endblock%}
  </head>
 
  <body>
@@ -80,4 +73,13 @@
     {%block body%}{%endblock%}
     </div>
  </body>
+  {% assets "vendor_js" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+
+  {% assets "site_js" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+  
+  {%block scripts%}{%endblock%}
 </html>

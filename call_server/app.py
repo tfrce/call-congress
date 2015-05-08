@@ -133,8 +133,10 @@ def configure_login(app):
 
 
 def configure_assets(app):
-    vendor_js = Bundle('bower_components/jquery/dist/jquery.js',
+    vendor_js = Bundle('bower_components/jquery/dist/jquery.min.js',
                        'bower_components/bootstrap/dist/js/bootstrap.min.js',
+                       'bower_components/underscore/underscore-min.js',
+                       'bower_components/backbone/backbone.js',
                        filters='rjsmin', output='dist/js/vendor.js')
     assets.register('vendor_js', vendor_js)
 
@@ -143,16 +145,24 @@ def configure_assets(app):
                         filters='cssmin', output='dist/css/vendor.css')
     assets.register('vendor_css', vendor_css)
 
-    style_css = Bundle('styles/*.css',
-                       filters='cssmin', output='dist/css/style.css')
-    assets.register('style_css', style_css)
+    site_js = Bundle('scripts/*.js',
+                     filters='rjsmin', output='dist/css/site.js')
+    assets.register('site_js', site_js)
+
+    site_css = Bundle('styles/*.css',
+                      filters='cssmin', output='dist/css/site.css')
+    assets.register('site_css', site_css)
     app.logger.info('registered assets %s' % assets._named_bundles.keys())
 
 
 def context_processors(app):
+    # inject sitename into all templates
     @app.context_processor
     def inject_sitename():
         return dict(SITENAME=app.config.get('SITENAME', 'Call Power'))
+
+    # json filter
+    app.jinja_env.filters['json'] = json_markup
 
 
 def configure_logging(app):
