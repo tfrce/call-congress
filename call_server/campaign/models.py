@@ -11,7 +11,8 @@ class Campaign(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(STRING_LEN), nullable=False, unique=True)
-    type = db.Column(db.Integer)
+    campaign_type = db.Column(db.String(STRING_LEN))
+    campaign_subtype = db.Column(db.String(STRING_LEN))
     allow_call_in = db.Column(db.Boolean)
 
     target_set = db.relationship(u'Target', secondary=u'campaign_target_sets', backref=db.backref('campaigns'))

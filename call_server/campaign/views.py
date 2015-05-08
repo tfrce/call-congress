@@ -2,8 +2,11 @@ from flask import (Blueprint, render_template, current_app, request,
                    flash, url_for, redirect, session, abort)
 from flask.ext.login import login_required
 
+import json
+
 from ..extensions import db
 
+from .constants import CAMPAIGN_NESTED_CHOICES
 from .models import Campaign
 from .forms import CampaignForm
 
@@ -32,7 +35,8 @@ def new():
 
         flash('Campaign created.', 'success')
 
-    return render_template('campaign/form.html', form=form)
+    return render_template('campaign/form.html', form=form,
+                           CAMPAIGN_NESTED_CHOICES=CAMPAIGN_NESTED_CHOICES)
 
 
 @campaign.route('/<int:user_id>/edit', methods=['GET', 'POST'])

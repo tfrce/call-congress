@@ -18,24 +18,24 @@
 {% block body %}
 <h3>{% if edit %}Edit{%else%}New{%endif%} Campaign</h3>
 
-<form class="form-horizontal container" method="POST" action="" >
+<form class="form-horizontal" id="campaign" method="POST" action="" >
     {{ form.hidden_tag() }}
     <fieldset>
-        <legend>Campaign</legend>
+        <legend>Type</legend>
 
         {{render_field_default(form.name) }}
 
         {# campaign type including nested #}
         {% with %}
             {% set field = form.campaign_type %}
-            {% set nested = form.campaign_nested_type %}
+            {% set nested_field = form.campaign_subtype %}
 
             <div class="form-group{% if field.errors %} error{% endif %}">
                 {{ render_label(field, label_width) }}
 
                 <div class="controls {{control_width}}">
                 {{ field(class_='') }}
-                {{ nested(class_='inline') }}
+                {{ nested_field(class_='nested inline', **{'data-nested-choices': CAMPAIGN_NESTED_CHOICES|json} ) }}
                 <span class="help-inline">{{ field.description }}</span>
                 {% if field.errors -%}
                     {% for error in field.errors -%}
@@ -48,7 +48,7 @@
     </fieldset>
 
     <fieldset>
-        <legend>Targeting</legend>
+        <legend>Targets</legend>
         {{render_field_default(form.target_by) }}
         {{render_field_default(form.target_set) }}
         {{render_field_default(form.target_ordering) }}
