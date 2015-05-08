@@ -11,6 +11,8 @@ import logging
 from flask import Flask, g, request, session
 from flask.ext.assets import Bundle
 
+from utils import json_markup
+
 from .config import DefaultConfig
 
 from .site import site
