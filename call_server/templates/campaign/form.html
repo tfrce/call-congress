@@ -20,7 +20,7 @@
 
 <form class="form-horizontal" id="campaign" method="POST" action="" >
     {{ form.hidden_tag() }}
-    <fieldset>
+    <fieldset class="border">
         <legend>Type</legend>
 
         {{render_field_default(form.name) }}
@@ -47,7 +47,7 @@
         {% endwith %}
     </fieldset>
 
-    <fieldset>
+    <fieldset class="border">
         <legend>Targets</legend>
         {{render_field_default(form.target_by) }}
         {{render_field_default(form.target_set) }}
@@ -57,7 +57,7 @@
         {{render_field_default(form.no_limit, offset='col-sm-offset-2') }}
     </fieldset>
 
-    <fieldset>
+    <fieldset class="border">
         <legend>Phone Numbers</legend>
         {{render_field_default(form.phone_numbers) }}
         {{render_field_default(form.allow_call_in, offset='col-sm-offset-2') }}

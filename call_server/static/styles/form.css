@@ -21,13 +21,13 @@ label.inline {
     display: inline-block;
 }
 
-fieldset {
+fieldset.border {
     border: 1px groove #ddd;
     padding: 0 1.4em 1.4em 1.4em;
     margin: 0 0 1.5em 0;
 }
 
-fieldset legend {
+fieldset.border legend {
     font-size: 1.2em;
     font-weight: bold;
     text-align: left;
