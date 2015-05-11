@@ -30,7 +30,7 @@ To install locally and run in debug mode use:
     pip install -r requirements/development.txt
 
     # create the database
-    python manage.py migrate up
+    python manager.py migrate up
 
     # compile assets
     bower install
