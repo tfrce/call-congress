@@ -1,2 +1,2 @@
 # Mirror production requirements
--r requirements/prod.txt
+-r requirements/production.txt
