@@ -7,3 +7,4 @@ venv
 gunicorn.log
 call_server/static/bower_components
 call_server/static/.webassets-cache
+*.swp
