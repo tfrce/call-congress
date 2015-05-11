@@ -34,10 +34,10 @@ To install locally and run in debug mode use:
 
     # compile assets
     bower install
-    python manage.py assets build
+    python manager.py assets build
  
     # run local server for debugging
-    python manage.py run
+    python manager.py run
     # for testing twilio, need internet-visible urls to do call handling
     ngrok -subdomain="1cf55a5a" 5000
 
