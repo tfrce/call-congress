@@ -89,7 +89,7 @@ def init_extensions(app):
     login_manager.init_app(app)
 
     if app.config.get('DEBUG'):
-        from flask.ext.debugtoolbar import DebugToolbarExtension
+        from flask_debugtoolbar import DebugToolbarExtension
         DebugToolbarExtension(app)
 
 
