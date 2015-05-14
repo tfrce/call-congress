@@ -10,7 +10,7 @@ from .constants import CAMPAIGN_NESTED_CHOICES
 from .models import Campaign
 from .forms import CampaignForm
 
-campaign = Blueprint('campaign', __name__, url_prefix='/campaign')
+campaign = Blueprint('campaign', __name__, url_prefix='/admin/campaign')
 
 
 @campaign.route('/')
