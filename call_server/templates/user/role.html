@@ -1,0 +1,9 @@
+{% extends 'layouts/base_admin.html' %}
+{% from "macros/_form.html" import render_form %}
+
+{% block body %}
+<div class="profile">
+    <h2>{{ _('User Role') }}  <small>&ndash; {{user.name}}</small></h2>
+    {{ render_form(url_for('user.role', user_id=user.id), form) }}
+</div>
+{% endblock %}

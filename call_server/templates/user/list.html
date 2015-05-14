@@ -4,9 +4,6 @@
 {% block body %}
 <div class="container">
     <h2 class="pull-left">{{ _('Manage Users') }}</h2>
-    <div class="pull-right">
-        <a class="btn btn-success" href="{{ url_for('user.add_user') }}"><strong>{{ _('Add') }} +</strong></a>
-    </div>
     <table class='table table-bordered table-hover'>
         <thead>
             <tr>
@@ -27,7 +24,9 @@
             <td>{{ u.role }}</td>
             <td>{{ u.last_accessed }}</td>
             <td>{{ u.status }}</td>
-            <td><a href="{{ url_for('user.profile', user_id=u.id) }}">{{ _('Edit') }}</a></td>
+            <td><a href="{{ url_for('user.profile', user_id=u.id) }}">{{ _('Profile') }}</a> /
+                <a href="{{ url_for('user.role', user_id=u.id) }}">{{ _('Role') }}</a></td>
+            </td>
         </tr>
         {% endfor %}
     </table>

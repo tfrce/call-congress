@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # User roles
-ADMIN = 0    # edit all
+ADMIN = 0    # edit users
 STAFF = 1    # edit all campaigns
 PARTNER = 2  # edit own campaigns
 VIEWER = 3   # view stats only

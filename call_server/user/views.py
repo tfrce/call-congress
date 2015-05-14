@@ -9,24 +9,22 @@ from flask.ext.login import login_required, login_user, current_user, logout_use
 from ..extensions import db, mail, login_manager
 
 from .models import User
-from .forms import UserForm, LoginForm, RecoverPasswordForm, ReauthForm, ChangePasswordForm
+from .forms import UserForm, UserRoleForm, LoginForm, RecoverPasswordForm, ReauthForm, ChangePasswordForm
 from .decorators import admin_required
 
-user = Blueprint('user', __name__, url_prefix='/user')
+user = Blueprint('user', __name__)
 
 
-@user.route('/')
+@user.route('/admin/user')
+@login_required
 @admin_required
 def index():
-    if current_user.is_authenticated():
-        return redirect(url_for('user.index'))
-
     page = int(request.args.get('page', 1))
     pagination = User.query.paginate(page=page, per_page=10)
     return render_template('user/list.html', pagination=pagination)
 
 
-@user.route('/login', methods=['GET', 'POST'])
+@user.route('/user/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated():
         return redirect(url_for('admin.dashboard'))
@@ -51,7 +49,7 @@ def login():
     return render_template('user/login.html', form=form)
 
 
-@user.route('/reauth', methods=['GET', 'POST'])
+@user.route('/user/reauth', methods=['GET', 'POST'])
 @login_required
 def reauth():
     form = ReauthForm(next=request.args.get('next'))
@@ -68,7 +66,7 @@ def reauth():
     return render_template('user/reauth.html', form=form)
 
 
-@user.route('/logout')
+@user.route('/user/logout')
 @login_required
 def logout():
     logout_user()
@@ -76,7 +74,7 @@ def logout():
     return redirect(url_for('site.index'))
 
 
-@user.route('/signup', methods=['GET', 'POST'])
+@user.route('/user/signup', methods=['GET', 'POST'])
 def signup():
     if current_user.is_authenticated():
         return redirect(url_for('admin.dashboard'))
@@ -96,7 +94,7 @@ def signup():
     return render_template('user/signup.html', form=form)
 
 
-@user.route('/change_password', methods=['GET', 'POST'])
+@user.route('/user/change_password', methods=['GET', 'POST'])
 # not login_required, because user could be auth'ing by activation_key
 def change_password():
     user = None
@@ -128,7 +126,7 @@ def change_password():
     return render_template("user/change_password.html", form=form)
 
 
-@user.route('/reset_password', methods=['GET', 'POST'])
+@user.route('/user/reset_password', methods=['GET', 'POST'])
 # not login_required, because user doesn't know password
 def reset_password():
     form = RecoverPasswordForm()
@@ -155,8 +153,8 @@ def reset_password():
     return render_template('user/reset_password.html', form=form)
 
 
-@user.route('/profile', methods=['GET', 'POST'], defaults={'user_id': None})
-@user.route('/profile/<int:user_id>/edit', methods=['GET', 'POST'])
+@user.route('/user/profile', methods=['GET', 'POST'], defaults={'user_id': None})
+@user.route('/user/profile/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def profile(user_id):
     if user_id:
@@ -181,7 +179,26 @@ def profile(user_id):
     return render_template('user/profile.html', user=user, form=form, edit=edit)
 
 
-@user.route('/lang/', methods=['POST'])
+
+@user.route('/admin/user/role/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def role(user_id):
+    user = User.query.filter_by(id=user_id).first_or_404()
+    form = UserRoleForm(obj=user, next=request.args.get('next'))
+
+    if form.validate_on_submit():
+        form.populate_obj(user)
+
+        db.session.add(user)
+        db.session.commit()
+
+        flash('User role updated.', 'success')
+
+    return render_template('user/role.html', user=user, form=form)
+
+
+@user.route('/user/lang/', methods=['POST'])
 def lang():
     session['language'] = request.form['language']
     new_language = current_app.config['ACCEPT_LANGUAGES'][request.form['language']]
