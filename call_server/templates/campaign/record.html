@@ -1,0 +1,51 @@
+{% from "macros/_form.html" import render_field, render_label, render_input %}
+{% set label_width = 'col-sm-2' %}
+{% set control_width = 'col-sm-6' %}
+{% macro render_field_default(field, offset='', control_class=control_width, group_class='', field_class='') %}
+    {%if offset%}{% set control_class = control_width+' '+offset %}{%endif%}
+    {{ render_field(field, class_={'label': label_width,
+                                   'control': control_class,
+                                   'group': group_class,
+                                   'field': field_class}
+                    ) }}
+{% endmacro %}
+
+
+{% extends "layouts/base_admin.html" %}
+
+{% block body %}
+<h3>Record Campaign</h3>
+
+<form class="form-horizontal" id="campaign" method="POST" action="" >
+    {{ form.hidden_tag() }}
+    <fieldset class="border">
+        <legend>Record Audio</legend>
+
+        {{ render_field_default(form.msg_intro) }}
+        {{ render_field_default(form.msg_location) }}
+
+        {# hide these by default #}
+        {{ render_field_default(form.msg_invalid_location) }}
+        {{ render_field_default(form.msg_choose_target) }}
+        
+        {{ render_field_default(form.msg_between_calls) }}
+        {{ render_field_default(form.msg_final_thanks) }}
+
+    </fieldset>
+
+    <fieldset class="border">
+        <legend>Embed</legend>
+
+        {{ render_field_default(form.display_script) }}
+        {{ render_field_default(form.embed_code, field_class='readonly') }}
+    </fieldset>
+
+    <fieldset class="border advanced">
+        <legend>Advanced</legend>
+
+        {{ render_field_default(form.success_endpoint) }}
+        {{ render_field_default(form.form_id) }}
+        {{ render_field_default(form.display_script_id) }}
+    </fieldset>
+</form>
+{% endblock %}

@@ -15,15 +15,19 @@
                 <th>Targets</th>
                 <th>Calls</th>
                 <th>Live</th>
+                <th></th>
             </tr>
         </thead>
         {% for c in campaigns %}
         <tr>
-            <td>{{c.title}}</td>
-            <td>{{c.type}}</td>
-            <td>{{c.targets}}</td>
+            <td>{{c.name}}</td>
+            <td>{{c.campaign_type_display()}}</td>
+            <td>{{c.target_set}}</td>
             <td>{{c.calls}}</td>
             <td>{{c.live}}</td>
+            <td><a href="{{url_for('campaign.edit', campaign_id=c.id)}}">edit</a> /
+                <a href="{{url_for('campaign.copy', campaign_id=c.id)}}">copy</a>
+            </td>
         </tr>
         {%endfor%}
     </table>

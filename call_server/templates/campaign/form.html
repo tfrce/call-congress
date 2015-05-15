@@ -2,11 +2,11 @@
 
 {% set label_width = 'col-sm-2' %}
 {% set control_width = 'col-sm-6' %}
-{% macro render_field_default(field, offset='') %}
-    {% set control_class = control_width %}
+{% macro render_field_default(field, offset='', control_class=control_width, group='') %}
     {%if offset%}{% set control_class = control_width+' '+offset %}{%endif%}
-    {{ render_field(field, class_={'label':label_width,
-                                   'control':control_class}
+    {{ render_field(field, class_={'label': label_width,
+                                   'control': control_class,
+                                   'group': group}
                     ) }}
 {% endmacro %}
 
@@ -44,6 +44,12 @@
                     <span class="help-block error">{{ error|e }}</span>
                     {%- endfor %}
                 {%- endif %}
+                
+                {% if nested_field.errors -%}
+                    {% for error in nested_field.errors -%}
+                    <span class="help-block error">{{ error|e }}</span>
+                    {%- endfor %}
+                {%- endif %}
                 </div>
             </div>
         {% endwith %}
@@ -53,7 +59,7 @@
         <legend>Targets</legend>
         {{render_field_default(form.target_by) }}
 
-        <div class="form-group set-target">
+        <div class="form-group set-target hidden">
             {{render_label(form.target_set, label_width)}}
             <div class="controls {{control_width}}">
                 <div class="input-group" id="target_search">
@@ -80,8 +86,9 @@
         </div>
 
         {{render_field_default(form.target_ordering) }}
-        {{render_field_default(form.call_maximum) }}
-        {{render_field_default(form.no_limit, offset='col-sm-offset-2') }}
+
+        {{render_field_default(form.call_limit, offset='col-sm-offset-2') }}
+        {{render_field_default(form.call_maximum, group="hidden") }}
     </fieldset>
 
     <fieldset class="border">
@@ -107,8 +114,10 @@
 
 <script type="text/template" name="search-results-item">
     <li class="result">
-        <a><span class="text"><%= data.title %> <%= data.first_name %> <%= data.last_name %> (<%= data.party %>-<%= data.state %>)</span>
-        <span class="phone"><%= data.phone %></span></a>
+        <a data-object='{"name":"<%= data.first_name %> <%= data.last_name %>", "number":"<%= data.phone %>"}'>
+            <span class="text"><%= data.title %> <%= data.first_name %> <%= data.last_name %> (<%= data.party %>-<%= data.state %>)</span>
+            <span class="phone"><%= data.phone %></span>
+        </a>
     </li>
 </script>
 

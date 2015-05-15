@@ -3,7 +3,8 @@ from datetime import datetime
 from sqlalchemy_utils.types import phone_number
 
 from ..extensions import db
-from .constants import (CAMPAIGN_CHOICES, STRING_LEN, TWILIO_SID_LENGTH)
+from ..utils import convert_to_dict, choice_values_flat
+from .constants import (CAMPAIGN_CHOICES, CAMPAIGN_NESTED_CHOICES, STRING_LEN, TWILIO_SID_LENGTH)
 
 
 class Campaign(db.Model):
@@ -22,6 +23,24 @@ class Campaign(db.Model):
 
     def __unicode__(self):
         return self.name
+
+    def campaign_type_display(self):
+        val = ''
+        if self.campaign_type:
+            val = convert_to_dict(CAMPAIGN_CHOICES)[self.campaign_type]
+        if self.campaign_subtype:
+            sub = convert_to_dict(choice_values_flat(CAMPAIGN_NESTED_CHOICES))[self.campaign_subtype]
+            val = '%s - %s' % (val, sub)
+        return val
+
+
+    @classmethod
+    def duplicate(self):
+        arguments = dict()
+        for name, column in self.__mapper__.columns.items():
+            if not (column.primary_key or column.unique):
+                arguments[name] = getattr(self, name)
+        return self.__class__(**arguments)
 
 
 # m2m through tables

@@ -30,7 +30,7 @@ def get_one_or_create(session,
             return created, True
         except IntegrityError, e:
             current_app.logger.error('get_one_or_create failed for '+model+' '+kwargs+e)
-            flash(_("Unable to create "+model), 'error')
+            flash("Unable to create "+model, 'error')
             session.rollback()
             return session.query(model).filter_by(**kwargs).one(), False
 

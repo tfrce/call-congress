@@ -26,6 +26,7 @@ TARGET_BY_CHOICES = (
     ('zipcode', 'Zipcode'),
     ('lat_lon', 'Lat / Lon'),
     ('form_param', 'Form Parameter'),
+    ('custom', 'Custom')
 )
 
 ORDERING_CHOICES = (

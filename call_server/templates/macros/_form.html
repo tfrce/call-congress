@@ -30,7 +30,9 @@
             {{ subfield(class_ = 'form-control '+class_.get('field', '')) }} {{ subfield.label.text }}
         </label>
         {%- endfor %}
-        <a class="btn btn-default btn-xs radio-inline clear">Clear</a>
+        {% if class_.get('clear', False)%}
+            <a class="btn btn-default btn-xs radio-inline clear">Clear</a>
+        {%endif%}
         <span class="help-inline">{{ field.description }}</span>
         {% if field.errors -%}
             {% for error in field.errors -%}

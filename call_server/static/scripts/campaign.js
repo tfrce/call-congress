@@ -40,11 +40,16 @@ $(function(){
       'click .search-results .result': 'selectResult',
       'click .search-results .btn.close': 'closeSearch',
       
+      'change input[name="call_limit"]': 'callLimit',
+
       'submit form': 'validateForm'
     },
 
     initialize: function() {
       console.log('campaign form');
+
+      // clear nested choices until updated by client
+      if (!$('select.nested').val()) { $('select.nested').empty(); }
     },
 
     updateNestedChoices: function(event) {
@@ -84,13 +89,11 @@ $(function(){
     },
 
     targetBy: function(event) {
-      var selected = $(event.target).prop('checked');
-      if (selected === true) {
-        // disable "set target fields"
-        $('.set-target').find('input, select, .btn').prop('disabled', true);
+      var selected = $(event.target);
+      if (selected.val() !== "custom") {
+        $('.set-target').addClass('hidden');
       } else {
-        // re-enable
-        $('.set-target').find('input, select, .btn').prop('disabled', false);
+        $('.set-target').removeClass('hidden');
       }
     },
 
@@ -136,6 +139,9 @@ $(function(){
       if (campaign_type === 'state') {
         // hit Sunlight OpenStates
 
+        // TODO, request state metadata
+        // display latest_json_date to user
+
         $.ajax({
           url: CallPowerApp.SUNLIGHT_STATES_URL,
           data: {
@@ -179,13 +185,38 @@ $(function(){
 
     },
 
-    closeSearch: function(event) {
-      var dropdownMenu = $(event.target).parents('ul.dropdown-menu').remove();
+    closeSearch: function() {
+      var dropdownMenu = $('.search-results ul.dropdown-menu').remove();
     },
 
     selectResult: function(event) {
-      console.log($(event.target));
+      // pull json data out of data-object attr
+      var obj = $(event.target).data('object');
 
+      // re-save it with only the necessary fields as new <option>
+      var targetSet = $('select[name="target_set"]');
+      var option = $('<option value="'+obj.number+'">'+obj.name+'</option>');
+      targetSet.append(option);
+
+      // remove any <option>s without a value
+      _.each(targetSet.children('option'), function(o) {
+        console.log(o); console.log(o.value);
+        if (!o.value) { o.remove(); }
+      });
+
+      // if only one result, closeSearch
+      if ($('.search-results ul.dropdown-menu').children('.result').length <= 1) {
+        this.closeSearch();
+      }
+    },
+
+    callLimit: function(event) {
+      var callMaxGroup = $('input[name="call_maximum"]').parents('.form-group');
+      if ($(event.target).prop('checked')) {
+        callMaxGroup.removeClass('hidden');
+      } else {
+        callMaxGroup.addClass('hidden');
+      }
     },
 
     validateForm: function(event) {

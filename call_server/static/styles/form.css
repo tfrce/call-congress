@@ -40,6 +40,11 @@ input.form-control[type="radio"] {
     padding-top: 0;
 }
 
+.search-results .result span {
+    /* let js events pass through */
+    pointer-events: none;
+}
+
 fieldset.border {
     border: 1px groove #ddd;
     padding: 0 1.4em 1.4em 1.4em;

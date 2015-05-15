@@ -1,4 +1,5 @@
 US_STATES = (
+    ('', ''),
     ('AL', 'Alabama'),
     ('AK', 'Alaska'),
     ('AS', 'American Samoa'),
