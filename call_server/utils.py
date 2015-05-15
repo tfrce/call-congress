@@ -1,10 +1,38 @@
 # Misc utilities that are useful between models
+from flask import current_app, flash
 
 import itertools
 import json
 from collections import OrderedDict
 
 from flask import Markup
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import IntegrityError
+
+
+# near copy of django's get_or_create, modified from http://stackoverflow.com/a/21146492/264790
+def get_one_or_create(session,
+                      model,
+                      create_method='',
+                      create_method_kwargs=None,
+                      **kwargs):
+    """ get one model object from keyword parameters, or create one and save it
+    returns the object and boolean true if created"""
+    try:
+        return session.query(model).filter_by(**kwargs).one(), False
+    except NoResultFound:
+        kwargs.update(create_method_kwargs or {})
+        created = getattr(model, create_method, model)(**kwargs)
+        try:
+            session.add(created)
+            session.commit()
+            session.flush()
+            return created, True
+        except IntegrityError, e:
+            current_app.logger.error('get_one_or_create failed for '+model+' '+kwargs+e)
+            flash(_("Unable to create "+model), 'error')
+            session.rollback()
+            return session.query(model).filter_by(**kwargs).one(), False
 
 
 def convert_to_dict(obj):

@@ -12,7 +12,7 @@ from .constants import (CAMPAIGN_CHOICES, CAMPAIGN_NESTED_CHOICES,
                         EMPTY_CHOICES)
 from ..political_data.constants import US_STATES
 
-from .models import PhoneNumber
+from .models import TwilioPhoneNumber
 
 from ..utils import choice_items, choice_values, choice_values_flat
 
@@ -34,7 +34,7 @@ class CampaignForm(Form):
     no_limit = BooleanField(_('No Limit'))
 
     phone_numbers = QuerySelectMultipleField(_('Allocate Phone Numbers'),
-                                             query_factory=PhoneNumber.available_numbers)
+                                             query_factory=TwilioPhoneNumber.available_numbers)
     allow_call_in = BooleanField(_('Allow Call In'))
 
     submit = SubmitField(_('Next Step'))

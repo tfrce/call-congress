@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy_utils.types import phone_number
 
 from ..extensions import db
-from .constants import (CAMPAIGN_CHOICES, STRING_LEN)
+from .constants import (CAMPAIGN_CHOICES, STRING_LEN, TWILIO_SID_LENGTH)
 
 
 class Campaign(db.Model):
@@ -16,7 +16,7 @@ class Campaign(db.Model):
     allow_call_in = db.Column(db.Boolean)
 
     target_set = db.relationship(u'Target', secondary=u'campaign_target_sets', backref=db.backref('campaigns'))
-    phone_number_set = db.relationship(u'PhoneNumber', secondary=u'campaign_phone_numbers', backref=db.backref('campaigns'))
+    phone_number_set = db.relationship(u'TwilioPhoneNumber', secondary=u'campaign_phone_numbers', backref=db.backref('campaign'))
 
     created_time = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -49,11 +49,13 @@ class Target(db.Model):
         return self.name
 
 
-class PhoneNumber(db.Model):
+class TwilioPhoneNumber(db.Model):
     __tablename__ = 'campaign_phone'
 
     id = db.Column(db.Integer, primary_key=True)
-    phone = db.Column(phone_number.PhoneNumberType())
+    twilio_sid = db.Column(db.String(TWILIO_SID_LENGTH))
+    twilio_app = db.Column(db.String(TWILIO_SID_LENGTH))
+    number = db.Column(phone_number.PhoneNumberType())
 
     def __unicode__(self):
         return self.phone
