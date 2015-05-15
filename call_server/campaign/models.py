@@ -58,8 +58,8 @@ class TwilioPhoneNumber(db.Model):
     number = db.Column(phone_number.PhoneNumberType())
 
     def __unicode__(self):
-        return self.phone
+        return self.number.__unicode__()
 
     @classmethod
     def available_numbers(cls, limit=None):
-        return PhoneNumber.query.limit(limit)
+        return TwilioPhoneNumber.query.limit(limit)
