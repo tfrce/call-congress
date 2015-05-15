@@ -190,9 +190,8 @@
 
 - id: no2reauth
   numbers:
-    - 215-600-2215
-    - 202-759-7590
-    - 202-759-7597
+    - 202-759-7593
+    - 202-759-7591
   target_house: true
   target_senate: true
   target_house_first: false
