@@ -26,6 +26,10 @@ input.form-control[type="radio"] {
     height: auto;
 }
 
+.btn .glyphicon {
+    pointer-events: none;
+}
+
 .btn.radio-inline {
     padding-top: 0; /* reset bootstrap .radio-inline */
     margin-top: 7px; 
