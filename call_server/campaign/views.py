@@ -39,13 +39,13 @@ def new():
                            CAMPAIGN_NESTED_CHOICES=CAMPAIGN_NESTED_CHOICES)
 
 
-@campaign.route('/<int:user_id>/edit', methods=['GET', 'POST'])
+@campaign.route('/<int:campaign_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit():
-    return render_template('campaign/new.html')
+    return render_template('campaign/new.html', edit=True)
 
 
-@campaign.route('/<int:user_id>/record', methods=['GET', 'POST'])
+@campaign.route('/<int:campaign_id>/record', methods=['GET', 'POST'])
 @login_required
 def record():
     return render_template('campaign/record.html')
