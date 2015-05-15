@@ -8,43 +8,8 @@
 <h1>System Settings</h1>
 
 <div class="container" id="system">
-    <h2>{{ _('Phone Numbers') }}</h2>
-    <table class='table table-bordered table-hover'>
-        <thead>
-            <tr>
-                <th>{{ _('Number') }}</th>
-                <th>{{ _('Campaign') }}</th>
-                <th>{{ _('Dial In') }}</th>
-            </tr>
-        </thead>
-        {% for p in twilio_numbers %}
-        <tr>
-            <td>{{ p.number }} </td>
-            <td>{{ p.campaign }}</td>
-            <td>{{ p.campaign.allow_call_in }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-
-    <form class="form-inline" method="POST" action="{{url_for('admin.twilio_resync')}}">
-        <input id="csrf_token" name="csrf_token" type="hidden" value="{{csrf_token()}}">
-        <div class="form-group"><button type="submit" class="btn btn-warning">Resync</button></div>
-        <a class="btn btn-success" href="https://www.twilio.com/user/account/phone-numbers/search" target="_blank">Buy Another</a>
-    </form>
-    
-
-
-    <h2>Default Messages</h2>
-    <table class='table table-bordered table-hover'>
-        <thead>
-            <tr>
-                <th>{{ _('Type') }}</th>
-                <th>{{ _('Message') }}</th>
-            </tr>
-        <tr></tr>
-    </table>
-
-    <h2>Twilio Account</h2>
+    <fieldset class="border">
+    <legend>Twilio Account</legend>
     <div class="row">
         <div class="col-sm-6">
             <label class="control-label">Account SID:</label>
@@ -61,7 +26,45 @@
             </div>
         </div>
     </div>
+    </fieldset>
 
+    <fieldset class="border">
+    <legend>{{ _('Phone Numbers') }}</legend>
+    <table class='table table-bordered table-hover'>
+        <thead>
+            <tr>
+                <th>{{ _('Number') }}</th>
+                <th>{{ _('Campaign') }}</th>
+                <th>{{ _('Dial In') }}</th>
+            </tr>
+        </thead>
+        {% for p in twilio_numbers %}
+        <tr>
+            <td>{{ p.number }} </td>
+            <td>{{ p.campaign }}</td>
+            <td>{{ p.campaign.allow_call_in }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <form class="form-inline pull-right" method="POST" action="{{url_for('admin.twilio_resync')}}">
+        <input id="csrf_token" name="csrf_token" type="hidden" value="{{csrf_token()}}">
+        <div class="form-group"><button type="submit" class="btn btn-warning">Resync</button></div>
+        <a class="btn btn-success" href="https://www.twilio.com/user/account/phone-numbers/search" target="_blank">Buy Another</a>
+    </form>
+    </fieldset>
+
+
+    <fieldset class="border">
+    <legend>Default Messages</legend>
+    <table class='table table-bordered table-hover'>
+        <thead>
+            <tr>
+                <th>{{ _('Type') }}</th>
+                <th>{{ _('Message') }}</th>
+            </tr>
+        <tr></tr>
+    </table>
+    </fieldset>
 </div>
 {% endblock %}
 
