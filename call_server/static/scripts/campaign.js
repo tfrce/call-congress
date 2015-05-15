@@ -9,7 +9,7 @@ $(function(){
         this.SUNLIGHT_CONGRESS_URL = "https://congress.api.sunlightfoundation.com/legislators/";
         this.SUNLIGHT_STATES_URL = "http://openstates.org/api/v1/legislators/";
 
-        this.campaignForm = new FormView();
+        this.campaignForm = new CampaignFormView();
     },
   };
 
@@ -26,7 +26,7 @@ $(function(){
 
   });
 
-  var FormView = Backbone.View.extend({
+  var CampaignFormView = Backbone.View.extend({
     el: $('form#campaign'),
 
     events: {
