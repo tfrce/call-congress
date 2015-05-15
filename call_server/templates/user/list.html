@@ -3,15 +3,16 @@
 
 {% block body %}
 <div class="container">
-    <h2 class="pull-left">{{ _('Manage Users') }}</h2>
+    <fieldset class="border">
+    <legend>{{ _('Manage Users') }}</legend>
     <table class='table table-bordered table-hover'>
         <thead>
             <tr>
-                <th>{{ _('Name') }}</th>
+                <th>{{ _('Username') }}</th>
                 <th>{{ _('Email') }}</th>
                 <th>{{ _('Phone') }}</th>
                 <th>{{ _('Role') }}</th>
-                <th>{{ _('Last Accessed') }}</th>
+                <th>{{ _('Last Login') }}</th>
                 <th>{{ _('Status') }}</th>
                 <th>{{ _('Edit') }}</th>
             </tr>
@@ -22,7 +23,7 @@
             <td>{{ u.email }}</td>
             <td>{{ u.phone }}</td>
             <td>{{ u.role }}</td>
-            <td>{{ u.last_accessed }}</td>
+            <td>{{ u.last_accessed.strftime('%Y-%m-%d') }}</td>
             <td>{{ u.status }}</td>
             <td><a href="{{ url_for('user.profile', user_id=u.id) }}">{{ _('Profile') }}</a> /
                 <a href="{{ url_for('user.role', user_id=u.id) }}">{{ _('Role') }}</a></td>
@@ -30,5 +31,6 @@
         </tr>
         {% endfor %}
     </table>
+    </fieldset>
 </div>
 {% endblock %}

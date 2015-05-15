@@ -1,4 +1,5 @@
 from uuid import uuid4
+from datetime import datetime
 
 from flask import (Blueprint, render_template, current_app, request,
                    flash, url_for, redirect, session, abort)
@@ -19,9 +20,8 @@ user = Blueprint('user', __name__)
 @login_required
 @admin_required
 def index():
-    page = int(request.args.get('page', 1))
-    pagination = User.query.paginate(page=page, per_page=10)
-    return render_template('user/list.html', pagination=pagination)
+    users = User.query.all()
+    return render_template('user/list.html', users=users)
 
 
 @user.route('/user/login', methods=['GET', 'POST'])
@@ -42,6 +42,11 @@ def login():
                 flash(_("Logged in"), 'success')
             else:
                 flash(_("Unable to log in"), 'warning')
+
+            user.last_accessed = datetime.now()
+            db.session.add(user)
+            db.session.commit()
+
             return redirect(form.next.data or url_for('admin.dashboard'))
         else:
             flash(_('Sorry, invalid login'), 'warning')
@@ -123,7 +128,7 @@ def change_password():
               "success")
         return redirect(url_for("user.login"))
 
-    return render_template("user/change_password.html", form=form)
+    return render_template("user/change_password.html", user=user, form=form)
 
 
 @user.route('/user/reset_password', methods=['GET', 'POST'])
@@ -158,10 +163,8 @@ def reset_password():
 @login_required
 def profile(user_id):
     if user_id:
-        edit = True
         user = User.query.get(user_id)
     else:
-        edit = False
         user = User.query.filter_by(name=current_user.name).first_or_404()
 
     form = UserForm(obj=user,
@@ -176,7 +179,7 @@ def profile(user_id):
 
         flash('User profile updated.', 'success')
 
-    return render_template('user/profile.html', user=user, form=form, edit=edit)
+    return render_template('user/profile.html', user=user, form=form)
 
 
 

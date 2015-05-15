@@ -3,11 +3,6 @@
 
 {% block body %}
 <div class="profile">
-    <h2>{{ _('User Profile') }} <small>&ndash; {{user.name}}</small></h2>
-    {% if not edit %}
-    {{ render_form(url_for('user.profile'), form) }}
-    {% else %}
-    {{ render_form(url_for('user.profile', user_id=user.id), form) }}
-    {% endif %}
+    {{ render_form(url_for('user.profile', user_id=user.id), form, legend=("Update Profile - "+user.name), skip_fields=['password','password_confirm','name']) }}
 </div>
 {% endblock %}

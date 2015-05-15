@@ -36,14 +36,12 @@ class UserRoleForm(Form):
 
 class UserForm(Form):
     next = HiddenField()
-    email = EmailField(_('Email'), [Required(), Email()],
-                       description=_("What's your email address?"))
+    email = EmailField(_('Email'), [Required(), Email()])
     password = PasswordField(_('Password'), [Required(), Length(PASSWORD_LEN_MIN, PASSWORD_LEN_MAX)],
                              description=_('%s characters or more' % PASSWORD_LEN_MIN))
-    name = TextField(_('Choose your username'), [Required(), Length(USERNAME_LEN_MIN, USERNAME_LEN_MAX)],
-                     description=_("Don't worry. you can change it later."))
-    phone = PhoneNumberField(_('Phone Number'),
-                             description=_("What's your phone number?"))
+    password_confirm = PasswordField(u'Password Confirm', [EqualTo('password', message="Passwords don't match")])
+    name = TextField(_('Username'), [Required(), Length(USERNAME_LEN_MIN, USERNAME_LEN_MAX)])
+    phone = PhoneNumberField(_('Phone Number'), description="Optional")
     submit = SubmitField(_('Save'))
 
     def validate_name(self, field):
