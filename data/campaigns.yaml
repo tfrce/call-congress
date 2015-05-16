@@ -195,9 +195,9 @@
   target_house: true
   target_senate: true
   target_house_first: false
-  msg_intro: https://tfrce.s3.amazonaws.com/no2reauth/msg_intro.mp3
+  msg_intro: https://s3.amazonaws.com/no2reauth/msg_intro.mp3
   msg_ask_zip: https://tfrce.s3.amazonaws.com/no2reauth/msg_ask_zip.mp3
-  msg_call_block_intro: https://tfrce.s3.amazonaws.com/no2reauth/msg_callblock_intro_calltool.mp3
+  msg_call_block_intro: https://s3.amazonaws.com/no2reauth/msg_callblock_intro_calltool.mp3
   msg_rep_intro: Connecting you to {{name}}. Press star once you're done.
   msg_between_thanks: http://tfrce.s3.amazonaws.com/fight215/msg_between_thanks.mp3
-  msg_final_thanks: https://tfrce.s3.amazonaws.com/no2reauth/msg_final_thanks.mp3
+  msg_final_thanks: https://s3.amazonaws.com/no2reauth/msg_final_thanks.mp3
