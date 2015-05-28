@@ -1,4 +1,4 @@
-{% from "macros/_form.html" import render_field, render_label, render_input %}
+{% from "macros/_form.html" import render_field, render_label, render_input, render_button %}
 
 {% set label_width = 'col-sm-2' %}
 {% set control_width = 'col-sm-6' %}
@@ -97,7 +97,16 @@
         {{render_field_default(form.allow_call_in, offset='col-sm-offset-2') }}
     </fieldset>
 
-    {{render_field(form.submit, {'group':'pull-right'}) }}
+    <div class="form-group">
+        <div class="form-actions">
+            {% if edit %}
+                <a class="btn btn-warning" href="status">Edit Status</a>
+            {%endif%}
+            <div class="pull-right">
+                {{render_button(form.submit, {'field':'btn-success', 'icon':'arrow-right'}) }}
+            </div>
+        </div>
+    </div>
 </form>
 
 {% endblock %}

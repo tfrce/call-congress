@@ -34,6 +34,15 @@ ORDERING_CHOICES = (
     ('shuffle', 'Shuffle'),
 )
 
+ARCHIVED = 0
+PAUSED = 1
+LIVE = 2
+CAMPAIGN_STATUS = {
+    ARCHIVED: 'archived',
+    PAUSED: 'paused',
+    LIVE: 'live',
+}
+
 # empty set of choices, for filling in on client-side
 EMPTY_CHOICES = {'': ''}
 

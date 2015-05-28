@@ -61,9 +61,23 @@
 {% macro render_action(field, class_={}) %}
 <div class="form-group {{class_.get('group', '')}}">
     <div class="form-actions">
-        {{ field(class_="btn btn-primary "+class_.get('field', '')) }}
+        <button class="btn btn-primary {{class_.get('field', '')}}" name="{{field.name}}">
+            {{field.label.text}}
+            {% if class_.get('icon','') %}
+                <span class="glyphicon glyphicon-{{class_.get('icon')}}"></span>
+            {% endif %}
+        </button>
     </div>
 </div>
+{% endmacro %}
+
+{% macro render_button(field, class_={}) %}
+    <button class="btn btn-primary {{class_.get('field', '')}}" name="{{field.name}}" value="{{field.name}}">
+        {{field.label.text}}
+        {% if class_.get('icon','') %}
+            <span class="glyphicon glyphicon-{{class_.get('icon')}}"></span>
+        {% endif %}
+    </button>
 {% endmacro %}
 
 {% macro render_field(field, class_={}) %}

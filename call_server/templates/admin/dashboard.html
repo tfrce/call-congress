@@ -17,16 +17,16 @@
                 <th>Type</th>
                 <th>Targets</th>
                 <th>Calls</th>
-                <th>Live</th>
+                <th>Status</th>
             </tr>
         </thead>
         {% for c in campaigns %}
         <tr>
-            <td>{{c.title}}</td>
-            <td>{{c.type}}</td>
-            <td>{{c.targets}}</td>
+            <td>{{c.name}}</td>
+            <td>{{c.campaign_type_display()}}</td>
+            <td>{{c.target_set}}</td>
             <td>{{c.calls}}</td>
-            <td>{{c.live}}</td>
+            <td><span class="glyphicon {% if c.status == 'live' %}glyphicon-play{%elif c.status=='paused'%}glyphicon-pause{%else%}glyphicon-stop{%endif%}"></td>
         </tr>
         {%endfor%}
     </table>

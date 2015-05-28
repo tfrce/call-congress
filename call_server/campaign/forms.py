@@ -10,6 +10,7 @@ from wtforms.validators import Required, Optional, AnyOf, NumberRange
 
 from .constants import (CAMPAIGN_CHOICES, CAMPAIGN_NESTED_CHOICES,
                         TARGET_BY_CHOICES, ORDERING_CHOICES,
+                        CAMPAIGN_STATUS,
                         EMPTY_CHOICES)
 from ..political_data.constants import US_STATES
 
@@ -68,3 +69,11 @@ class CampaignRecordForm(Form):
     success_endpoint = TextField(_('Success Endpoint'))
     form_id = TextField(_('Form ID'))
     display_script_id = TextField(_('Display Script ID'))
+
+    submit = SubmitField(_('Save and Activate'))
+
+
+class CampaignStatusForm(Form):
+    status_code = RadioField(_("Status"), [AnyOf([str(val) for val in CAMPAIGN_STATUS.keys()])],
+                             choices=[(str(val), label) for val, label in CAMPAIGN_STATUS.items()])
+    submit = SubmitField(_('Save'))

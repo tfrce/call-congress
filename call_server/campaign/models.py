@@ -4,7 +4,8 @@ from sqlalchemy_utils.types import phone_number
 
 from ..extensions import db
 from ..utils import convert_to_dict, choice_values_flat
-from .constants import (CAMPAIGN_CHOICES, CAMPAIGN_NESTED_CHOICES, STRING_LEN, TWILIO_SID_LENGTH)
+from .constants import (CAMPAIGN_CHOICES, CAMPAIGN_NESTED_CHOICES, STRING_LEN, TWILIO_SID_LENGTH,
+                        CAMPAIGN_STATUS, PAUSED)
 
 
 class Campaign(db.Model):
@@ -21,6 +22,12 @@ class Campaign(db.Model):
 
     created_time = db.Column(db.DateTime, default=datetime.utcnow)
 
+    status_code = db.Column(db.SmallInteger, default=PAUSED)
+
+    @property
+    def status(self):
+        return CAMPAIGN_STATUS.get(self.status_code,'')
+
     def __unicode__(self):
         return self.name
 
@@ -32,7 +39,6 @@ class Campaign(db.Model):
             sub = convert_to_dict(choice_values_flat(CAMPAIGN_NESTED_CHOICES))[self.campaign_subtype]
             val = '%s - %s' % (val, sub)
         return val
-
 
     @classmethod
     def duplicate(self):

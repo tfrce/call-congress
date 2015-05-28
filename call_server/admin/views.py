@@ -6,7 +6,8 @@ from twilio.rest import TwilioRestClient
 
 from ..extensions import db
 
-from ..campaign.models import TwilioPhoneNumber
+from ..campaign.models import TwilioPhoneNumber, Campaign
+from ..campaign.constants import PAUSED
 from ..utils import get_one_or_create
 
 admin = Blueprint('admin', __name__, url_prefix='/admin')
@@ -15,7 +16,8 @@ admin = Blueprint('admin', __name__, url_prefix='/admin')
 @admin.route('/')
 @login_required
 def dashboard():
-    return render_template('admin/dashboard.html')
+    campaigns = Campaign.query.filter(Campaign.status_code >= PAUSED)
+    return render_template('admin/dashboard.html', campaigns=campaigns)
 
 
 @admin.route('/statistics')
