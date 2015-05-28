@@ -5,6 +5,10 @@
 <div class="container">
     <fieldset class="border">
     <legend>{{ _('Manage Users') }}</legend>
+    <div class="pull-right">
+        <a class="btn btn-success" href="{{ url_for('user.invite') }}"><strong>{{ _('Invite') }} +</strong></a>
+    </div>
+
     <table class='table table-bordered table-hover'>
         <thead>
             <tr>
@@ -23,14 +27,18 @@
             <td>{{ u.email }}</td>
             <td>{{ u.phone }}</td>
             <td>{{ u.role }}</td>
-            <td>{{ u.last_accessed.strftime('%Y-%m-%d') }}</td>
+            <td>{%if u.last_accessed%}{{ u.last_accessed.strftime('%Y-%m-%d') }}{%else%}Never{%endif%}</td>
             <td>{{ u.status }}</td>
-            <td><a href="{{ url_for('user.profile', user_id=u.id) }}">{{ _('Profile') }}</a> /
-                <a href="{{ url_for('user.role', user_id=u.id) }}">{{ _('Role') }}</a></td>
+            <td><a href="{{ url_for('user.profile', user_id=u.id) }}">{{ _('Profile') }}</a>
+                / <a href="{{ url_for('user.role', user_id=u.id) }}">{{ _('Role') }}</a>
+                {% if current_user.is_admin() %}
+                / <a href="{{ url_for('user.remove', user_id=u.id) }}">{{ _('Remove') }}</a>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
     </table>
+
     </fieldset>
 </div>
 {% endblock %}

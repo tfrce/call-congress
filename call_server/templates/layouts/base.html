@@ -45,7 +45,7 @@
             {% if current_user.is_authenticated() %}
             <li><a href="{{ url_for('admin.dashboard') }}">{{ _('Admin') }}</a></li>
             {% else %}
-            <li><a href="{{ url_for('admin.dashboard') }}">{{ _('Login') }}</a></li>
+            <li><a href="{{ url_for('user.login') }}">{{ _('Login') }}</a></li>
             {% endif %}
           </ul>
         </div><!-- /.navbar-collapse -->

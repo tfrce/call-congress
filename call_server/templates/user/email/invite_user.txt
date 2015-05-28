@@ -1,0 +1,4 @@
+{{ project }} has created an account for you to administer campaigns.
+
+Click this link to log in and create your user profile.
+{{ url }}

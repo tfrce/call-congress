@@ -1,10 +1,10 @@
 {% from "macros/_form.html" import render_form %}
 
-{% set page_title = _("Sign in") %}
+{% set page_title = _('Sign up') %}
 
 {% extends "layouts/base_admin.html" %}
 
 {% block body %}
-<h2>{{ _('Sign in') }}</h2>
-{{ render_form(url_for('user.login'), form)}}
+<h2>{{ _('Invite User') }}</h2>
+{{ render_form(url_for('user.invite'), form) }}
 {% endblock %}

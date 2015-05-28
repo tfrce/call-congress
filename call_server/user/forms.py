@@ -37,10 +37,10 @@ class UserRoleForm(Form):
 class UserForm(Form):
     next = HiddenField()
     email = EmailField(_('Email'), [Required(), Email()])
+    name = TextField(_('Username'), [Required(), Length(USERNAME_LEN_MIN, USERNAME_LEN_MAX)])
     password = PasswordField(_('Password'), [Required(), Length(PASSWORD_LEN_MIN, PASSWORD_LEN_MAX)],
                              description=_('%s characters or more' % PASSWORD_LEN_MIN))
     password_confirm = PasswordField(u'Password Confirm', [EqualTo('password', message="Passwords don't match")])
-    name = TextField(_('Username'), [Required(), Length(USERNAME_LEN_MIN, USERNAME_LEN_MAX)])
     phone = PhoneNumberField(_('Phone Number'), description="Optional")
     submit = SubmitField(_('Save'))
 
@@ -53,9 +53,21 @@ class UserForm(Form):
             raise ValidationError(_('This email is already registered'))
 
 
-class RecoverPasswordForm(Form):
-    email = EmailField(_('Your email'), [Email()])
+class InviteUserForm(Form):
+    name = TextField(_('Username'), [Required(), Length(USERNAME_LEN_MIN, USERNAME_LEN_MAX)])
+    email = EmailField(_('Email'), [Email()])
     submit = SubmitField(_('Send instructions'))
+
+
+class RecoverPasswordForm(Form):
+    email = EmailField(_('Email'), [Email()])
+    submit = SubmitField(_('Send instructions'))
+
+
+class RemoveUserForm(Form):
+    username = HiddenField()
+    confirm_username = TextField(_('Confirm Username'), [EqualTo('username', message="Usernames don't match")])
+    submit = SubmitField('Confirm Removal')
 
 
 class ChangePasswordForm(Form):
