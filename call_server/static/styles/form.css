@@ -28,6 +28,10 @@ input.form-control[type="radio"] {
     width: auto;
 }
 
+span.input-group-addon.glyphicon { 
+    top: 0;
+}
+
 .btn .glyphicon {
     pointer-events: none;
 }
