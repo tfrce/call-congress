@@ -88,12 +88,20 @@
         {{render_field_default(form.target_ordering) }}
 
         {{render_field_default(form.call_limit, offset='col-sm-offset-2') }}
-        {{render_field_default(form.call_maximum, group="hidden") }}
+
+        {% with %}
+        {% if form.call_maximum.data > 0 %}
+            {% set call_max_display = '' %}
+        {% else %}
+            {% set call_max_display = 'hidden' %}
+        {% endif %}
+        {{render_field_default(form.call_maximum, group=call_max_display) }}
+        {% endwith %}
     </fieldset>
 
     <fieldset class="border">
         <legend>Phone Numbers</legend>
-        {{render_field_default(form.phone_numbers) }}
+        {{render_field_default(form.phone_number_set) }}
         {{render_field_default(form.allow_call_in, offset='col-sm-offset-2') }}
     </fieldset>
 

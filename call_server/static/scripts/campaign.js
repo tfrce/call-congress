@@ -68,7 +68,7 @@ $(function(){
         nested_field.append(option);
       });
 
-      // show/hide state select
+      // special case, show/hide state select
       if (val === 'state') {
         $('select[name="campaign_state"]').removeClass('hidden');
       } else {
@@ -216,6 +216,7 @@ $(function(){
         callMaxGroup.removeClass('hidden');
       } else {
         callMaxGroup.addClass('hidden');
+        $('input[name="call_maximum"]').val('');
       }
     },
 

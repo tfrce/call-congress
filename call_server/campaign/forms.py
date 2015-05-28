@@ -29,18 +29,18 @@ class CampaignForm(Form):
 
     target_by = RadioField(_('Target By'), [Optional()], choices=choice_items(TARGET_BY_CHOICES),
                            default=TARGET_BY_CHOICES[0][0])
-    target_set = SelectMultipleField(_('Set Targets'), [Optional()] )
+    target_set = SelectMultipleField(_('Set Targets'), [Optional()])
     target_ordering = RadioField(_('Order'), choices=choice_items(ORDERING_CHOICES),
                                  default=ORDERING_CHOICES[0][0])
 
     call_limit = BooleanField(_('Limit Maximum Calls'), [Optional()], default=False)
     call_maximum = IntegerField(_('Call Maximum'), [Optional(), NumberRange(min=0)])
 
-    phone_numbers = QuerySelectMultipleField(_('Allocate Phone Numbers'),
+    phone_number_set = QuerySelectMultipleField(_('Allocate Phone Numbers'),
                                              query_factory=TwilioPhoneNumber.available_numbers)
     allow_call_in = BooleanField(_('Allow Call In'))
 
-    submit = SubmitField(_('Next Step'))
+    submit = SubmitField(_('Edit Audio'))
 
     def validate(self):
         passes_default_validation = Form.validate(self)

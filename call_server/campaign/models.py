@@ -12,15 +12,20 @@ class Campaign(db.Model):
     __tablename__ = 'campaign_campaign'
 
     id = db.Column(db.Integer, primary_key=True)
+    created_time = db.Column(db.DateTime, default=datetime.utcnow)
+
     name = db.Column(db.String(STRING_LEN), nullable=False, unique=True)
     campaign_type = db.Column(db.String(STRING_LEN))
+    campaign_state = db.Column(db.String(STRING_LEN))
     campaign_subtype = db.Column(db.String(STRING_LEN))
-    allow_call_in = db.Column(db.Boolean)
 
+    target_by = db.Column(db.String(STRING_LEN))
     target_set = db.relationship(u'Target', secondary=u'campaign_target_sets', backref=db.backref('campaigns'))
-    phone_number_set = db.relationship(u'TwilioPhoneNumber', secondary=u'campaign_phone_numbers', backref=db.backref('campaign'))
+    target_ordering = db.Column(db.String(STRING_LEN))
 
-    created_time = db.Column(db.DateTime, default=datetime.utcnow)
+    allow_call_in = db.Column(db.Boolean)
+    phone_number_set = db.relationship(u'TwilioPhoneNumber', secondary=u'campaign_phone_numbers', backref=db.backref('campaign'))
+    call_maximum = db.Column(db.SmallInteger, nullable=True)
 
     status_code = db.Column(db.SmallInteger, default=PAUSED)
 
@@ -32,12 +37,18 @@ class Campaign(db.Model):
         return self.name
 
     def campaign_type_display(self):
+        campaign_choices = convert_to_dict(CAMPAIGN_CHOICES)
+        campaign_subchoices = convert_to_dict(choice_values_flat(CAMPAIGN_NESTED_CHOICES))
         val = ''
         if self.campaign_type:
-            val = convert_to_dict(CAMPAIGN_CHOICES)[self.campaign_type]
+            val = campaign_choices[self.campaign_type]
         if self.campaign_subtype:
-            sub = convert_to_dict(choice_values_flat(CAMPAIGN_NESTED_CHOICES))[self.campaign_subtype]
+            sub = campaign_subchoices[self.campaign_subtype]
             val = '%s - %s' % (val, sub)
+            if self.campaign_type == 'state':
+                #special case, show specific state
+                val = '%s - %s' % (self.campaign_state, sub)
+
         return val
 
     @classmethod
