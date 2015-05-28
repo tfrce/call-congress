@@ -22,7 +22,7 @@ from .call import call
 from .campaign import campaign
 from .api import api
 
-from extensions import cache, db, babel, assets, login_manager, csrf
+from extensions import cache, db, babel, assets, login_manager, csrf, mail
 
 DEFAULT_BLUEPRINTS = (
     site,
@@ -86,6 +86,7 @@ def init_extensions(app):
     babel.init_app(app)
     cache.init_app(app)
     csrf.init_app(app)
+    mail.init_app(app)
     login_manager.init_app(app)
 
     if app.config.get('DEBUG'):

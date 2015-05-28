@@ -34,6 +34,8 @@ class DefaultConfig(object):
 
     SUNLIGHT_API_KEY = os.environ.get('SUNLIGHT_API_KEY')
 
+    MAIL_SERVER = 'localhost'
+
 
 class ProductionConfig(DefaultConfig):
     DEBUG = False
@@ -47,8 +49,11 @@ class ProductionConfig(DefaultConfig):
         os.environ.get('TWILIO_AUTH_TOKEN'))
     TW_NUMBER = os.environ.get('TWILIO_NUMBER')
 
-    SECRET_KEY = os.environ.get('SECRET_KEY')
-    SENTRY_DSN = os.environ.get('SENTRY_DSN')
+    MAIL_SERVER = os.environ.get('MAIL_SERVER')
+    MAIL_PORT = os.environ.get('MAIL_PORT')
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
 
     SQLALCHEMY_POOL_RECYCLE = 60 * 60  # 1 hour
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI')
@@ -62,6 +67,10 @@ class DevelopmentConfig(DefaultConfig):
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     SERVER_NAME = 'localhost:5000'
     SECRET_KEY = os.environ.get('SECRET_KEY', 'NotARealSecretKey,YouShouldSetOneInYour.Env')
+
+    MAIL_DEBUG = True
+    MAIL_PORT = 1025
+    MAIL_DEFAULT_SENDER = 'debug'
 
 
 class TestingConfig(DefaultConfig):
