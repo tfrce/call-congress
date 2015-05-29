@@ -22,10 +22,17 @@ CAMPAIGN_NESTED_CHOICES = (
     (CUSTOM, ()),
 )
 
+# these types of campaigns cannot be looked up via api
+# default to the custom target interface
+CUSTOM_CAMPAIGN_CHOICES = [
+    'executive.office',
+    'local',
+    'custom'
+]
+
 TARGET_BY_CHOICES = (
     ('zipcode', 'Zipcode'),
     ('lat_lon', 'Lat / Lon'),
-    ('form_param', 'Form Parameter'),
     ('custom', 'Custom')
 )
 
