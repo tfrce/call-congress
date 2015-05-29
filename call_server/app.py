@@ -138,6 +138,7 @@ def configure_assets(app):
                        'bower_components/bootstrap/dist/js/bootstrap.min.js',
                        'bower_components/underscore/underscore-min.js',
                        'bower_components/backbone/backbone.js',
+                       'bower_components/html.sortable/dist/html.sortable.min.js',
                        filters='rjsmin', output='dist/js/vendor.js')
     assets.register('vendor_js', vendor_js)
 
