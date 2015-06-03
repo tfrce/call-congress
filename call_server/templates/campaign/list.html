@@ -5,7 +5,7 @@
 <div class="container">
     <h2 class="pull-left">{{ _('Manage Campaigns') }}</h2>
     <div class="pull-right">
-        <a class="btn btn-success" href="{{ url_for('campaign.new') }}"><strong>{{ _('Add') }} +</strong></a>
+        <a class="btn btn-success" href="{{ url_for('campaign.form') }}"><strong>{{ _('Add') }} +</strong></a>
     </div>
     <table class="table" id="campaigns-list">
         <thead>
@@ -25,7 +25,7 @@
             <td>{{c.target_set}}</td>
             <td>{{c.calls}}</td>
             <td><span class="glyphicon {% if c.status == 'live' %}glyphicon-play{%elif c.status=='paused'%}glyphicon-pause{%else%}glyphicon-stop{%endif%}"></td>
-            <td><a href="{{url_for('campaign.edit', campaign_id=c.id)}}">edit</a> /
+            <td><a href="{{url_for('campaign.form', campaign_id=c.id)}}">edit</a> /
                 <a href="{{url_for('campaign.copy', campaign_id=c.id)}}">copy</a>
             </td>
         </tr>
