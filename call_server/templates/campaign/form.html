@@ -72,16 +72,18 @@
                     </span>
                 </div>
 
-                {% with %}
-                {% set field=form.target_set %}
-                {{ field(class_="form-control voffset-10") }}
-                <span class="help-inline">{{ field.description }}</span>
-                    {% if field.errors -%}
-                        {% for error in field.errors -%}
+                <!-- hidden set of inputs -->
+                <div class="hidden-target-set">
+                    <input type="hidden" name="target_set[]" value="" />
+                </div>
+
+                <ol class="target-list list-group sortable hidden"></ol>
+                <span class="help-inline">{{ form.target_set.description }}</span>
+                    {% if form.target_set.errors -%}
+                        {% for error in form.target_set.errors -%}
                         <span class="help-block error">{{ error }}</span>
                         {%- endfor %}
                     {%- endif %}
-                {% endwith %}
             </div>
         </div>
 
@@ -135,6 +137,17 @@
             <span class="text"><%= data.title %> <%= data.first_name %> <%= data.last_name %> (<%= data.party %>-<%= data.state %>)</span>
             <span class="phone"><%= data.phone %></span>
         </a>
+    </li>
+</script>
+
+<script type="text/template" name="target-list-item">
+    <li class="list-group-item">
+        <span class="text"><%= data.name %></span>
+        <span class="phone"><%= data.number %></span>
+
+        <div class="pull-right">
+            <span class="glyphicon glyphicon-remove remove"></span>
+        </div>
     </li>
 </script>
 

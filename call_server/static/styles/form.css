@@ -51,6 +51,15 @@ span.input-group-addon.glyphicon {
     pointer-events: none;
 }
 
+.target-list { padding-top: 10px; }
+.target-list li.list-group-item {
+    display: list-item;
+    cursor: move;
+}
+.target-list li span.glyphicon-remove {
+    cursor: default;
+}
+
 fieldset.border {
     border: 1px groove #ddd;
     padding: 0 1.4em 1.4em 1.4em;

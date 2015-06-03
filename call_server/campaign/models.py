@@ -20,7 +20,9 @@ class Campaign(db.Model):
     campaign_subtype = db.Column(db.String(STRING_LEN))
 
     target_by = db.Column(db.String(STRING_LEN))
-    target_set = db.relationship(u'Target', secondary=u'campaign_target_sets', backref=db.backref('campaigns'))
+    target_set = db.relationship(u'Target', secondary=u'campaign_target_sets',
+                                 order_by='campaign_target_sets.c.order',
+                                 backref=db.backref('campaigns'))
     target_ordering = db.Column(db.String(STRING_LEN))
 
     allow_call_in = db.Column(db.Boolean)
@@ -31,7 +33,7 @@ class Campaign(db.Model):
 
     @property
     def status(self):
-        return CAMPAIGN_STATUS.get(self.status_code,'')
+        return CAMPAIGN_STATUS.get(self.status_code, '')
 
     def __unicode__(self):
         return self.name
@@ -64,7 +66,8 @@ class Campaign(db.Model):
 t_campaign_target_sets = db.Table(
     u'campaign_target_sets',
     db.Column(u'campaign_id', db.ForeignKey('campaign_campaign.id')),
-    db.Column(u'target_id', db.ForeignKey('campaign_target.id'))
+    db.Column(u'target_id', db.ForeignKey('campaign_target.id')),
+    db.Column(u'order', db.Integer()),
 )
 
 t_campaign_phone_numbers = db.Table(

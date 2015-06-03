@@ -30,7 +30,7 @@ $(function(){
     el: $('form#campaign'),
 
     events: {
-      'change select#campaign_type':  'updateNestedChoices',
+      'change select#campaign_type':  'updateCampaignTypeChoices',
       'click a.radio-inline.clear': 'clearRadioChoices',
       
       'change input[name="target_by"]': 'targetBy',
@@ -39,6 +39,7 @@ $(function(){
       'click .input-group#target_search button': 'targetSearch',
       'click .search-results .result': 'selectResult',
       'click .search-results .btn.close': 'closeSearch',
+      'click .target-list .list-group-item span.remove': 'removeTargetItem',
       
       'change input[name="call_limit"]': 'callLimit',
 
@@ -50,12 +51,24 @@ $(function(){
 
       // clear nested choices until updated by client
       if (!$('select.nested').val()) { $('select.nested').empty(); }
+
+      // display targeting fields
+      this.targetBy();
+
+      // 
+      this.updateCampaignTypeChoices();
+
+      // make target_set options sortable
+      $('select[name="target_set"]').sortable({
+        items: 'li' ,
+        placeholder : '<li></li>'
+      });
     },
 
-    updateNestedChoices: function(event) {
-      // updates sibling "nested" field with available choices from data-attr
-      var field = $(event.target);
-      var nested_field = field.siblings('.nested');
+    updateCampaignTypeChoices: function() {
+      // updates campaign_subtype with available choices from data-attr
+      var field = $('select#campaign_type');
+      var nested_field = $('select#campaign_subtype');
       nested_field.empty();
 
       var choices = nested_field.data('nested-choices');
@@ -88,8 +101,8 @@ $(function(){
       buttons.attr('checked',false).trigger('change'); //TODO, debounce this?
     },
 
-    targetBy: function(event) {
-      var selected = $(event.target);
+    targetBy: function() {
+      var selected = $('input[name="target_by"]:checked');
       if (selected.val() !== "custom") {
         $('.set-target').addClass('hidden');
       } else {
@@ -168,6 +181,10 @@ $(function(){
       }
       
       var dropdownMenu = renderTemplate("search-results-dropdown");
+      if (results.length === 0) {
+        dropdownMenu.append('<li class="result close"><a>No results</a></li>');
+      }
+
       _.each(results, function(i) {
         var li = renderTemplate("search-results-item", i);
         if (i.phone === undefined && i.offices) {
@@ -180,9 +197,8 @@ $(function(){
     },
 
     errorSearchResults: function(response) {
-      // show bootstrap warning panel
+      // TODO: show bootstrap warning panel
       console.log(response);
-
     },
 
     closeSearch: function() {
@@ -190,24 +206,31 @@ $(function(){
     },
 
     selectResult: function(event) {
-      // pull json data out of data-object attr
       var obj = $(event.target).data('object');
+      // pull json data out of data-object attr
 
-      // re-save it with only the necessary fields as new <option>
-      var targetSet = $('select[name="target_set"]');
-      var option = $('<option value="'+obj.number+'">'+obj.name+'</option>');
-      targetSet.append(option);
+      // save to display list
+      var targetList = $('ol.target-list');
+      var listItem = renderTemplate("target-list-item", obj);
+      targetList.append(listItem);
+      targetList.sortable('reload'); // reset sortable
+      targetList.removeClass('hidden');
 
-      // remove any <option>s without a value
-      _.each(targetSet.children('option'), function(o) {
-        console.log(o); console.log(o.value);
-        if (!o.value) { o.remove(); }
-      });
+      // also to hidden input set
+      var targetSet = $('.hidden-target-set');
+      var hiddenItem = $("<input type='hidden' name='target_set[]' value='"+JSON.stringify(obj)+"' />");
+      targetSet.append(hiddenItem);
 
       // if only one result, closeSearch
       if ($('.search-results ul.dropdown-menu').children('.result').length <= 1) {
         this.closeSearch();
       }
+    },
+
+    removeTargetItem: function(event) {
+      console.log('remove');
+      $(event.target).parents('li.list-group-item').remove();
+      // also remove it from 
     },
 
     callLimit: function(event) {
