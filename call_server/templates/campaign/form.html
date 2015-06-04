@@ -77,7 +77,7 @@
                     <input type="hidden" name="target_set[]" value="" />
                 </div>
 
-                <ol class="target-list list-group sortable hidden"></ol>
+                <ol class="target-list list-group sortable hide-initial"></ol>
                 <span class="help-inline">{{ form.target_set.description }}</span>
                     {% if form.target_set.errors -%}
                         {% for error in form.target_set.errors -%}

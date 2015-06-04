@@ -83,9 +83,9 @@ $(function(){
 
       // special case, show/hide state select
       if (val === 'state') {
-        $('select[name="campaign_state"]').removeClass('hidden');
+        $('select[name="campaign_state"]').show();
       } else {
-        $('select[name="campaign_state"]').addClass('hidden');
+        $('select[name="campaign_state"]').hide();
       }
 
       // disable field if no choices present
@@ -104,9 +104,9 @@ $(function(){
     targetBy: function() {
       var selected = $('input[name="target_by"]:checked');
       if (selected.val() !== "custom") {
-        $('.set-target').addClass('hidden');
+        $('.set-target').hide();
       } else {
-        $('.set-target').removeClass('hidden');
+        $('.set-target').show();
       }
     },
 
@@ -214,7 +214,7 @@ $(function(){
       var listItem = renderTemplate("target-list-item", obj);
       targetList.append(listItem);
       targetList.sortable('reload'); // reset sortable
-      targetList.removeClass('hidden');
+      targetList.show();
 
       // also to hidden input set
       var targetSet = $('.hidden-target-set');
@@ -228,17 +228,17 @@ $(function(){
     },
 
     removeTargetItem: function(event) {
-      console.log('remove');
       $(event.target).parents('li.list-group-item').remove();
-      // also remove it from 
+
+      // TODO, also find and remove it from hidden-target-set
     },
 
     callLimit: function(event) {
       var callMaxGroup = $('input[name="call_maximum"]').parents('.form-group');
       if ($(event.target).prop('checked')) {
-        callMaxGroup.removeClass('hidden');
+        callMaxGroup.show();
       } else {
-        callMaxGroup.addClass('hidden');
+        callMaxGroup.hide();
         $('input[name="call_maximum"]').val('');
       }
     },

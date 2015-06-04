@@ -1,3 +1,9 @@
+.hide-initial {
+    display: none;
+    /* because bootstrap's default .hide and .hiddden use !important
+    * which we can't easily override later with js */
+}
+
 .align-center {
     text-align: center;
 }
