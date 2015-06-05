@@ -1,32 +1,9 @@
-$(function(){
+/*global CallPower, Backbone */
 
-  var CallPowerApp = {
-    Views: {},
-    initialize: function () {
-        console.log('Call Power');
+CallPower.Views = CallPower.Views || {};
 
-        this.SUNLIGHT_API_KEY = $('meta[name="SUNLIGHT_API_KEY"]').attr('content');
-        this.SUNLIGHT_CONGRESS_URL = "https://congress.api.sunlightfoundation.com/legislators/";
-        this.SUNLIGHT_STATES_URL = "http://openstates.org/api/v1/legislators/";
-
-        this.campaignForm = new CampaignFormView();
-    },
-  };
-
-  var renderTemplate = function(name, context) {
-    var template = _.template($('script[type="text/template"][name="'+name+'"]').html(), { 'variable': 'data' });
-    return $(template(context));
-  };
-
-  var TargetView = Backbone.View.extend({
-
-  });
-
-  var PhoneNumberView = Backbone.View.extend({
-
-  });
-
-  var CampaignFormView = Backbone.View.extend({
+(function () {
+  CallPower.Views.CampaignForm = Backbone.View.extend({
     el: $('form#campaign'),
 
     events: {
@@ -346,6 +323,4 @@ $(function(){
     }
 
   });
-
-    CallPowerApp.initialize();
-});
+})();

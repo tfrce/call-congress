@@ -1,9 +1,5 @@
 {% extends "layouts/base.html" %}
 
-{% block extra_meta %}
-<meta name="SUNLIGHT_API_KEY" content="{{SUNLIGHT_API_KEY}}" >
-{% endblock %}
-
 {% block navbar %}
 <div class="container-fluid">
   <nav class="navbar navbar-default navbar-static-top">
@@ -51,4 +47,14 @@
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
   </nav>
+{% endblock %}
+
+{% block before_scripts %}
+<script>
+    window.CallPower = {
+        SUNLIGHT_API_KEY: "{{SUNLIGHT_API_KEY}}",
+        SUNLIGHT_CONGRESS_URL: "https://congress.api.sunlightfoundation.com/legislators/",
+        SUNLIGHT_STATES_URL: "http://openstates.org/api/v1/legislators/",
+    };
+</script>
 {% endblock %}

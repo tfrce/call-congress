@@ -74,6 +74,8 @@
     {%block body%}{%endblock%}
     </div>
  </body>
+  {%block before_scripts %}{% endblock %}
+
   {% assets "vendor_js" %}
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
   {% endassets %}
@@ -81,6 +83,6 @@
   {% assets "site_js" %}
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
   {% endassets %}
-  
-  {%block scripts%}{%endblock%}
+
+  {%block scripts %}{% endblock %}
 </html>
