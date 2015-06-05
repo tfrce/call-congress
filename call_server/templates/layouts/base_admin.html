@@ -52,9 +52,11 @@
 {% block before_scripts %}
 <script>
     window.CallPower = {
+      Config: {
         SUNLIGHT_API_KEY: "{{SUNLIGHT_API_KEY}}",
         SUNLIGHT_CONGRESS_URL: "https://congress.api.sunlightfoundation.com/legislators/",
         SUNLIGHT_STATES_URL: "http://openstates.org/api/v1/legislators/",
+      }
     };
 </script>
 {% endblock %}

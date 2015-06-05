@@ -62,14 +62,14 @@
         <legend>Targets</legend>
         {{render_field_default(form.segment_by) }}
 
-        <div class="form-group set-target hide-initial">
+        <div class="form-group hide-initial" id="set-targets">
             {{render_label(form.target_set, label_width)}}
             <div class="controls {{control_width}}">
                 <div class="control-group">
-                    <div class="input-group col-sm-10 left" id="target_search">
+                    <div class="input-group col-sm-10 left" id="target-search">
                         <span class="input-group-addon glyphicon glyphicon-search"></span>
                         <div class="search-results open">
-                            <input type="text" class="form-control" name="target_search" placeholder="search"/>
+                            <input type="text" class="form-control" name="target-search" placeholder="search"/>
                         </div>
                         <span class="input-group-btn">
                             <button class="btn btn-default search" type="button">Go</button>
@@ -90,10 +90,8 @@
                     {%- endfor %}
                 {%- endif %}
     
-                <!-- hidden set of inputs -->
-                <div class="hidden-target-set">
-                    <input type="hidden" name="target_set[]" value="" />
-                </div>
+                <!-- hidden target_set input filled in by js -->
+                <input type="hidden" name="target_set[]" value="" />
 
                 <ol class="target-list list-group sortable hide-initial"></ol>
             </div>
@@ -135,7 +133,7 @@
 
 {% block scripts %}
 
-<script type="text/template" name="search-results-dropdown">
+<script type="text/template" id="search-results-dropdown-tmpl">
     <ul class="dropdown-menu open">
       <li role="presentation" class="dropdown-header">
         Search Results <span class="close btn btn-xs">&times;</span>
@@ -143,26 +141,27 @@
     </ul>
 </script>
 
-<script type="text/template" name="search-results-item">
+<script type="text/template" id="search-results-item-tmpl">
     <li class="result">
-        <a data-object='{"title":"<%= data.title %>", "name":"<%= data.first_name %> <%= data.last_name %>", "number":"<%= data.phone %>"}'>
+        <a data-object='{ "title":"<%= data.title %>",
+                          "name":"<%= data.first_name %> <%= data.last_name %>",
+                          "number":"<%= data.phone %>"
+                        }'>
             <span class="text"><%= data.title %> <%= data.first_name %> <%= data.last_name %> (<%= data.party %>-<%= data.state %>)</span>
             <span class="phone"><%= data.phone %></span>
         </a>
     </li>
 </script>
 
-<script type="text/template" name="target-list-item">
-    <li class="list-group-item">
-        <span data-field="title" contenteditable placeholder="Title"><%= data.title %></span>
-        <span data-field="name" contenteditable placeholder="Name"><%= data.name %></span>
-        <span data-field="phone" contenteditable placeholder="202-555-1234"><%= data.number %></span>
+<script type="text/template" id="target-item-tmpl">
+    <span data-field="title" contenteditable placeholder="Title"><%= data.title %></span>
+    <span data-field="name" contenteditable placeholder="Name"><%= data.name %></span>
+    <span data-field="number" contenteditable placeholder="202-555-1234"><%= data.number %></span>
 
-        <div class="pull-right">
-            <span class="glyphicon glyphicon-move handle btn btn-xs"></span>
-            <span class="glyphicon glyphicon-remove remove btn btn-xs btn-danger"></span>
-        </div>
-    </li>
+    <div class="pull-right">
+        <span class="glyphicon glyphicon-move handle btn btn-xs"></span>
+        <span class="glyphicon glyphicon-remove remove btn btn-xs btn-danger"></span>
+    </div>
 </script>
 
 {% endblock %}

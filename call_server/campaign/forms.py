@@ -31,8 +31,8 @@ class CampaignForm(Form):
     segment_by = RadioField(_('Segment By'), [Optional()], choices=choice_items(SEGMENT_BY_CHOICES),
                            default=SEGMENT_BY_CHOICES[0][0],
                            description="Segment callers by geography or custom ordering.")
-    target_set = SelectMultipleField(_('Set Targets'), [Optional()],
-                            description="Search for office phone numbers via Sunlight, or add them directly.")
+    target_set = SelectMultipleField(_('Choose Targets'), [Optional()],
+                            description="Lookup office phone numbers in Sunlight, or add them directly.")
     target_ordering = RadioField(_('Order'), choices=choice_items(ORDERING_CHOICES),
                                  default=ORDERING_CHOICES[0][0])
 
