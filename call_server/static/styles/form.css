@@ -7,10 +7,6 @@
     display: inline-block;
 }
 
-/*.form-horizontal .control-label {
-    text-align: left;
-}*/
-
 label.inline, input.inline {
     display: inline-block;
     width: auto;
@@ -19,8 +15,41 @@ label.inline, input.inline {
     font-weight:normal;
 }
 
+.description {
+    display: inline-block;
+}
+span.help-inline {
+    display: none;
+}
+span.info {
+
+}
+span.info:hover + span.help-inline {
+    display: inline-block;
+    z-index: 10;
+    position: absolute;
+    top: 0;
+    width: 250px;
+    margin-left: 10px;
+
+    border: 1px groove #ddd;
+    background: white;
+    padding: 7px 10px;
+    font-style: italic;
+    color: gray;
+}
+
 select.block {
     display: block;
+}
+
+.input-group.left {
+    float: left;
+    padding-right: 10px;
+}
+
+.input-group.right {
+    float: right;
 }
 
 input.form-control[type="radio"] {
@@ -28,7 +57,7 @@ input.form-control[type="radio"] {
     width: auto;
 }
 
-span.input-group-addon.glyphicon { 
+.input-group-addon.glyphicon { 
     top: 0;
 }
 
@@ -56,8 +85,12 @@ span.input-group-addon.glyphicon {
     display: list-item;
     cursor: move;
 }
-.target-list li span.glyphicon-remove {
+.target-list li span.remove {
     cursor: default;
+    display: none;
+}
+.target-list li:hover span.remove {
+    display: block;
 }
 
 fieldset.border {

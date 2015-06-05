@@ -22,14 +22,17 @@ from ..utils import choice_items, choice_keys, choice_values, choice_values_flat
 class CampaignForm(Form):
     next = HiddenField()
     name = TextField(_('Campaign Name'), [Required()])
-    campaign_type = SelectField(_('Campaign Type'), choices=choice_items(CAMPAIGN_CHOICES))
+    campaign_type = SelectField(_('Campaign Type'), choices=choice_items(CAMPAIGN_CHOICES),
+        description = "Campaign targets which decision making body?")
     campaign_state = SelectField(_('State'), choices=choice_items(US_STATES))
     campaign_subtype = SelectField('', [AnyOf(choice_keys(choice_values_flat(CAMPAIGN_NESTED_CHOICES)))], )
     # nested_type passed to data-field in template, but starts empty
 
     target_by = RadioField(_('Target By'), [Optional()], choices=choice_items(TARGET_BY_CHOICES),
-                           default=TARGET_BY_CHOICES[0][0])
-    target_set = SelectMultipleField(_('Set Targets'), [Optional()])
+                           default=TARGET_BY_CHOICES[0][0],
+                           description="Callers can segmented by geography or custom ordering.")
+    target_set = SelectMultipleField(_('Set Targets'), [Optional()],
+                            description="Search for office phone numbers via Sunlight, or add them directly.")
     target_ordering = RadioField(_('Order'), choices=choice_items(ORDERING_CHOICES),
                                  default=ORDERING_CHOICES[0][0])
 
@@ -37,7 +40,7 @@ class CampaignForm(Form):
     call_maximum = IntegerField(_('Call Maximum'), [Optional(), NumberRange(min=0)])
 
     phone_number_set = QuerySelectMultipleField(_('Allocate Phone Numbers'),
-                                             query_factory=TwilioPhoneNumber.available_numbers)
+                                                query_factory=TwilioPhoneNumber.available_numbers)
     allow_call_in = BooleanField(_('Allow Call In'))
 
     submit = SubmitField(_('Edit Audio'))

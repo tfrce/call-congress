@@ -36,9 +36,12 @@
 
                 <div class="controls {{control_width}}">
                 {{ field(class_='') }}
-                {{ state(class_='inline hidden') }}
+                {{ state(class_='inline hide-initial') }}
                 {{ nested_field(class_='nested inline', **{'data-nested-choices': CAMPAIGN_NESTED_CHOICES|json} ) }}
-                <span class="help-inline">{{ field.description }}</span>
+                <div class="description">
+                    <span class="glyphicon glyphicon-info-sign info small"></span>
+                    <span class="help-inline">{{ field.description|safe }}</span>
+                </div>
                 {% if field.errors -%}
                     {% for error in field.errors -%}
                     <span class="help-block error">{{ error|e }}</span>
@@ -59,31 +62,40 @@
         <legend>Targets</legend>
         {{render_field_default(form.target_by) }}
 
-        <div class="form-group set-target hidden">
+        <div class="form-group set-target hide-initial">
             {{render_label(form.target_set, label_width)}}
             <div class="controls {{control_width}}">
-                <div class="input-group" id="target_search">
-                    <span class="input-group-addon glyphicon glyphicon-search"></span>
-                    <div class="search-results open">
-                        <input type="text" class="form-control" name="target_search" placeholder="search"/>
+                <div class="control-group">
+                    <div class="input-group col-sm-10 left" id="target_search">
+                        <span class="input-group-addon glyphicon glyphicon-search"></span>
+                        <div class="search-results open">
+                            <input type="text" class="form-control" name="target_search" placeholder="search"/>
+                        </div>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default search" type="button">Go</button>
+                        </span>
                     </div>
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="button">Go</button>
-                    </span>
-                </div>
 
+                    <div class="input-group col-sm-2 right">
+                        <button class="btn btn-primary add" type="button">Add</button>
+                        <div class="description">
+                            <span class="glyphicon glyphicon-info-sign info small"></span>
+                            <span class="help-inline">{{ form.target_set.description|safe }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% if form.target_set.errors -%}
+                    {% for error in form.target_set.errors -%}
+                    <span class="help-block error">{{ error }}</span>
+                    {%- endfor %}
+                {%- endif %}
+    
                 <!-- hidden set of inputs -->
                 <div class="hidden-target-set">
                     <input type="hidden" name="target_set[]" value="" />
                 </div>
 
                 <ol class="target-list list-group sortable hide-initial"></ol>
-                <span class="help-inline">{{ form.target_set.description }}</span>
-                    {% if form.target_set.errors -%}
-                        {% for error in form.target_set.errors -%}
-                        <span class="help-block error">{{ error }}</span>
-                        {%- endfor %}
-                    {%- endif %}
             </div>
         </div>
 
@@ -95,7 +107,7 @@
         {% if form.call_maximum.data > 0 %}
             {% set call_max_display = '' %}
         {% else %}
-            {% set call_max_display = 'hidden' %}
+            {% set call_max_display = 'hide-initial' %}
         {% endif %}
         {{render_field_default(form.call_maximum, group=call_max_display) }}
         {% endwith %}
@@ -107,7 +119,7 @@
         {{render_field_default(form.allow_call_in, offset='col-sm-offset-2') }}
     </fieldset>
 
-    <div class="form-group">
+    <div class="form-group container">
         <div class="form-actions">
             {% if edit %}
                 <a class="btn btn-warning" href="status">Edit Status</a>

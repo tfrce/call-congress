@@ -11,7 +11,12 @@
     <div class="controls {{class_.get('control', '')}}">
         {{ field(class_ = 'form-control inline '+class_.get('field', '')) }}
         {{ render_label(field, "inline") }}
-        <span class="help-inline">{{ field.description }}</span>
+        {% if field.description|safe %}
+        <div class="description">
+            <span class="glyphicon glyphicon-info-sign info small"></span>
+            <span class="help-inline">{{ field.description }}</span>
+        </div>
+        {%- endif %}
         {% if field.errors -%}
             {% for error in field.errors -%}
             <span class="help-block error">{{ error|e }}</span>
@@ -33,7 +38,12 @@
         {% if class_.get('clear', False)%}
             <a class="btn btn-default btn-xs radio-inline clear">Clear</a>
         {%endif%}
-        <span class="help-inline">{{ field.description }}</span>
+        {% if field.description %}
+        <div class="description">
+            <span class="glyphicon glyphicon-info-sign info small"></span>
+            <span class="help-inline">{{ field.description|safe }}</span>
+        </div>
+        {%- endif %}
         {% if field.errors -%}
             {% for error in field.errors -%}
             <span class="help-block error">{{ error }}</span>
@@ -48,7 +58,12 @@
     {{ render_label(field, class_.get('label', '')) }}
     <div class="controls {{class_.get('control', '')}}">
         {{ field(class_ = 'form-control '+class_.get('field', '')) }}
-         <span class="help-inline">{{ field.description }}</span>
+        {% if field.description %}
+        <div class="description">
+            <span class="glyphicon glyphicon-info-sign info small"></span>
+            <span class="help-inline">{{ field.description|safe }}</span>
+        </div>
+        {%- endif %}
         {% if field.errors -%}
             {% for error in field.errors -%}
             <span class="help-block error">{{ error }}</span>
