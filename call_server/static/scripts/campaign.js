@@ -30,16 +30,28 @@ $(function(){
     el: $('form#campaign'),
 
     events: {
-      'change select#campaign_type':  'updateCampaignTypeChoices',
+      // generic
       'click a.radio-inline.clear': 'clearRadioChoices',
-      
-      'change input[name="target_by"]': 'targetBy',
+
+      // campaign type
+      'change select#campaign_type':  'changeCampaignType',
+      'change input[name="segment_by"]': 'changeSegmentBy',
+
+      // target search
       'keydown input[name="target_search"]': 'searchKey',
       'focusout input[name="target_search"]': 'searchTab',
-      'click .input-group#target_search button': 'targetSearch',
-      'click .search-results .result': 'selectResult',
-      'click .search-results .btn.close': 'closeSearch',
-      'click .target-list .list-group-item span.remove': 'removeTargetItem',
+      'click .input-group#target_search .search': 'targetSearch',
+      'click .search-results .result': 'selectSearchResult',
+      'click .search-results .close': 'closeSearch',
+      'click .target-list .list-group-item .remove': 'removeTargetItem',
+
+      // target set edit
+      'click .set-target .add': 'addTargetItem',
+      'focus .set-target [contenteditable]': 'editTargetItem',
+      'keydown .set-target [contenteditable]': 'keyTargetItem',
+      'blur .set-target [contenteditable]': 'saveTargetItem',
+      // sortupdate
+      // sortend ?
       
       'change input[name="call_limit"]': 'callLimit',
 
@@ -47,45 +59,44 @@ $(function(){
     },
 
     initialize: function() {
-      console.log('campaign form');
-
       // clear nested choices until updated by client
       if (!$('select.nested').val()) { $('select.nested').empty(); }
 
-      // display targeting fields
-      this.targetBy();
+      // trigger change to targeting fields
+      // so defaults show properly
+      this.changeCampaignType();
+      this.changeSegmentBy();
 
-      // 
-      this.updateCampaignTypeChoices();
-
-      // make target_set options sortable
-      $('select[name="target_set"]').sortable({
-        items: 'li' ,
-        placeholder : '<li></li>'
+      // make target-list items sortable
+      $('.target-list.sortable').sortable({
+        items: 'li',
+        handle: '.handle',
       });
     },
 
-    updateCampaignTypeChoices: function() {
+    changeCampaignType: function() {
       // updates campaign_subtype with available choices from data-attr
       var field = $('select#campaign_type');
-      var nested_field = $('select#campaign_subtype');
-      nested_field.empty();
-
-      var choices = nested_field.data('nested-choices');
       var val = field.val();
 
-      // handle weird obj layout from constants
-      var avail = _.find(choices, function(v) { return v[0] == val; })[1];
+      var nested_field = $('select#campaign_subtype');
+      var nested_choices = nested_field.data('nested-choices');
+      var nested_val = nested_field.val();
+      nested_field.empty();
+
+      // fill in new choices from data attr
+      // - handle weird obj layout from constants
+      var avail = _.find(nested_choices, function(v) { return v[0] == val; })[1];
       _.each(avail, function(v) {
         var option = $('<option value="'+v[0]+'">'+v[1]+'</option>');
         nested_field.append(option);
       });
 
-      // special case, show/hide state select
-      if (val === 'state') {
-        $('select[name="campaign_state"]').show();
+      // reset initial choice if still valid
+      if (_.contains(_.flatten(avail), nested_val)) {
+        nested_field.val(nested_val);
       } else {
-        $('select[name="campaign_state"]').hide();
+        nested_field.val('');
       }
 
       // disable field if no choices present
@@ -94,6 +105,32 @@ $(function(){
       } else {
         nested_field.prop('disabled', false);
       }
+
+      // special cases
+
+      // state: show/hide campaign_state select
+      if (val === 'state') {
+        $('select[name="campaign_state"]').show();
+        $('#target_search input[name="target_search"]').attr('placeholder', 'search OpenStates');
+      } else {
+        $('select[name="campaign_state"]').hide();
+        $('#target_search input[name="target_search"]').attr('placeholder', 'search Sunlight');
+      }
+
+      // local or custom: no search, show custom target_set
+      if (val === "custom" || val === "local") {
+        $('#target_search input[name="target_search"]').attr('disabled', true);
+        $('#target_search button.search').attr('disabled', true);
+        $('.set-target').show();
+      } else {
+        $('#target_search input[name="target_search"]').attr('disabled', false);
+        $('#target_search button.search').attr('disabled', false);
+        var segment_by = $('input[name="segment_by"]:checked');
+        // unless segment_by is also custom
+        if (segment_by.val() !== 'custom') {
+          $('.set-target').hide();
+        }
+      }
     },
 
     clearRadioChoices: function(event) {
@@ -101,8 +138,8 @@ $(function(){
       buttons.attr('checked',false).trigger('change'); //TODO, debounce this?
     },
 
-    targetBy: function() {
-      var selected = $('input[name="target_by"]:checked');
+    changeSegmentBy: function() {
+      var selected = $('input[name="segment_by"]:checked');
       if (selected.val() !== "custom") {
         $('.set-target').hide();
       } else {
@@ -179,16 +216,22 @@ $(function(){
         // openstates doesn't paginate
         results = response;
       }
-      
+
       var dropdownMenu = renderTemplate("search-results-dropdown");
       if (results.length === 0) {
         dropdownMenu.append('<li class="result close"><a>No results</a></li>');
       }
 
       _.each(results, function(i) {
+        // standardize office titles
+        if (i.title === 'Sen')  { i.title = 'Senator'; }
+        if (i.title === 'Rep')  { i.title = 'Representative'; }
+
+        // render display
         var li = renderTemplate("search-results-item", i);
+
+        // if multiple phones, use the first office
         if (i.phone === undefined && i.offices) {
-          // put the first office phone in
           if (i.offices) { li.find('span.phone').html(i.offices[0].phone); }
         }
         dropdownMenu.append(li);
@@ -205,26 +248,79 @@ $(function(){
       var dropdownMenu = $('.search-results ul.dropdown-menu').remove();
     },
 
-    selectResult: function(event) {
-      var obj = $(event.target).data('object');
+    selectSearchResult: function(event) {
       // pull json data out of data-object attr
-
-      // save to display list
-      var targetList = $('ol.target-list');
-      var listItem = renderTemplate("target-list-item", obj);
-      targetList.append(listItem);
-      targetList.sortable('reload'); // reset sortable
-      targetList.show();
-
-      // also to hidden input set
-      var targetSet = $('.hidden-target-set');
-      var hiddenItem = $("<input type='hidden' name='target_set[]' value='"+JSON.stringify(obj)+"' />");
-      targetSet.append(hiddenItem);
+      var obj = $(event.target).data('object');
+      
+      // add it to the list
+      this.addTargetItem(null, obj);
 
       // if only one result, closeSearch
       if ($('.search-results ul.dropdown-menu').children('.result').length <= 1) {
         this.closeSearch();
       }
+    },
+
+    addTargetItem: function(event, obj) {
+      if (obj === undefined) {
+        obj = {'title': 'Title', 'name': 'Name', 'number': '202-555-1234'};
+        var placeholder = true;
+      }
+
+      // save to display list
+      var targetList = $('ol.target-list');
+      var listItem = renderTemplate("target-list-item", obj);
+      targetList.append(listItem);
+      targetList.sortable('reload').show(); // reset sortable;
+
+      // if placeholder, adjust css
+      if (placeholder) {
+        listItem.children('[contenteditable]').addClass('placeholder');
+      }
+
+      // also to hidden input set
+      var targetSet = $('.hidden-target-set');
+      var hiddenItem = $("<input type='hidden' name='target_set[]' value='"+JSON.stringify(obj)+"' />");
+      targetSet.append(hiddenItem);
+    },
+
+    editTargetItem: function(event) {
+      var target = $(event.target);
+      console.log('edit '+target.data('field'));
+
+      if (target.hasClass('placeholder')) {
+        target.removeClass('placeholder');
+      }
+    },
+
+    keyTargetItem: function(event) {
+      var target = $(event.target);
+
+      var esc = event.which == 27,
+          nl = event.which == 13;
+
+      if (esc) {
+        document.execCommand('undo');
+        el.blur();
+      } else if (nl) {
+        this.saveTargetItem(event);
+      } else if (target.text() === target.attr('placeholder')) {
+        target.text(''); // overwrite
+      }
+    },
+
+    saveTargetItem: function(event) {
+      var target = $(event.target);
+      console.log('save '+target.data('field'));
+
+      if (target.text() === '') {
+        // empty, reset to placeholder
+        target.text(target.attr('placeholder'));
+      }
+      if (target.text() === target.attr('placeholder')) {
+        target.addClass('placeholder');
+      }
+
     },
 
     removeTargetItem: function(event) {

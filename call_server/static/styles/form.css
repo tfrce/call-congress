@@ -22,14 +22,14 @@ span.help-inline {
     display: none;
 }
 span.info {
-
+    padding-left: 5px;
 }
 span.info:hover + span.help-inline {
     display: inline-block;
     z-index: 10;
     position: absolute;
     top: 0;
-    width: 250px;
+    min-width: 250px;
     margin-left: 10px;
 
     border: 1px groove #ddd;
@@ -41,6 +41,10 @@ span.info:hover + span.help-inline {
 
 select.block {
     display: block;
+}
+
+.control-group {
+    display: inline-block;
 }
 
 .input-group.left {
@@ -70,7 +74,11 @@ input.form-control[type="radio"] {
     margin-top: 7px; 
 }
 
-.search-results .btn.close {
+.radio-inline, .checkbox-inline {
+    vertical-align: bottom;
+}
+
+.search-results .close {
     font-size: 14px;
     padding-top: 0;
 }
@@ -81,16 +89,28 @@ input.form-control[type="radio"] {
 }
 
 .target-list { padding-top: 10px; }
-.target-list li.list-group-item {
+.target-list .list-group-item {
     display: list-item;
-    cursor: move;
 }
-.target-list li span.remove {
-    cursor: default;
-    display: none;
+.target-list li .btn {
+    cursor: pointer;
+    visibility: hidden;
 }
-.target-list li:hover span.remove {
-    display: block;
+.target-list li:hover .btn  {
+    visibility: visible;
+}
+
+
+[contenteditable]:hover, [contenteditable]:focus {
+    background: #FFFFD3;
+    cursor: text;
+}
+[contenteditable]:focus {
+    padding: 5px;
+}
+[contenteditable].placeholder {
+    color: gray;
+    font-style: italic;
 }
 
 fieldset.border {

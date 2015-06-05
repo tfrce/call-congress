@@ -145,7 +145,7 @@
 
 <script type="text/template" name="search-results-item">
     <li class="result">
-        <a data-object='{"name":"<%= data.first_name %> <%= data.last_name %>", "number":"<%= data.phone %>"}'>
+        <a data-object='{"title":"<%= data.title %>", "name":"<%= data.first_name %> <%= data.last_name %>", "number":"<%= data.phone %>"}'>
             <span class="text"><%= data.title %> <%= data.first_name %> <%= data.last_name %> (<%= data.party %>-<%= data.state %>)</span>
             <span class="phone"><%= data.phone %></span>
         </a>
@@ -154,11 +154,13 @@
 
 <script type="text/template" name="target-list-item">
     <li class="list-group-item">
-        <span class="text"><%= data.name %></span>
-        <span class="phone"><%= data.number %></span>
+        <span data-field="title" contenteditable placeholder="Title"><%= data.title %></span>
+        <span data-field="name" contenteditable placeholder="Name"><%= data.name %></span>
+        <span data-field="phone" contenteditable placeholder="202-555-1234"><%= data.number %></span>
 
         <div class="pull-right">
-            <span class="glyphicon glyphicon-remove remove"></span>
+            <span class="glyphicon glyphicon-move handle btn btn-xs"></span>
+            <span class="glyphicon glyphicon-remove remove btn btn-xs btn-danger"></span>
         </div>
     </li>
 </script>
