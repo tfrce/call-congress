@@ -19,7 +19,7 @@ class Campaign(db.Model):
     campaign_state = db.Column(db.String(STRING_LEN))
     campaign_subtype = db.Column(db.String(STRING_LEN))
 
-    target_by = db.Column(db.String(STRING_LEN))
+    segment_by = db.Column(db.String(STRING_LEN))
     target_set = db.relationship(u'Target', secondary=u'campaign_target_sets',
                                  order_by='campaign_target_sets.c.order',
                                  backref=db.backref('campaigns'))

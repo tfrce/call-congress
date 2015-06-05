@@ -30,7 +30,7 @@ CUSTOM_CAMPAIGN_CHOICES = [
     'custom'
 ]
 
-TARGET_BY_CHOICES = (
+SEGMENT_BY_CHOICES = (
     ('zipcode', 'Zipcode'),
     ('lat_lon', 'Lat / Lon'),
     ('custom', 'Custom')

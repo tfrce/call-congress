@@ -9,7 +9,7 @@ from wtforms.widgets import TextArea
 from wtforms.validators import Required, Optional, AnyOf, NumberRange
 
 from .constants import (CAMPAIGN_CHOICES, CAMPAIGN_NESTED_CHOICES,
-                        TARGET_BY_CHOICES, ORDERING_CHOICES,
+                        SEGMENT_BY_CHOICES, ORDERING_CHOICES,
                         CAMPAIGN_STATUS,
                         EMPTY_CHOICES)
 from ..political_data.constants import US_STATES
@@ -28,9 +28,9 @@ class CampaignForm(Form):
     campaign_subtype = SelectField('', [AnyOf(choice_keys(choice_values_flat(CAMPAIGN_NESTED_CHOICES)))], )
     # nested_type passed to data-field in template, but starts empty
 
-    target_by = RadioField(_('Target By'), [Optional()], choices=choice_items(TARGET_BY_CHOICES),
-                           default=TARGET_BY_CHOICES[0][0],
-                           description="Callers can segmented by geography or custom ordering.")
+    segment_by = RadioField(_('Segment By'), [Optional()], choices=choice_items(SEGMENT_BY_CHOICES),
+                           default=SEGMENT_BY_CHOICES[0][0],
+                           description="Segment callers by geography or custom ordering.")
     target_set = SelectMultipleField(_('Set Targets'), [Optional()],
                             description="Search for office phone numbers via Sunlight, or add them directly.")
     target_ordering = RadioField(_('Order'), choices=choice_items(ORDERING_CHOICES),
