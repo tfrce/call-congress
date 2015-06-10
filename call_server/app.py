@@ -148,7 +148,7 @@ def configure_assets(app):
     assets.register('vendor_css', vendor_css)
 
     site_js = Bundle('scripts/*.js',
-                     filters='rjsmin', output='dist/css/site.js')
+                     filters='rjsmin', output='dist/js/site.js')
     assets.register('site_js', site_js)
 
     site_css = Bundle('styles/*.css',
