@@ -72,7 +72,7 @@ class RemoveUserForm(Form):
 
 class ChangePasswordForm(Form):
     activation_key = HiddenField()
-    password = PasswordField(u'Password', [Required()])
+    password = PasswordField(u'Password', [Required(), Length(PASSWORD_LEN_MIN, PASSWORD_LEN_MAX)])
     password_confirm = PasswordField(u'Password Confirm', [EqualTo('password', message="Passwords don't match")])
     submit = SubmitField('Save')
 
