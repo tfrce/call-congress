@@ -12,6 +12,8 @@ from call_server.app import create_app
 from call_server.config import DevelopmentConfig
 from call_server.extensions import assets, db
 
+from call_server.user import User, ADMIN, ACTIVE
+
 app = create_app(config=DevelopmentConfig)
 app.db = db
 manager = Manager(app)
@@ -67,6 +69,61 @@ def stamp(revision):
     reset_assets()
     alembic_cfg = Config("alembic.ini")
     command.stamp(alembic_cfg, revision)
+
+
+@manager.command
+def createadminuser():
+    from getpass import getpass
+    from call_server.user.constants import (USERNAME_LEN_MIN, USERNAME_LEN_MAX,
+                                            PASSWORD_LEN_MIN, PASSWORD_LEN_MAX)
+
+    username = None
+    password = None
+
+    while username is None:
+        username = raw_input('Username: ')
+        if len(username) < USERNAME_LEN_MIN:
+            print "username too short, must be at least", USERNAME_LEN_MIN, "characters"
+            username = None
+            continue
+        if len(username) > USERNAME_LEN_MAX:
+            print "username too long, must be less than", USERNAME_LEN_MIN, "characters"
+            username = None
+            continue
+        if User.query.filter_by(name=username).count() > 0:
+            print "username already exists"
+            username = None
+            continue
+
+        email = raw_input('Email: ')
+        # email validation necessary?
+
+    while password is None:
+        password = getpass('Password: ')
+        password_confirm = getpass('Confirm: ')
+        if password != password_confirm:
+            print "passwords don't match"
+            password = None
+            continue
+        if len(password) < PASSWORD_LEN_MIN:
+            print "password too short, must be at least", PASSWORD_LEN_MIN, "characters"
+            password = None
+            continue
+        if len(password) > PASSWORD_LEN_MAX:
+            print "password too long, must be less than", PASSWORD_LEN_MAX, "characters"
+            password = None
+            continue
+
+    admin = User(name=username,
+                 email=email,
+                 password=password,
+                 role_code=ADMIN,
+                 status_code=ACTIVE)
+    db.session.add(admin)
+    db.session.commit()
+
+    print "created admin user", admin.name
+
 
 if __name__ == "__main__":
     manager.run()
