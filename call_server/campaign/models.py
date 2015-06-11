@@ -73,7 +73,7 @@ t_campaign_target_sets = db.Table(
 t_campaign_phone_numbers = db.Table(
     u'campaign_phone_numbers',
     db.Column(u'campaign_id', db.ForeignKey('campaign_campaign.id')),
-    db.Column(u'phone_id', db.ForeignKey('campaign_phone.id'), unique=True)
+    db.Column(u'phone_id', db.ForeignKey('campaign_phone.id'))
 )
 
 
