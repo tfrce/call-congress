@@ -43,9 +43,9 @@ class Campaign(db.Model):
         campaign_subchoices = convert_to_dict(choice_values_flat(CAMPAIGN_NESTED_CHOICES))
         val = ''
         if self.campaign_type:
-            val = campaign_choices[self.campaign_type]
-        if self.campaign_subtype:
-            sub = campaign_subchoices[self.campaign_subtype]
+            val = campaign_choices.get(self.campaign_type, '')
+        if self.campaign_subtype and self.campaign_subtype != "None":
+            sub = campaign_subchoices.get(self.campaign_subtype, '')
             val = '%s - %s' % (val, sub)
             if self.campaign_type == 'state':
                 #special case, show specific state

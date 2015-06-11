@@ -41,6 +41,9 @@ def form(campaign_id=None):
     form.campaign_subtype.choices = choice_values_flat(CAMPAIGN_NESTED_CHOICES)
     form.target_set.choices = choice_items(EMPTY_CHOICES)
 
+    # check request form for campaign_subtype, reset if not present
+    if not request.form.get('campaign_subtype'):
+        form.campaign_subtype.data = None
     if campaign.call_maximum:
         form.call_limit.data = True
 
