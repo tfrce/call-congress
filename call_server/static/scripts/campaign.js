@@ -115,23 +115,59 @@
       }
     },
 
-    validateForm: function() {
-      // check segment compatibility for type
-
-      // if type == custom, ensure we have targets
-
-      // ensure we have a phone number allocated
-
+    validateSegmentBy: function(formGroup) {
+      // if campaignType is custom or local, segmentBy must equal custom
+      var campaignType = $('select#campaign_type').val();
+      if (campaignType === "custom" || campaignType === "local") {
+        var segmentBy = $('input[name="segment_by"]:checked').val();
+        if (segmentBy === "custom") { return true; }
+        else { return false; }
+      }
       return true;
+    },
 
+    validateTargetList: function(formGroup) {
+      // if type == custom, ensure we have targets
+      return ($('select#campaign_type').val() === "custom") &&
+             !!(CallPower.campaignForm.targetListView.collection.length);
+    },
+
+    validateSelected: function(formGroup) {
+      return !!$('select option:selected', formGroup).length;
+    },
+
+    validateField: function(formGroup, validator, message) {
+      // run validator for formGroup
+      var isValid = validator(formGroup);
+
+      // put message in last help-block
+      $('.help-block', formGroup).last().text((!isValid) ? message : '');
+
+      // toggle error states
+      formGroup.parents('fieldset').find('legend').toggleClass('has-error', !isValid);
+      formGroup.toggleClass('has-error', !isValid);
+      return isValid;
+    },
+
+
+    validateForm: function() {
+      var isValid = true;
+
+      isValid = this.validateField($('.form-group.segment_by'), this.validateSegmentBy, 'Campaign type requires custom targeting') && isValid;
+      isValid = this.validateField($('.form-group#set-targets'), this.validateTargetList, 'Add a custom target') && isValid;
+      isValid = this.validateField($('.form-group.phone_number_set'), this.validateSelected, 'Select a phone number') && isValid;
+      
+      return isValid;
     },
 
     submitForm: function(event) {
+      event.preventDefault();
+
       if (this.validateForm()) {
         this.targetListView.serialize();
+        $(this.$el).unbind('submit').submit();
         return true;
       }
-
       return false;
     }
 

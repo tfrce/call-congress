@@ -134,6 +134,16 @@
       }, this);
       $list.append(rendered_items);
 
+      var target_set_errors = this.$el.find('input[name^="target_set-"]').filter('[name$="-error"]');
+      target_set_errors.each(function(error) {
+        var id = $(this).attr('name').replace('-error','');
+        var item = $('#'+id);
+        item.addClass('error');
+
+        var message = $(this).val();
+        item.append('<span class="message">'+message+'</span>');
+      });
+
       $('.target-list.sortable').sortable('update');
 
       return this;

@@ -92,6 +92,12 @@ input.form-control[type="radio"] {
 .target-list .list-group-item {
     display: list-item;
 }
+.target-list li.error .message {
+    color: red;
+    font-style: italic;
+    font-size: small;
+    float: right;
+}
 .target-list li .btn {
     cursor: pointer;
     visibility: hidden;

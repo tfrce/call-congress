@@ -84,17 +84,18 @@
                         </div>
                     </div>
                 </div>
-                {% if form.target_set.errors -%}
-                    {% for error in form.target_set.errors -%}
-                    <span class="help-block error">{{ error }}</span>
-                    {%- endfor %}
-                {%- endif %}
-    
+
                 <!-- target_set entries stored as hidden inputs named target_set-N-FIELD -->
                 <div id="target-set" class="hidden">
                     {% if form.target_set.data|length %}
                     <input type="hidden" name="target_set_length" value="{{form.target_set|length}}" />
                     {% endif %}
+
+                    {% for error in form.target_set.errors -%}
+                    {# load errors here, for client-side display #}
+                    <input type="hidden" name="{{error.target}}-error" value="{{ error.message }}" />
+                    {%- endfor %}
+
                     {% for t in form.target_set.data %}
                     <input type="hidden" name="target_set-{{loop.index0}}-order" value="{{loop.index0}}" />
                     <input type="hidden" name="target_set-{{loop.index0}}-title" value="{{t.title}}" />
@@ -104,6 +105,7 @@
                 </div>
 
                 <ol class="target-list list-group sortable hide-initial"></ol>
+                <span class="help-block"></span>
             </div>
         </div>
 

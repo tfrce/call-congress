@@ -7,7 +7,7 @@ from wtforms import (HiddenField, SubmitField, TextField,
 from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField
 from wtforms_components import PhoneNumberField
 from wtforms.widgets import TextArea
-from wtforms.validators import Required, Optional, AnyOf, NumberRange
+from wtforms.validators import Required, Optional, AnyOf, NumberRange, ValidationError
 
 from .constants import (CAMPAIGN_CHOICES, CAMPAIGN_NESTED_CHOICES,
                         SEGMENT_BY_CHOICES, ORDERING_CHOICES,
@@ -48,21 +48,22 @@ class CampaignForm(Form):
     call_maximum = IntegerField(_('Call Maximum'), [Optional(), NumberRange(min=0)])
 
     phone_number_set = QuerySelectMultipleField(_('Allocate Phone Numbers'),
-                                                query_factory=TwilioPhoneNumber.available_numbers)
+                                                query_factory=TwilioPhoneNumber.available_numbers,
+                                                validators=[Required()])
     allow_call_in = BooleanField(_('Allow Call In'))
 
     submit = SubmitField(_('Edit Audio'))
 
     def validate(self):
-        passes_default_validation = Form.validate(self)
-        if not passes_default_validation:
+        # check default validation
+        if not Form.validate(self):
             return False
 
-        # correct data for related fields
-        if self.call_maximum:
-            self.call_limit = True
-
-        # get_one_or_create Target from target_set?
+        # check nested forms
+        for t in self.target_set:
+            if not t.form.validate():
+                self.target_set.errors.append({'target': t.name, 'message': 'Invalid Target'})
+                return False
 
         return True
 
