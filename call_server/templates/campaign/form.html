@@ -90,8 +90,19 @@
                     {%- endfor %}
                 {%- endif %}
     
-                <!-- hidden target_set input filled in by js -->
-                <input type="hidden" name="target_set[]" value="" />
+                <!-- target_set entries stored as hidden inputs named target_set-N-FIELD -->
+                <div id="target-set" class="hidden">
+                    {% for t in form.target_set.data %}
+                    <input type="hidden" name="target_set-{{loop.index0}}-order" value="{{loop.index0}}" />
+                    <input type="hidden" name="target_set-{{loop.index0}}-title" value="{{t.title}}" />
+                    <input type="hidden" name="target_set-{{loop.index0}}-name" value="{{t.name}}" />
+                    <input type="hidden" name="target_set-{{loop.index0}}-number" value="{{t.number}}" />
+                    {% endfor %}
+
+                    {% if form.target_set.data %}
+                    <input type="hidden" name="target_set-length" value="{{form.target_set|length}}" />
+                    {% endif %}
+                </div>
 
                 <ol class="target-list list-group sortable hide-initial"></ol>
             </div>
@@ -156,7 +167,7 @@
 <script type="text/template" id="target-item-tmpl">
     <span data-field="title" contenteditable placeholder="Title"><%= data.title %></span>
     <span data-field="name" contenteditable placeholder="Name"><%= data.name %></span>
-    <span data-field="number" contenteditable placeholder="202-555-1234"><%= data.number %></span>
+    <span data-field="number" contenteditable placeholder="Phone"><%= data.number %></span>
 
     <div class="pull-right">
         <span class="glyphicon glyphicon-move handle btn btn-xs"></span>

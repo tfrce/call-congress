@@ -39,7 +39,8 @@
     onEdit: function(event) {
       var target = $(event.target);
       var esc = event.which == 27,
-          nl = event.which == 13;
+          nl = event.which == 13,
+          tab = event.which == 9;
 
 
       if (esc) {
@@ -48,6 +49,9 @@
       } else if (nl) {
         event.preventDefault(); // stop user from creating multi-line spans
         target.blur();
+      } else if (tab) {
+        event.preventDefault(); // prevent focus from going back to first field
+        target.next('[contenteditable]').focus(); // send it to next editable
       } else if (target.text() === target.attr('placeholder')) {
         target.text(''); // overwrite placeholder text
         target.removeClass('placeholder');
@@ -72,6 +76,11 @@
     },
 
     onRemove: function(event) {
+      // clear related inputs
+      var sel = 'input[name^="target_set-'+this.model.get('order')+'"]';
+      this.$el.remove(sel);
+
+      // and destroy the model
       this.model.destroy();
     },
 
@@ -84,6 +93,11 @@
       // re-render on collection changes
       this.collection = new CallPower.Collections.TargetList();
       this.listenTo(this.collection, 'add change remove sort', this.render);
+
+      // check for serialized items
+      if(this.$el.find('input[name="target_set-length"]').val()) {
+        this.deserialize();
+      }
 
       // make target-list items sortable
       $('.target-list.sortable').sortable({
@@ -117,7 +131,50 @@
 
       $('.target-list.sortable').sortable('update');
 
+      // also serialize, just so we're sure inputs are in sync
+      this.serialize();
+
       return this;
+    },
+
+    serialize: function() {
+      // write collection to hidden inputs in format WTForms expects
+      var target_set = this.$el.find('#target-set');
+
+      // clear any existing target_set-N inputs
+      target_set.empty();
+
+      this.collection.each(function(model, index) {
+        // create new hidden inputs named target_set-N-FIELD
+        var fields = ['order','title','name','number'];
+        _.each(fields, function(field) {
+          var input = $('<input name="target_set-'+index+'-'+field+'" type="hidden" />');
+          input.val(model.get(field));
+
+          // append to target-set div
+          target_set.append(input);
+        });
+      });
+    },
+
+    deserialize: function() {
+      var self = this;
+
+      // figure out how many items we have
+      var target_set_length = this.$el.find('input[name="target_set-length"]').val();
+
+      // iterate over total
+      _(target_set_length).times(function(n) {
+        var model = new CallPower.Models.Target();
+        var fields = ['order','title','name','number'];
+        _.each(fields, function(field) {
+          // pull field values out of each input
+          var sel = 'input[name="target_set-'+n+'-'+field+'"]';
+          var val = self.$el.find(sel).val();
+          model.set(field, val);
+        });
+        self.collection.add(model);
+      });
     },
 
     events: {

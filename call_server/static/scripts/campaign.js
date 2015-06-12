@@ -15,7 +15,7 @@
       // call limit
       'change input[name="call_limit"]': 'changeCallLimit',
 
-      'submit form': 'validateForm'
+      'submit': 'submitForm'
     },
 
     initialize: function() {
@@ -115,9 +115,23 @@
       }
     },
 
-    validateForm: function(event) {
-      event.preventDefault();
-      //TODO, validate form
+    validateForm: function() {
+      // check segment compatibility for type
+
+      // if type == custom, ensure we have targets
+
+      // ensure we have a phone number allocated
+
+      return true;
+
+    },
+
+    submitForm: function(event) {
+      if (this.validateForm()) {
+        this.targetListView.serialize();
+        return true;
+      }
+
       return false;
     }
 

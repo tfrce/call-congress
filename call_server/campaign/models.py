@@ -53,6 +53,9 @@ class Campaign(db.Model):
 
         return val
 
+    def target_set_display(self):
+        return "<br>".join(['%s %s' % (s.name, s.number) for s in self.target_set])
+
     @classmethod
     def duplicate(self):
         arguments = dict()
@@ -62,18 +65,19 @@ class Campaign(db.Model):
         return self.__class__(**arguments)
 
 
-# m2m through tables
-t_campaign_target_sets = db.Table(
-    u'campaign_target_sets',
-    db.Column(u'campaign_id', db.ForeignKey('campaign_campaign.id')),
-    db.Column(u'target_id', db.ForeignKey('campaign_target.id')),
-    db.Column(u'order', db.Integer()),
-)
+class CampaignTarget(db.Model):
+    __tablename__ = 'campaign_target_sets'
+
+    id = db.Column(db.Integer, primary_key=True)
+    campaign_id = db.Column(db.Integer, db.ForeignKey('campaign_campaign.id'))
+    target_id = db.Column(db.Integer, db.ForeignKey('campaign_target.id'))
+    order = db.Column(db.Integer())
+
 
 t_campaign_phone_numbers = db.Table(
     u'campaign_phone_numbers',
     db.Column(u'campaign_id', db.ForeignKey('campaign_campaign.id')),
-    db.Column(u'phone_id', db.ForeignKey('campaign_phone.id'))
+    db.Column(u'phone_id', db.ForeignKey('campaign_phone.id'), unique=False)
 )
 
 
@@ -81,7 +85,8 @@ class Target(db.Model):
     __tablename__ = 'campaign_target'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(STRING_LEN), nullable=False, unique=True)
+    title = db.Column(db.String(STRING_LEN), nullable=True)
+    name = db.Column(db.String(STRING_LEN), nullable=False, unique=False)
     number = db.Column(phone_number.PhoneNumberType())
 
     def __unicode__(self):

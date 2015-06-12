@@ -8,8 +8,8 @@ from ..extensions import db
 from ..utils import choice_items, choice_keys, choice_values_flat
 
 from .constants import CAMPAIGN_NESTED_CHOICES, CUSTOM_CAMPAIGN_CHOICES, EMPTY_CHOICES
-from .models import Campaign
-from .forms import CampaignForm, CampaignRecordForm, CampaignStatusForm
+from .models import Campaign, Target, CampaignTarget
+from .forms import CampaignForm, CampaignRecordForm, CampaignStatusForm, TargetForm
 
 campaign = Blueprint('campaign', __name__, url_prefix='/admin/campaign')
 
@@ -21,7 +21,7 @@ def index():
     return render_template('campaign/list.html', campaigns=campaigns)
 
 
-@campaign.route('/', methods=['GET', 'POST'])
+@campaign.route('/create', methods=['GET', 'POST'])
 @campaign.route('/<int:campaign_id>/', methods=['GET', 'POST'])
 @login_required
 def form(campaign_id=None):
@@ -41,14 +41,25 @@ def form(campaign_id=None):
     form.campaign_subtype.choices = choice_values_flat(CAMPAIGN_NESTED_CHOICES)
     form.target_set.choices = choice_items(EMPTY_CHOICES)
 
-    # check request form for campaign_subtype, reset if not present
+    # check request.form for campaign_subtype, reset if not present
     if not request.form.get('campaign_subtype'):
         form.campaign_subtype.data = None
-    if campaign.call_maximum:
-        form.call_limit.data = True
 
     if form.validate_on_submit():
-        form.populate_obj(campaign)
+        # can't use populate_obj with nested forms, iterate over fields manually
+        # note, only handles one level deep
+        nested_forms = {'target_set': Target}
+        for field in form:
+            if field.name in nested_forms.keys():
+                obj_list = []
+                for entry in field.data:
+                    nested_obj = nested_forms[field.name]()
+                    for (subfield, subval) in entry.items():
+                        setattr(nested_obj, subfield, subval)
+                    obj_list.append(nested_obj)
+                setattr(campaign, field.name, obj_list)
+            else:
+                setattr(campaign, field.name, field.data)
 
         db.session.add(campaign)
         db.session.commit()
