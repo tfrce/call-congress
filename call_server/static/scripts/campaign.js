@@ -30,6 +30,9 @@
       // so defaults show properly
       this.changeCampaignType();
       this.changeSegmentBy();
+
+      // load existing items from hidden inputs
+      this.targetListView.loadExistingItems();
     },
 
     changeCampaignType: function() {
@@ -77,12 +80,15 @@
 
       // local or custom: no search, show custom target_set
       if (val === "custom" || val === "local") {
+        $('#target-search input[name="target-search"]').attr('placeholder', 'search unavailable');
         $('#target-search input[name="target-search"]').attr('disabled', true);
         $('#target-search button.search').attr('disabled', true);
+        //$('#target-search').hide();
         $('#set-targets').show();
       } else {
         $('#target-search input[name="target-search"]').attr('disabled', false);
         $('#target-search button.search').attr('disabled', false);
+        $('#target-search').show();
         var segment_by = $('input[name="segment_by"]:checked');
         // unless segment_by is also custom
         if (segment_by.val() !== 'custom') {
