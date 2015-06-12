@@ -1,13 +1,14 @@
 /*global $, _*/
 
-window.CallPower = _.extend(window.CallPower, {
+window.CallPower = _.extend(window.CallPower || {}, {
     Models: {},
     Collections: {},
     Views: {},
+    Routers: {},
     init: function () {
         console.log('Call Power');
 
-        this.campaignForm = new CallPower.Views.CampaignForm();
+        new this.Routers.Campaign({});
     }
 });
 
@@ -18,4 +19,5 @@ window.renderTemplate = function(selector, context) {
 
 $(document).ready(function () {
     CallPower.init();
+    Backbone.history.start({pushState: true, root: "/admin/"});
 });

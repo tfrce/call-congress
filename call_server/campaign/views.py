@@ -22,7 +22,7 @@ def index():
 
 
 @campaign.route('/create', methods=['GET', 'POST'])
-@campaign.route('/<int:campaign_id>/', methods=['GET', 'POST'])
+@campaign.route('/edit/<int:campaign_id>', methods=['GET', 'POST'])
 @login_required
 def form(campaign_id=None):
     edit = False
@@ -75,7 +75,7 @@ def form(campaign_id=None):
                            CUSTOM_CAMPAIGN_CHOICES=CUSTOM_CAMPAIGN_CHOICES)
 
 
-@campaign.route('/<int:campaign_id>/copy', methods=['GET', 'POST'])
+@campaign.route('/copy/<int:campaign_id>', methods=['GET', 'POST'])
 @login_required
 def copy(campaign_id):
     orig_campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
@@ -88,7 +88,7 @@ def copy(campaign_id):
     return redirect(url_for('campaign.form', campaign_id=new_campaign.id))
 
 
-@campaign.route('/<int:campaign_id>/record', methods=['GET', 'POST'])
+@campaign.route('/record/<int:campaign_id>', methods=['GET', 'POST'])
 @login_required
 def record(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
@@ -97,7 +97,7 @@ def record(campaign_id):
     return render_template('campaign/record.html', campaign=campaign, form=form)
 
 
-@campaign.route('/<int:campaign_id>/status', methods=['GET', 'POST'])
+@campaign.route('/status/<int:campaign_id>', methods=['GET', 'POST'])
 @login_required
 def status(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
