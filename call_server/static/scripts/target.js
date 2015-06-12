@@ -92,12 +92,15 @@
     initialize: function() {
       // re-render on collection changes
       this.collection = new CallPower.Collections.TargetList();
-      this.listenTo(this.collection, 'add change remove sort', this.render);
-
+      
       // check for serialized items
-      if(this.$el.find('input[name="target_set-length"]').val()) {
+      if(this.$el.find('input[name="target_set_length"]').val()) {
         this.deserialize();
+        this.render();
       }
+
+      // bind to future render events
+      this.listenTo(this.collection, 'add change remove reset sort', this.render);
 
       // make target-list items sortable
       $('.target-list.sortable').sortable({
@@ -109,6 +112,7 @@
     render: function() {
       var $list = this.$('ol.target-list').empty().show();
 
+      var rendered_items = [];
       this.collection.each(function(model) {
         var item = new CallPower.Views.TargetItemView({
           model: model,
@@ -126,13 +130,11 @@
           }
         });
 
-        $list.append($el);
+        rendered_items.push($el);
       }, this);
+      $list.append(rendered_items);
 
       $('.target-list.sortable').sortable('update');
-
-      // also serialize, just so we're sure inputs are in sync
-      this.serialize();
 
       return this;
     },
@@ -142,7 +144,7 @@
       var target_set = this.$el.find('#target-set');
 
       // clear any existing target_set-N inputs
-      target_set.empty();
+      target_set.find('input').remove('[name^="target_set-"]');
 
       this.collection.each(function(model, index) {
         // create new hidden inputs named target_set-N-FIELD
@@ -155,15 +157,22 @@
           target_set.append(input);
         });
       });
+
+      console.log(target_set);
     },
 
     deserialize: function() {
+      // destructive operation, create models from data in inputs
       var self = this;
 
+      // clear rendered targets
+      var $list = this.$('ol.target-list').empty();
+
       // figure out how many items we have
-      var target_set_length = this.$el.find('input[name="target_set-length"]').val();
+      var target_set_length = this.$el.find('input[name="target_set_length"]').val();
 
       // iterate over total
+      var items = []
       _(target_set_length).times(function(n) {
         var model = new CallPower.Models.Target();
         var fields = ['order','title','name','number'];
@@ -173,8 +182,9 @@
           var val = self.$el.find(sel).val();
           model.set(field, val);
         });
-        self.collection.add(model);
+        items.push(model);
       });
+      self.collection.reset(items);
     },
 
     events: {

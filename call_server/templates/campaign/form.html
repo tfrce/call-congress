@@ -92,16 +92,15 @@
     
                 <!-- target_set entries stored as hidden inputs named target_set-N-FIELD -->
                 <div id="target-set" class="hidden">
+                    {% if form.target_set.data|length %}
+                    <input type="hidden" name="target_set_length" value="{{form.target_set|length}}" />
+                    {% endif %}
                     {% for t in form.target_set.data %}
                     <input type="hidden" name="target_set-{{loop.index0}}-order" value="{{loop.index0}}" />
                     <input type="hidden" name="target_set-{{loop.index0}}-title" value="{{t.title}}" />
                     <input type="hidden" name="target_set-{{loop.index0}}-name" value="{{t.name}}" />
                     <input type="hidden" name="target_set-{{loop.index0}}-number" value="{{t.number}}" />
                     {% endfor %}
-
-                    {% if form.target_set.data %}
-                    <input type="hidden" name="target_set-length" value="{{form.target_set|length}}" />
-                    {% endif %}
                 </div>
 
                 <ol class="target-list list-group sortable hide-initial"></ol>
