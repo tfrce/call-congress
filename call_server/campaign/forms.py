@@ -16,7 +16,7 @@ from ..political_data.constants import US_STATES
 
 from .models import Campaign, Target, TwilioPhoneNumber
 
-from ..utils import choice_items, choice_keys, choice_values, choice_values_flat, AttributeDict
+from ..utils import choice_items, choice_keys, choice_values, choice_values_flat
 
 
 class TargetForm(Form):
@@ -63,7 +63,7 @@ class CampaignForm(Form):
             self.call_limit = True
 
         # get_one_or_create Target from target_set?
-        
+
         return True
 
 
