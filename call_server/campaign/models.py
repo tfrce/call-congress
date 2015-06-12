@@ -26,7 +26,8 @@ class Campaign(db.Model):
     target_ordering = db.Column(db.String(STRING_LEN))
 
     allow_call_in = db.Column(db.Boolean)
-    phone_number_set = db.relationship(u'TwilioPhoneNumber', secondary=u'campaign_phone_numbers', backref=db.backref('campaign'))
+    phone_number_set = db.relationship(u'TwilioPhoneNumber', secondary=u'campaign_phone_numbers',
+                                       backref=db.backref('campaign', uselist=False))
     call_maximum = db.Column(db.SmallInteger, nullable=True)
 
     status_code = db.Column(db.SmallInteger, default=PAUSED)
