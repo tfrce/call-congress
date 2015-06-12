@@ -134,8 +134,11 @@
 
     validateTargetList: function(formGroup) {
       // if type == custom, ensure we have targets
-      return ($('select#campaign_type').val() === "custom") &&
-             !!(CallPower.campaignForm.targetListView.collection.length);
+      if ($('select#campaign_type').val() === "custom") {
+        return !!CallPower.campaignForm.targetListView.collection.length;
+      } else {
+        return true;
+      }
     },
 
     validateSelected: function(formGroup) {
