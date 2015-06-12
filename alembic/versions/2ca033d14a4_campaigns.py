@@ -23,8 +23,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.Column('number', sqlalchemy_utils.types.phone_number.PhoneNumberType(length=20), nullable=True),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('campaign_campaign',
     sa.Column('id', sa.Integer(), nullable=False),

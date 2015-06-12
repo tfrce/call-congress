@@ -1,14 +1,14 @@
 """ add campaign_type and campaign_subtype fields
 
 Revision ID: 36c68d24bd98
-Revises: 5108bec7e545
+Revises: 3a64ac078961
 Create Date: 2015-06-11 13:06:02.119709
 
 """
 
 # revision identifiers, used by Alembic.
 revision = '36c68d24bd98'
-down_revision = '5108bec7e545'
+down_revision = '3a64ac078961'
 branch_labels = None
 depends_on = None
 
