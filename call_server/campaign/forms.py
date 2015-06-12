@@ -70,13 +70,13 @@ class CampaignForm(Form):
 
 class CampaignRecordForm(Form):
     next = HiddenField()
-    name = TextField(_('Campaign Name'), [Required()])
-    msg_intro = FileField(_('Introduction'))
-    msg_location = FileField(_('Location Prompt'))
+    name = TextField(_('Campaign Name'))
+    msg_intro = FileField(_('Introduction'), [Required()])
+    msg_location = FileField(_('Location Prompt'), [Required()])
     msg_invalid_location = FileField(_('Invalid Location'))
     msg_choose_target = FileField(_('Choose Target'))
     msg_between_calls = FileField(_('Between Calls'))
-    msg_final_thanks = FileField(_('Final Thanks'))
+    msg_final_thanks = FileField(_('Final Thanks'), [Required()])
 
     display_script = TextField(_('Display Script'), widget=TextArea())
     embed_code = TextField(_('Embed Code'), widget=TextArea())
