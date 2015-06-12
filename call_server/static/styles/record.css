@@ -1,3 +1,10 @@
 .btn-group.audio button .text {
     display: block;
 }
+
+.microphone.modal canvas.meter {
+    display:block;
+    margin: 1em auto;
+    border:1px solid #ddd;
+    background: #eee;
+}

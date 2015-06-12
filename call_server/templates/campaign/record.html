@@ -98,12 +98,8 @@
 
 {% block scripts %}
 
-<script type="text/template" id="audio-record-overlay-tmpl">
-    <ul class="dropdown-menu open">
-      <li role="presentation" class="dropdown-header">
-        Search Results <span class="close btn btn-xs">&times;</span>
-      </li>
-    </ul>
+<script type="text/template" id="microphone-modal-tmpl">
+{% include "campaign/microphone.html" %}
 </script>
 
 {% endblock %}

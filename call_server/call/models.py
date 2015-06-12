@@ -21,7 +21,7 @@ class Call(db.Model):
     target = db.relationship('Target')
 
     # user attributes
-    phone_hash = db.Column(db.String(64))  # hashed phone number
+    phone_hash = db.Column(db.String(64), nullable=True)  # hashed phone number (optional)
     location = db.Column(db.String(STRING_LEN))  # provided location
 
     # twilio attributes

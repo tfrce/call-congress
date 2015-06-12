@@ -139,6 +139,7 @@ def configure_assets(app):
                        'bower_components/underscore/underscore-min.js',
                        'bower_components/backbone/backbone.js',
                        'bower_components/html.sortable/dist/html.sortable.min.js',
+                       'bower_components/volume-meter/volume-meter.js',
                        filters='rjsmin', output='dist/js/vendor.js')
     assets.register('vendor_js', vendor_js)
 

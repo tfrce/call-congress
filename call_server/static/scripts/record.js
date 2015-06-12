@@ -5,16 +5,30 @@
     el: $('form#record'),
 
     events: {
-      '.audio .record': 'onRecord',
-      '.audio .play': 'onPlay',
-      '.audio .upload': 'onUpload',
-      '.audio .version': 'onVersion',
+      'click .record': 'onRecord',
+      'click .play': 'onPlay',
+      'click .upload': 'onUpload',
+      'click .version': 'onVersion',
 
       'submit': 'submitForm'
     },
 
     initialize: function() {
+      console.log('record form');
 
+    },
+
+    onRecord: function(event) {
+      event.preventDefault();
+      console.log('onRecord');
+
+      // pull modal info from related fields
+      var inputGroup = $(event.target).parents('.input-group');
+      var modal = { name: inputGroup.prev('label').text(),
+                    example_text: inputGroup.next('.description').text()
+                  };
+      this.microphoneView = new CallPower.Views.MicrophoneModal();
+      this.microphoneView.render(modal);
     },
 
     validateForm: function() {
