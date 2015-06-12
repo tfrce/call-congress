@@ -14,6 +14,7 @@
 
   CallPower.Collections.TargetList = Backbone.Collection.extend({
     model: CallPower.Models.Target,
+    comparator: 'order'
   });
 
   CallPower.Views.TargetItemView = Backbone.View.extend({
@@ -26,6 +27,7 @@
 
     render: function() {
       var html = this.template(this.model.toJSON());
+      this.$el.attr('id', 'target_set-'+this.model.get('order'));
       this.$el.html(html);
       return this;
     },
@@ -90,23 +92,23 @@
     el: '#set-targets',
 
     initialize: function() {
-      // re-render on collection changes
       this.collection = new CallPower.Collections.TargetList();
-      
-      // check for serialized items
-      if(this.$el.find('input[name="target_set_length"]').val()) {
-        this.deserialize();
-        this.render();
-      }
-
       // bind to future render events
-      this.listenTo(this.collection, 'add change remove reset sort', this.render);
+      this.listenTo(this.collection, 'add remove sort reset', this.render);
 
       // make target-list items sortable
       $('.target-list.sortable').sortable({
          items: 'li',
          handle: '.handle',
-      }).bind('sortupdate', this.onReorder);
+      }).bind('sortupdate', this.onSortUpdate);
+    },
+
+    loadExistingItems: function() {
+      // check for items in serialized inputs
+      if(this.$el.find('input[name="target_set_length"]').val()) {
+        this.deserialize();
+        this.recalculateOrder(this);
+      }
     },
 
     render: function() {
@@ -167,8 +169,6 @@
           target_set.append(input);
         });
       });
-
-      console.log(target_set);
     },
 
     deserialize: function() {
@@ -182,7 +182,7 @@
       var target_set_length = this.$el.find('input[name="target_set_length"]').val();
 
       // iterate over total
-      var items = []
+      var items = [];
       _(target_set_length).times(function(n) {
         var model = new CallPower.Models.Target();
         var fields = ['order','title','name','number'];
@@ -204,18 +204,22 @@
     onAdd: function() {
       // create new empty item
       var item = this.collection.add({});
-      this.onReorder();
+      this.recalculateOrder(this);
     },
 
-    onReorder: function() {
+    onSortUpdate: function() {
       // because this event is bound by jQuery, 'this' is the element, not the parent view
       var view = CallPower.campaignForm.targetListView; // get a reference to it manually
-      
+      return view.recalculateOrder(); // pass it to the backbone view
+    },
+
+    recalculateOrder: function() {
+      var self = this;
       // iterate over DOM objects to set item order
       $('.target-list .list-group-item').each(function(index) {
         var elem = $(this); // in jquery.each, 'this' is the element
         var cid = elem.data('cid');
-        var item = view.collection.get(cid);
+        var item = self.collection.get(cid);
         if(item) { item.set('order', index); }
       });
     },

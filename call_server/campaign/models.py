@@ -22,7 +22,7 @@ class Campaign(db.Model):
     segment_by = db.Column(db.String(STRING_LEN))
     target_set = db.relationship(u'Target', secondary=u'campaign_target_sets',
                                  order_by='campaign_target_sets.c.order',
-                                 backref=db.backref('campaigns'))
+                                 backref=db.backref('campaign'))
     target_ordering = db.Column(db.String(STRING_LEN))
 
     allow_call_in = db.Column(db.Boolean)
@@ -72,6 +72,9 @@ class CampaignTarget(db.Model):
     campaign_id = db.Column(db.Integer, db.ForeignKey('campaign_campaign.id'))
     target_id = db.Column(db.Integer, db.ForeignKey('campaign_target.id'))
     order = db.Column(db.Integer())
+
+    campaign = db.relationship('Campaign', backref="CampaignTargets")
+    target = db.relationship('Target', backref="CampaignTargets")
 
 
 t_campaign_phone_numbers = db.Table(

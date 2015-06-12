@@ -3,6 +3,7 @@ from flask import (Blueprint, render_template, current_app, request,
 from flask.ext.login import login_required
 
 import json
+import sqlalchemy
 
 from ..extensions import db
 from ..utils import choice_items, choice_keys, choice_values_flat
@@ -47,20 +48,36 @@ def form(campaign_id=None):
 
     if form.validate_on_submit():
         # can't use populate_obj with nested forms, iterate over fields manually
-        # note, only handles one level deep
-        nested_forms = {'target_set': Target}
         for field in form:
-            if field.name in nested_forms.keys():
-                obj_list = []
-                for entry in field.data:
-                    nested_obj = nested_forms[field.name]()
-                    for (subfield, subval) in entry.items():
-                        setattr(nested_obj, subfield, subval)
-                    obj_list.append(nested_obj)
-                setattr(campaign, field.name, obj_list)
-            else:
+            if field.name != 'target_set':
                 setattr(campaign, field.name, field.data)
 
+        # handle target_set nested data
+        target_list = []
+        for target_data in form.target_set.data:
+            # create Target object
+            target = Target()
+            for (field, val) in target_data.items():
+                setattr(target, field, val)
+            db.session.add(target)
+            target_list.append(target)
+
+            # update or create CampaignTarget membership
+            try:
+                campaign_target = CampaignTarget.query.filter_by(campaign=campaign, target=target).one()
+            except sqlalchemy.orm.exc.NoResultFound:
+                # create a new one
+                campaign_target = CampaignTarget()
+                campaign_target.campaign = campaign
+                campaign_target.target = target
+            # update order
+            campaign_target.order = target_data['order']
+
+            db.session.add(campaign_target)
+            db.session.commit()
+
+        # save campaign.target_set
+        setattr(campaign, 'target_set', target_list)
         db.session.add(campaign)
         db.session.commit()
 
