@@ -1,25 +1,25 @@
 {% from "macros/_form.html" import render_field, render_label %}
 
-{% set button_class = 'btn btn-default btn-lg col-sm-3 col-xs-6' %}
+{% set button_class = 'btn btn-default col-sm-3 col-xs-6' %}
 
 {% macro render_audio(field, class_={}) %}
 <div class="form-group {{class_.get('group', '')}} {{field.id}} {% if field.errors %}error{% endif %}">
     {{ render_label(field, class_.get('label', '')) }}
     <div class="input-group col-sm-10">
         <div class="btn-group audio col-sm-10">
-            <button class="{{button_class}}">
+            <button class="{{button_class}} record">
                 <span class="glyphicon glyphicon-record"></span>
                 <span class="text">Record</span>
             </button>
-            <button class="{{button_class}}">
+            <button class="{{button_class}} play">
                 <span class="glyphicon glyphicon-play-circle"></span>
                 <span class="text">Play</span>
             </button>
-            <button class="{{button_class}}" id="{{field.id}}" name="{{field.name}}" type="file">
+            <button class="{{button_class}} upload" id="{{field.id}}" name="{{field.name}}" type="file">
                 <span class="glyphicon glyphicon-file"></span>
                 <span class="text">Upload</span>
             </button>
-            <button class="{{button_class}}">
+            <button class="{{button_class}} version">
                 <span class="glyphicon glyphicon-repeat"></span>
                 <span class="text">Version</span>
             </button>

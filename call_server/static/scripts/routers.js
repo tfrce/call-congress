@@ -12,7 +12,7 @@
     },
 
     recordForm: function(id) {
-      var recordForm = new CallPower.Views.RecordForm();
+      CallPower.recordForm = new CallPower.Views.RecordForm();
     }
   });
 })();
