@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy_utils.types import phone_number
+from flask_store.sqla import FlaskStoreType
 
 from ..extensions import db
 from ..utils import convert_to_dict, choice_values_flat
@@ -111,3 +112,25 @@ class TwilioPhoneNumber(db.Model):
     @classmethod
     def available_numbers(cls, limit=None):
         return TwilioPhoneNumber.query.limit(limit)
+
+
+class AudioRecording(db.Model):
+    __tablename__ = 'campaign_recording'
+
+    id = db.Column(db.Integer, primary_key=True)
+    campaign_id = db.Column(db.Integer, db.ForeignKey('campaign_campaign.id'))
+    key = db.Column(db.String(STRING_LEN), nullable=False)
+    selected = db.Column(db.Boolean, default=False)
+
+    file_storage = db.Column(FlaskStoreType(location='audio'))
+    version = db.Column(db.Integer, unique=True, autoincrement=True)
+    description = db.Column(db.String(STRING_LEN))
+
+    campaign = db.relationship('Campaign', backref="audiorecordings")
+
+
+    # ensure that each campaign/key can only have one selected version
+    __table_args__ = (db.UniqueConstraint('campaign_id', 'key', 'selected'), )
+
+    def __unicode__(self):
+        return "%s %s %s" % (self.campaign.name, self.key, self.version)

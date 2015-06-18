@@ -23,3 +23,6 @@ rest = APIManager()
 
 from flask_wtf.csrf import CsrfProtect
 csrf = CsrfProtect()
+
+from flask.ext.store import Store
+store = Store()

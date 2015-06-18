@@ -22,7 +22,7 @@ from .call import call
 from .campaign import campaign
 from .api import api
 
-from extensions import cache, db, babel, assets, login_manager, csrf, mail
+from extensions import cache, db, babel, assets, login_manager, csrf, mail, store
 
 DEFAULT_BLUEPRINTS = (
     site,
@@ -88,6 +88,7 @@ def init_extensions(app):
     csrf.init_app(app)
     mail.init_app(app)
     login_manager.init_app(app)
+    store.init_app(app)
 
     if app.config.get('DEBUG'):
         from flask_debugtoolbar import DebugToolbarExtension

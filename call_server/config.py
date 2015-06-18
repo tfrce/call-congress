@@ -36,6 +36,10 @@ class DefaultConfig(object):
 
     MAIL_SERVER = 'localhost'
 
+    STORE_PROVIDER = 'flask_store.providers.local.LocalProvider'
+    STORE_DOMAIN = 'http://127.0.0.1:5000'
+    STORE_PATH = '/uploads/'
+
 
 class ProductionConfig(DefaultConfig):
     DEBUG = False
@@ -57,6 +61,11 @@ class ProductionConfig(DefaultConfig):
 
     SQLALCHEMY_POOL_RECYCLE = 60 * 60  # 1 hour
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI')
+
+    STORE_PROVIDER = 'flask_store.providers.s3.S3Provider'
+    # TODO, change to S3GeventProvider when we re-enable gevent
+    STORE_S3_ACCESS_KEY = os.environ.get('S3_ACCESS_KEY')
+    STORE_S3_SECRET_KEY = os.environ.get('S3_SECRET_KEY')
 
 
 class DevelopmentConfig(DefaultConfig):
