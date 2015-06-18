@@ -100,8 +100,8 @@
         $('#target-search button.search').attr('disabled', false);
         $('#target-search').show();
         var segment_by = $('input[name="segment_by"]:checked');
-        // unless segment_by is also custom
-        if (segment_by.val() !== 'custom') {
+        // unless segment_by is other
+        if (segment_by.val() !== 'other') {
           $('#set-targets').hide();
         }
       }
@@ -121,7 +121,10 @@
         $('.form-group.segment_location').hide();
       }
 
+      if (selected.val() === "other") {
         $('#set-targets').show();
+      } else {
+        $('#set-targets').hide();
       }
     },
 
@@ -136,11 +139,11 @@
     },
 
     validateSegmentBy: function(formGroup) {
-      // if campaignType is custom or local, segmentBy must equal custom
+      // if campaignType is custom or local, segmentBy must equal other
       var campaignType = $('select#campaign_type').val();
       if (campaignType === "custom" || campaignType === "local") {
         var segmentBy = $('input[name="segment_by"]:checked').val();
-        if (segmentBy === "custom") { return true; }
+        if (segmentBy === "other") { return true; }
         else { return false; }
       }
       return true;
