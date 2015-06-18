@@ -10,7 +10,7 @@ from wtforms.widgets import TextArea
 from wtforms.validators import Required, Optional, AnyOf, NumberRange, ValidationError
 
 from .constants import (CAMPAIGN_CHOICES, CAMPAIGN_NESTED_CHOICES,
-                        SEGMENT_BY_CHOICES, ORDERING_CHOICES,
+                        SEGMENT_BY_CHOICES, LOCATION_CHOICES, ORDERING_CHOICES,
                         CAMPAIGN_STATUS)
 from ..political_data.constants import US_STATES
 

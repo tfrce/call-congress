@@ -114,9 +114,13 @@
 
     changeSegmentBy: function() {
       var selected = $('input[name="segment_by"]:checked');
-      if (selected.val() !== "custom") {
-        $('#set-targets').hide();
+
+      if (selected.val() === 'location') {
+        $('.form-group.segment_location').show();
       } else {
+        $('.form-group.segment_location').hide();
+      }
+
         $('#set-targets').show();
       }
     },

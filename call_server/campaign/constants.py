@@ -31,9 +31,15 @@ CUSTOM_CAMPAIGN_CHOICES = [
 ]
 
 SEGMENT_BY_CHOICES = (
-    ('zipcode', 'Zipcode'),
-    ('lat_lon', 'Lat / Lon'),
-    ('custom', 'Custom')
+    ('', 'None'),
+    ('location', 'Location'),
+    ('other', 'Other')
+)
+
+LOCATION_CHOICES = (
+    ('', 'None'),
+    ('postal', 'ZIP / Postal Code'),
+    ('latlng', 'Lat / Lon')
 )
 
 ORDERING_CHOICES = (
