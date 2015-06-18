@@ -34,10 +34,10 @@
             <div class="form-group{% if field.errors %} error{% endif %}">
                 {{ render_label(field, label_width) }}
 
-                <div class="controls {{control_width}}">
-                {{ field(class_='') }}
-                {{ state(class_='inline hide-initial') }}
-                {{ nested_field(class_='nested inline', **{'data-nested-choices': CAMPAIGN_NESTED_CHOICES|json} ) }}
+                <div class="control-group {{control_width}}">
+                {{ field(class_='form-control inline') }}
+                {{ state(class_='form-control inline hide-initial') }}
+                {{ nested_field(class_='form-control inline nested', **{'data-nested-choices': CAMPAIGN_NESTED_CHOICES|json} ) }}
                 <div class="description">
                     <span class="glyphicon glyphicon-info-sign info small"></span>
                     <span class="help-inline">{{ descriptions.get(field.id)|safe }}</span>

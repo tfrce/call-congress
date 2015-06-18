@@ -56,6 +56,11 @@ select.block {
     float: right;
 }
 
+.form-control.inline {
+    width: auto;
+    display: inline-block;
+}
+
 input.form-control[type="radio"] {
     height: auto;
     width: auto;
