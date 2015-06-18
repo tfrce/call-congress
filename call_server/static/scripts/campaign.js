@@ -60,11 +60,11 @@
         nested_field.val('');
       }
 
-      // disable field if no choices present
+      // hide field if no choices present
       if (avail.length === 0) {
-        nested_field.prop('disabled', true);
+        nested_field.hide();
       } else {
-        nested_field.prop('disabled', false);
+        nested_field.show();
       }
 
       // special cases
@@ -88,17 +88,16 @@
         $('#target-search input[name="target-search"]').attr('placeholder', 'search Sunlight');
       }
 
-      // local or custom: no search, show custom target_set
+      // local or custom: no seegment or search, show custom target_set
       if (val === "custom" || val === "local") {
-        $('#target-search input[name="target-search"]').attr('placeholder', 'search unavailable');
-        $('#target-search input[name="target-search"]').attr('disabled', true);
-        $('#target-search button.search').attr('disabled', true);
-        //$('#target-search').hide();
+        $('.form-group.segment_by').hide();
+        $('#target-search').addClass('invisible');
+        
         $('#set-targets').show();
       } else {
-        $('#target-search input[name="target-search"]').attr('disabled', false);
-        $('#target-search button.search').attr('disabled', false);
-        $('#target-search').show();
+        $('.form-group.segment_by').show();
+        $('#target-search').removeClass('invisible');
+
         var segment_by = $('input[name="segment_by"]:checked');
         // unless segment_by is other
         if (segment_by.val() !== 'other') {
