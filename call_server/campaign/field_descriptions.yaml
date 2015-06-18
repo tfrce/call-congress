@@ -1,7 +1,7 @@
-campaign_type: This campaign targets which decision making body?
+campaign_type: This campaign targets which type of decision-makers?
 segment_by: Segment callers by attribute. Choose other for custom campaigns.
 segment_location: Determine location by which attribute?
-target_set: Lookup target phone numbers in Sunlight, or add them directly.
+target_set: Search for target phone numbers, or add them directly.
 target_ordering: |
     Default order is alphabetical by last name.
     Shuffle is re-done for every caller.
