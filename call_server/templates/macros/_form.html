@@ -14,7 +14,7 @@
         {% if field.description|safe %}
         <div class="description">
             <span class="glyphicon glyphicon-info-sign info small"></span>
-            <span class="help-inline">{{ field.description }}</span>
+            <span class="help-inline">{{ descriptions.get(field.id)|safe }}</span>
         </div>
         {%- endif %}
         {% if field.errors -%}
@@ -42,7 +42,7 @@
         {% if field.description %}
         <div class="description">
             <span class="glyphicon glyphicon-info-sign info small"></span>
-            <span class="help-inline">{{ field.description|safe }}</span>
+            <span class="help-inline">{{ descriptions.get(field.id)|safe }}</span>
         </div>
         {%- endif %}
         {% if field.errors -%}
@@ -63,7 +63,7 @@
         {% if field.description %}
         <div class="description">
             <span class="glyphicon glyphicon-info-sign info small"></span>
-            <span class="help-inline">{{ field.description|safe }}</span>
+            <span class="help-inline">{{ descriptions.get(field.id)|safe }}</span>
         </div>
         {%- endif %}
         {% if field.errors -%}

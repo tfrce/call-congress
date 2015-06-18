@@ -55,3 +55,6 @@ EMPTY_CHOICES = {'': ''}
 
 STRING_LEN = 100
 TWILIO_SID_LENGTH = 34
+
+import yaml
+FIELD_DESCRIPTIONS = yaml.load(open('call_server/campaign/field_descriptions.yaml'))

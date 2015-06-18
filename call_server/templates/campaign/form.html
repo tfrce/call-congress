@@ -1,4 +1,4 @@
-{% from "macros/_form.html" import render_field, render_label, render_input, render_button %}
+{% from "macros/_form.html" import render_field, render_label, render_input, render_button with context %}
 
 {% set label_width = 'col-sm-2' %}
 {% set control_width = 'col-sm-6' %}
@@ -40,7 +40,7 @@
                 {{ nested_field(class_='nested inline', **{'data-nested-choices': CAMPAIGN_NESTED_CHOICES|json} ) }}
                 <div class="description">
                     <span class="glyphicon glyphicon-info-sign info small"></span>
-                    <span class="help-inline">{{ field.description|safe }}</span>
+                    <span class="help-inline">{{ descriptions.get(field.id)|safe }}</span>
                 </div>
                 {% if field.errors -%}
                     {% for error in field.errors -%}
@@ -80,7 +80,7 @@
                         <button class="btn btn-primary add" type="button">Add</button>
                         <div class="description">
                             <span class="glyphicon glyphicon-info-sign info small"></span>
-                            <span class="help-inline">{{ form.target_set.description|safe }}</span>
+                            <span class="help-inline">{{ descriptions.get('target_set')|safe }}</span>
                         </div>
                     </div>
                 </div>

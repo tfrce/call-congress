@@ -29,20 +29,18 @@ class TargetForm(Form):
 class CampaignForm(Form):
     next = HiddenField()
     name = TextField(_('Campaign Name'), [Required()])
-    campaign_type = SelectField(_('Campaign Type'), [Required()], choices=choice_items(CAMPAIGN_CHOICES),
-                                description="Campaign targets which decision making body?")
+    campaign_type = SelectField(_('Campaign Type'), [Required()], choices=choice_items(CAMPAIGN_CHOICES), description=True)
     campaign_state = SelectField(_('State'), [Optional()], choices=choice_items(US_STATES))
     campaign_subtype = SelectField('', [AnyOf(choice_keys(choice_values_flat(CAMPAIGN_NESTED_CHOICES))), Optional()], )
     # nested_type passed to data-field in template, but starts empty
 
     segment_by = RadioField(_('Segment By'), [Optional()], choices=choice_items(SEGMENT_BY_CHOICES),
-                            default=SEGMENT_BY_CHOICES[0][0],
-                            description="Segment callers by geography or custom ordering.")
-    target_set = FieldList(FormField(TargetForm, _('Choose Targets')),
-                           description="Lookup target phone numbers in Sunlight, or add them directly.",
-                           validators=[Optional()])
+                            description=True, default=SEGMENT_BY_CHOICES[0][0])
+    segment_location = RadioField(_('Location'), [Optional()], choices=choice_items(LOCATION_CHOICES),
+                                  description=True, default=LOCATION_CHOICES[0][0])
+    target_set = FieldList(FormField(TargetForm, _('Choose Targets')), validators=[Optional()])
     target_ordering = RadioField(_('Order'), choices=choice_items(ORDERING_CHOICES),
-                                 default=ORDERING_CHOICES[0][0])
+                                description=True, default=ORDERING_CHOICES[0][0])
 
     call_limit = BooleanField(_('Limit Maximum Calls'), [Optional()], default=False)
     call_maximum = IntegerField(_('Call Maximum'), [Optional(), NumberRange(min=0)])

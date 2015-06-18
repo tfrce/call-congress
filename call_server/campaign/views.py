@@ -8,7 +8,7 @@ import sqlalchemy
 from ..extensions import db
 from ..utils import choice_items, choice_keys, choice_values_flat
 
-from .constants import CAMPAIGN_NESTED_CHOICES, CUSTOM_CAMPAIGN_CHOICES, EMPTY_CHOICES
+from .constants import CAMPAIGN_NESTED_CHOICES, CUSTOM_CAMPAIGN_CHOICES, EMPTY_CHOICES, FIELD_DESCRIPTIONS
 from .models import Campaign, Target, CampaignTarget
 from .forms import CampaignForm, CampaignRecordForm, CampaignStatusForm, TargetForm
 
@@ -88,6 +88,7 @@ def form(campaign_id=None):
         return redirect(url_for('campaign.record', campaign_id=campaign.id))
 
     return render_template('campaign/form.html', form=form, edit=edit,
+                           descriptions=FIELD_DESCRIPTIONS,
                            CAMPAIGN_NESTED_CHOICES=CAMPAIGN_NESTED_CHOICES,
                            CUSTOM_CAMPAIGN_CHOICES=CUSTOM_CAMPAIGN_CHOICES)
 
