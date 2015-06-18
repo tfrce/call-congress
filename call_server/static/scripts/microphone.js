@@ -19,7 +19,6 @@
     render: function(modal) {
       this.modal = modal; // save modal info
       var html = this.template(modal);
-      console.log(html);
       this.$el.html(html).modal('show');
       return this;
     },

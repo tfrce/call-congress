@@ -16,6 +16,19 @@
     initialize: function() {
       console.log('record form');
 
+      // webkit shim
+      window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
+      navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+      this.checkGetUserMedia();
+    },
+
+    checkGetUserMedia: function() {
+      if (navigator.getUserMedia === undefined) {
+        this.$el.find('button.record')
+          .attr('title', 'This feature not available in your browser.')
+          .attr('disabled', 'disabled');
+      }
     },
 
     onRecord: function(event) {
