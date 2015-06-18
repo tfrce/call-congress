@@ -69,6 +69,16 @@
 
       // special cases
 
+      // congress: show/hide target_ordering values senate_first and house_first
+      if ((val === 'congress' && nested_val === 'both') ||
+          (val === 'state' && nested_val === 'both')) {
+        $('input[name="target_ordering"][value="senate-first"]').parent('label').show();
+        $('input[name="target_ordering"][value="house-first"]').parent('label').show();
+      } else {
+        $('input[name="target_ordering"][value="senate-first"]').parent('label').hide();
+        $('input[name="target_ordering"][value="house-first"]').parent('label').hide();
+      }
+
       // state: show/hide campaign_state select
       if (val === 'state') {
         $('select[name="campaign_state"]').show();

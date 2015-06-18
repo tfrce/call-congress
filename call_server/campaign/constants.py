@@ -16,8 +16,8 @@ CAMPAIGN_CHOICES = (
 CAMPAIGN_NESTED_CHOICES = (
     ('', ''),
     (EXECUTIVE, (('president', 'President'), ('office', 'Office'))),
-    (CONGRESS, (('senate', 'Senate'), ('house', 'House'))),
-    (STATE, (('upper', 'Senate'), ('lower', 'House'), ('governor', 'Governor'))),
+    (CONGRESS, (('both', 'Both Bodies'), ('senate', 'Senate Only'), ('house', 'House Only'))),
+    (STATE, (('both', 'Both Bodies'), ('upper', 'Upper Body'), ('lower', 'Lower Body'), ('governor', 'Governor'))),
     (LOCAL, ()),
     (CUSTOM, ()),
 )
@@ -39,6 +39,8 @@ SEGMENT_BY_CHOICES = (
 ORDERING_CHOICES = (
     ('in-order', 'In Order'),
     ('shuffle', 'Shuffle'),
+    ('senate-first', 'Senate First'),
+    ('house-first', 'House First'),
 )
 
 ARCHIVED = 0
