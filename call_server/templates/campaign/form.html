@@ -31,7 +31,7 @@
             {% set state = form.campaign_state %}
             {% set nested_field = form.campaign_subtype %}
 
-            <div class="form-group{% if field.errors %} error{% endif %}">
+            <div class="form-group campaign_type {% if field.errors %}error{% endif %}">
                 {{ render_label(field, label_width) }}
 
                 <div class="control-group {{control_width}}">
@@ -54,6 +54,8 @@
                     {%- endfor %}
                 {%- endif %}
                 </div>
+
+                <span class="help-block"></span>
             </div>
         {% endwith %}
     </fieldset>

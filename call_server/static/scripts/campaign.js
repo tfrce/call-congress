@@ -8,8 +8,9 @@
       // generic
       'click a.radio-inline.clear': 'clearRadioChoices',
 
-      // campaign type
+      // campaign targets
       'change select#campaign_type':  'changeCampaignType',
+      'change select#campaign_subtype':  'changeCampaignType',
       'change input[name="segment_by"]': 'changeSegmentBy',
 
       // call limit
@@ -137,6 +138,23 @@
       }
     },
 
+    validateNestedSelect: function(formGroup) {
+      if ($('select.nested:visible').length) {
+        return !!$('select.nested option:selected').val();
+      } else {
+        return true;
+      }
+    },
+
+    validateState: function(formGroup) {
+      var campaignType = $('select#campaign_type').val();
+      if (campaignType === "state") {
+        return !!$('select[name="campaign_state"] option:selected').val();
+      } else {
+        return true;
+      }
+    },
+
     validateSegmentBy: function(formGroup) {
       // if campaignType is custom or local, segmentBy must equal other
       var campaignType = $('select#campaign_type').val();
@@ -178,8 +196,15 @@
     validateForm: function() {
       var isValid = true;
 
+      // campaign type
+      isValid = this.validateField($('.form-group.campaign_type'), this.validateState, 'Select a state') && isValid;
+      isValid = this.validateField($('.form-group.campaign_type'), this.validateNestedSelect, 'Select a sub-type') && isValid;
+
+      // campaign targets
       isValid = this.validateField($('.form-group.segment_by'), this.validateSegmentBy, 'Campaign type requires custom targeting') && isValid;
       isValid = this.validateField($('.form-group#set-targets'), this.validateTargetList, 'Add a custom target') && isValid;
+
+      // phone numbers
       isValid = this.validateField($('.form-group.phone_number_set'), this.validateSelected, 'Select a phone number') && isValid;
       
       return isValid;
