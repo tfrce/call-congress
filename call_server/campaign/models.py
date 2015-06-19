@@ -26,7 +26,7 @@ class Campaign(db.Model):
                                  backref=db.backref('campaign'))
     target_ordering = db.Column(db.String(STRING_LEN))
 
-    allow_call_in = db.Column(db.Boolean)
+    allow_call_in = db.Column(db.Boolean, default=False)
     phone_number_set = db.relationship(u'TwilioPhoneNumber', secondary=u'campaign_phone_numbers',
                                        backref=db.backref('campaign', uselist=False))
     call_maximum = db.Column(db.SmallInteger, nullable=True)
@@ -75,8 +75,8 @@ class CampaignTarget(db.Model):
     target_id = db.Column(db.Integer, db.ForeignKey('campaign_target.id'))
     order = db.Column(db.Integer())
 
-    campaign = db.relationship('Campaign', backref="CampaignTargets")
-    target = db.relationship('Target', backref="CampaignTargets")
+    campaign = db.relationship('Campaign', backref="campaigntargets")
+    target = db.relationship('Target', backref="campaigntargets")
 
 
 t_campaign_phone_numbers = db.Table(
