@@ -40,7 +40,7 @@ class CampaignForm(Form):
                                   description=True, default=LOCATION_CHOICES[0][0])
     target_set = FieldList(FormField(TargetForm, _('Choose Targets')), validators=[Optional()])
     target_ordering = RadioField(_('Order'), choices=choice_items(ORDERING_CHOICES),
-                                description=True, default=ORDERING_CHOICES[0][0])
+                                 description=True, default=ORDERING_CHOICES[0][0])
 
     call_limit = BooleanField(_('Limit Maximum Calls'), [Optional()], default=False)
     call_maximum = IntegerField(_('Call Maximum'), [Optional(), NumberRange(min=0)])
