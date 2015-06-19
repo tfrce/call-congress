@@ -16,14 +16,13 @@
     initialize: function() {
       console.log('record form');
 
-      // webkit shim
-      window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
-      navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-
       this.checkGetUserMedia();
     },
 
     checkGetUserMedia: function() {
+      // check for vendor prefixes
+      navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
       if (navigator.getUserMedia === undefined) {
         this.$el.find('button.record')
           .attr('title', 'This feature not available in your browser.')
@@ -33,7 +32,7 @@
 
     onRecord: function(event) {
       event.preventDefault();
-      console.log('onRecord');
+      console.log('launch record modal');
 
       // pull modal info from related fields
       var inputGroup = $(event.target).parents('.input-group');

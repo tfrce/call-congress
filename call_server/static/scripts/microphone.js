@@ -17,14 +17,27 @@
     },
 
     render: function(modal) {
-      this.modal = modal; // save modal info
+      this.modal = modal;
       var html = this.template(modal);
-      this.$el.html(html).modal('show');
+      this.$el.html(html);
+
+      this.meter = new CallPower.Views.AudioMeter();
+
+      var self = this;
+      this.$el.on('shown.bs.modal', function() {
+        // render meter after modal is visible
+        self.meter.render();
+      });
+      this.$el.on('hidden.bs.modal', function() {
+        self.meter.destroy();
+      });
+      this.$el.modal('show');
+
       return this;
     },
 
     onRecord: function() {
-
+      
     },
 
     onPlay: function() {
