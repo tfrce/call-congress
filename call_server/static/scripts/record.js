@@ -20,12 +20,12 @@
     },
 
     checkGetUserMedia: function() {
-      // check for vendor prefixes
+      // browser prefix shim
       navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
       if (navigator.getUserMedia === undefined) {
         this.$el.find('button.record')
-          .attr('title', 'This feature not available in your browser.')
+          .attr('title', 'This feature is not available in your browser.')
           .attr('disabled', 'disabled');
       }
     },

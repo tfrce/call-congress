@@ -2,9 +2,11 @@
     display: block;
 }
 
-.microphone.modal canvas.meter {
-    display:block;
+.microphone.modal .meter canvas {
+    display: block;
+    width: 100%;
     margin: 1em auto;
-    border:1px solid #ddd;
+    padding: 0;
+    border: 1px solid #ddd;
     background: #eee;
 }

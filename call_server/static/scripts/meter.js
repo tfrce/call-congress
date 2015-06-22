@@ -9,7 +9,7 @@
   CallPower.Views.AudioMeter = Backbone.View.extend({
     el: $('.meter'),
 
-    initialize: function() {
+    initialize: function(sourceId) {
       this.template = _.template($('#meter-canvas-tmpl').html());
 
       // bind getUserMedia triggered events to this backbone view
@@ -18,13 +18,29 @@
       this.mediaStreamSource = null;
       this.audioContext = null;
       this.meter = null;
-      this.WIDTH = 500;
-      this.HEIGHT = 50;
+      this.WIDTH = 500; //default, gets reset on page render
+      this.HEIGHT = 25;
       this.canvasContext = null;
       this.rafID = null;
+
+      // suppress chrome audio filters, which can cause feedback
+      this.filters = {
+        "audio": {
+              "mandatory": {
+                  "googEchoCancellation": "false",
+                  "googAutoGainControl": "false",
+                  "googNoiseSuppression": "false",
+                  "googHighpassFilter": "false"
+              },
+        }
+      };
+
+      if (sourceId) {
+        this.filters["audio"]["optional"] = [{ "sourceId": sourceId }];
+      }
     },
 
-    render: function(modal) {
+    render: function() {
       this.$el = $('.meter'); // re-bind once element is created
 
       var html = this.template({WIDTH: this.WIDTH, HEIGHT: this.HEIGHT});
@@ -33,22 +49,12 @@
       // get canvas context
       this.canvasContext = document.getElementById( "meter" ).getContext("2d");
 
-      // create meter from stream
-      navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+      // and newly calculated canvas width
+      this.WIDTH = $('#meter').width();
+      $('#meter').attr('width', this.WIDTH);
 
-      // suppress chrome's "helpful" filters, which actually cause epic feedback
-      var filters = {
-        "audio": {
-              "mandatory": {
-                  "googEchoCancellation": "false",
-                  "googAutoGainControl": "false",
-                  "googNoiseSuppression": "false",
-                  "googHighpassFilter": "false"
-              },
-              "optional": []
-        }
-      };
-      navigator.getUserMedia(filters, this.createMeterFromStream, this.streamError);
+      // connect meter to stream
+      navigator.getUserMedia(this.filters, this.createMeterFromStream, this.streamError);
 
       return this;
     },

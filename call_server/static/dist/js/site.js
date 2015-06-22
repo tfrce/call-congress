@@ -259,7 +259,7 @@ $(document).ready(function () {
   CallPower.Views.AudioMeter = Backbone.View.extend({
     el: $('.meter'),
 
-    initialize: function() {
+    initialize: function(sourceId) {
       this.template = _.template($('#meter-canvas-tmpl').html());
 
       // bind getUserMedia triggered events to this backbone view
@@ -268,13 +268,29 @@ $(document).ready(function () {
       this.mediaStreamSource = null;
       this.audioContext = null;
       this.meter = null;
-      this.WIDTH = 500;
-      this.HEIGHT = 50;
+      this.WIDTH = 500; //default, gets reset on page render
+      this.HEIGHT = 25;
       this.canvasContext = null;
       this.rafID = null;
+
+      // suppress chrome audio filters, which can cause feedback
+      this.filters = {
+        "audio": {
+              "mandatory": {
+                  "googEchoCancellation": "false",
+                  "googAutoGainControl": "false",
+                  "googNoiseSuppression": "false",
+                  "googHighpassFilter": "false"
+              },
+        }
+      };
+
+      if (sourceId) {
+        this.filters["audio"]["optional"] = [{ "sourceId": sourceId }];
+      }
     },
 
-    render: function(modal) {
+    render: function() {
       this.$el = $('.meter'); // re-bind once element is created
 
       var html = this.template({WIDTH: this.WIDTH, HEIGHT: this.HEIGHT});
@@ -283,22 +299,12 @@ $(document).ready(function () {
       // get canvas context
       this.canvasContext = document.getElementById( "meter" ).getContext("2d");
 
-      // create meter from stream
-      navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+      // and newly calculated canvas width
+      this.WIDTH = $('#meter').width();
+      $('#meter').attr('width', this.WIDTH);
 
-      // suppress chrome's "helpful" filters, which actually cause epic feedback
-      var filters = {
-        "audio": {
-              "mandatory": {
-                  "googEchoCancellation": "false",
-                  "googAutoGainControl": "false",
-                  "googNoiseSuppression": "false",
-                  "googHighpassFilter": "false"
-              },
-              "optional": []
-        }
-      };
-      navigator.getUserMedia(filters, this.createMeterFromStream, this.streamError);
+      // connect meter to stream
+      navigator.getUserMedia(this.filters, this.createMeterFromStream, this.streamError);
 
       return this;
     },
@@ -330,7 +336,7 @@ $(document).ready(function () {
     streamError: function(e) {
       var msg = 'Please allow microphone access in the permissions popup.';
       if (window.chrome !== undefined) {
-        msg = msg + '<br>You may need to remove this site from your media exceptions at <a href="#">chrome://settings/content</a>';
+        msg = msg + '<br>You may need to remove this site from your media exceptions at <a href="">chrome://settings/content</a>';
       }
       var flash = $('<div class="alert alert-warning">'+
                     '<button type="button" class="close" data-dismiss="alert">×</button>'+
@@ -366,6 +372,7 @@ $(document).ready(function () {
     className: 'microphone modal fade',
 
     events: {
+      'change select.source': 'setSource',
       'click .record': 'onRecord',
       'click .play': 'onPlay',
       'click .reset': 'onReset',
@@ -374,6 +381,7 @@ $(document).ready(function () {
 
     initialize: function() {
       this.template = _.template($('#microphone-modal-tmpl').html(), { 'variable': 'modal' });
+      _.bindAll(this, 'setup', 'destroy', 'getSources');
     },
 
     render: function(modal) {
@@ -381,19 +389,50 @@ $(document).ready(function () {
       var html = this.template(modal);
       this.$el.html(html);
 
-      this.meter = new CallPower.Views.AudioMeter();
-
       var self = this;
-      this.$el.on('shown.bs.modal', function() {
-        // render meter after modal is visible
-        self.meter.render();
-      });
-      this.$el.on('hidden.bs.modal', function() {
-        self.meter.destroy();
-      });
+      this.$el.on('shown.bs.modal', this.setup);
+      this.$el.on('hidden.bs.modal', this.destroy);
       this.$el.modal('show');
 
       return this;
+    },
+
+    setup: function() {
+      // get available sources (Chrome only)
+      if (MediaStreamTrack.getSources !== undefined) {
+        MediaStreamTrack.getSources( this.getSources );
+        this.setSource();
+      } else {
+        this.setSource();
+      }
+    },
+
+    destroy: function() {
+      this.meter.destroy();
+    },
+
+    getSources: function(sourceInfos) {
+      // fill in source info in selector
+      sourceSelect = $('select.source', this.$el);
+      sourceSelect.empty();
+
+      for (var i = 0; i !== sourceInfos.length; ++i) {
+        var sourceInfo = sourceInfos[i];
+        var option = $('<option></option>');
+        option.val(sourceInfo.id);
+        if (sourceInfo.kind === 'audio') {
+          option.text(sourceInfo.label || 'Microphone ' + (sourceSelect.children('option').length + 1));
+          sourceSelect.append(option);
+        }
+      }
+    },
+
+    setSource: function() {
+      var selectedSourceId = $('select.source', this.$el).children('option:selected').val();
+
+      // create and render meter
+      this.meter = new CallPower.Views.AudioMeter(selectedSourceId);
+      this.meter.render();
     },
 
     onRecord: function() {
@@ -438,12 +477,12 @@ $(document).ready(function () {
     },
 
     checkGetUserMedia: function() {
-      // check for vendor prefixes
+      // browser prefix shim
       navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
       if (navigator.getUserMedia === undefined) {
         this.$el.find('button.record')
-          .attr('title', 'This feature not available in your browser.')
+          .attr('title', 'This feature is not available in your browser.')
           .attr('disabled', 'disabled');
       }
     },
