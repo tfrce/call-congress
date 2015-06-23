@@ -19,6 +19,7 @@ class DefaultConfig(object):
 
     CSRF_ENABLED = False
 
+    INSTALLED_ORG = os.environ.get('INSTALLED_ORG')
     SITENAME = os.environ.get('SITENAME')
 
     TW_CLIENT = twilio.rest.TwilioRestClient(
