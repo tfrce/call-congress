@@ -15,15 +15,15 @@ The server lets callers:
 
 * Dial in directly to the campaign number
 * Fill out a web form and get a call back on their phone
-    * can specify target in the api call
-    * can have the user enter their zip code to look up the target
+    * specifying a target in the api call
+    * or entering their zip code to look up their location
 * Sign up for a call-back if the target is busy
 
 
 Campaign Configuration
 ----------------------
 
-# TODO update for new web interface
+### TODO update for new web interface
 
 
 Installation Instructions
@@ -33,7 +33,5 @@ Read detailed instrustions at [INSTALLATION.md](INSTALLATION.md)
 
 Updating political data
 --------------------------------
-Just download the latest data from Sunlight Congress API using:
 
-    cd data && make -B
-    git commit data/districts.csv data/legislators.csv
+### TODO update for new local search cache
