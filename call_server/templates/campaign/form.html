@@ -136,7 +136,7 @@
     <div class="form-group container">
         <div class="form-actions">
             {% if edit %}
-                <a class="btn btn-warning" href="status">Edit Status</a>
+                <a class="btn btn-warning" href="{{ url_for('campaign.status', campaign_id=campaign_id) }}">Edit Status</a>
             {%endif%}
             <div class="pull-right">
                 {{render_button(form.submit, {'field':'btn-success', 'icon':'arrow-right'}) }}

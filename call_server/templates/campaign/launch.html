@@ -1,0 +1,85 @@
+{% from "macros/_form.html" import render_field, render_label, render_button %}
+{% set label_width = 'col-sm-2' %}
+{% set control_width = 'col-sm-6 col-xs-12' %}
+{% macro render_field_default(field, offset='', control_class=control_width, group_class='', field_class='') %}
+    {%if offset%}{% set control_class = control_width+' '+offset %}{%endif%}
+    {{ render_field(field, class_={'label': label_width,
+                                   'control': control_class,
+                                   'group': group_class,
+                                   'field': field_class}
+                    ) }}
+{% endmacro %}
+
+{% extends "layouts/base_admin.html" %}
+
+{% block body %}
+<h3>Launch Campaign</h3>
+
+<form class="form-horizontal" id="launch" method="POST" action="" >
+    {{ form.hidden_tag() }}
+    <fieldset class="border">
+        <legend>Confirm Details</legend>
+
+        <table class="table table-bordered">
+            <tr><td>Name</td><td>{{campaign.name}}</td></tr>
+            <tr><td>Type</td><td>{{campaign.campaign_type_display()}}</td></tr>
+            <tr><td>Targets</td><td>{{campaign.target_set_display()|safe}}</td></tr>
+            <tr><td>Segment By</td><td>{{campaign.segment_by}}</td></tr>
+            <tr><td>Order</td><td>{{campaign.target_ordering}}</td></tr>
+            {% if campaign.call_maximum %}
+            <tr><td>Call Maximum</td><td></td></tr>
+            {% endif %}
+            <tr><td>Allow Call In</td><td>{{campaign.allow_call_in}}</td></tr>
+            <tr><td>Phone Numbers</td><td>{% for num in campaign.phone_number_set %}{{num}}{%if not loop.last%},{%endif%}{%endfor%}</td></tr>
+
+        </table>
+
+        <div class="form-group {{form.test_call_number.id}} ">
+            <label class="control-label col-sm-2 " for="{{form.test_call_number.id}}">{{form.test_call_number.label}}</label>
+
+            <div class="controls col-sm-3">
+                <input class="form-control " id="{{form.test_call_number.id}}" name="{{form.test_call_number.id}}" type="text" value="">
+                                
+                <span class="help-block"></span>
+            </div>
+
+            <div class="col-sm-3">
+                <button type="button" class="btn btn-primary">Test Call</button>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="border">
+        <legend>Embed</legend>
+
+        {{ render_field_default(form.display_script) }}
+        {{ render_field_default(form.embed_code, field_class='readonly') }}
+
+        <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#embed-advanced">Advanced Options</button>
+
+
+        <div class="panel panel-info collapse out" id="embed-advanced">
+            <div class="panel-heading">
+                <h3 class="panel-title">Advanced</h3>
+            </div>
+
+            <div class="panel-body">
+                {{ render_field_default(form.success_endpoint) }}
+                {{ render_field_default(form.form_id) }}
+                {{ render_field_default(form.display_script_id) }}
+            </div>
+        </div>
+
+    </fieldset>
+
+    <div class="form-group container">
+        <div class="form-actions">
+            
+            <div class="pull-right">
+                {{render_button(form.submit, {'field':'btn-success', 'icon':'send'}) }}
+            </div>
+        </div>
+    </div>
+
+</form>
+{% endblock %}

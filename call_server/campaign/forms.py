@@ -76,6 +76,14 @@ class CampaignRecordForm(Form):
     msg_between_calls = FileField(_('Between Calls'))
     msg_final_thanks = FileField(_('Final Thanks'), [Required()])
 
+    submit = SubmitField(_('Save and Test'))
+
+
+class CampaignLaunchForm(Form):
+    next = HiddenField()
+
+    test_call_number = TextField(_('Call Me'))
+
     display_script = TextField(_('Display Script'), widget=TextArea())
     embed_code = TextField(_('Embed Code'), widget=TextArea())
 
@@ -83,8 +91,7 @@ class CampaignRecordForm(Form):
     form_id = TextField(_('Form ID'))
     display_script_id = TextField(_('Display Script ID'))
 
-    submit = SubmitField(_('Save and Activate'))
-
+    submit = SubmitField(_('Launch'))
 
 class CampaignStatusForm(Form):
     status_code = RadioField(_("Status"), [AnyOf([str(val) for val in CAMPAIGN_STATUS.keys()])],

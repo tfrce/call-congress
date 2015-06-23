@@ -10,7 +10,7 @@ from ..utils import choice_items, choice_keys, choice_values_flat
 
 from .constants import CAMPAIGN_NESTED_CHOICES, CUSTOM_CAMPAIGN_CHOICES, EMPTY_CHOICES, FIELD_DESCRIPTIONS
 from .models import Campaign, Target, CampaignTarget
-from .forms import CampaignForm, CampaignRecordForm, CampaignStatusForm, TargetForm
+from .forms import CampaignForm, CampaignRecordForm, CampaignLaunchForm, CampaignStatusForm, TargetForm
 
 campaign = Blueprint('campaign', __name__, url_prefix='/admin/campaign')
 
@@ -33,9 +33,11 @@ def form(campaign_id=None):
     if edit:
         campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
         form = CampaignForm(obj=campaign)
+        campaign_id = campaign.id
     else:
         campaign = Campaign()
         form = CampaignForm()
+        campaign_id = None
 
     # for fields with dynamic choices, set to empty here in view
     # will be updated in client
@@ -87,7 +89,7 @@ def form(campaign_id=None):
             flash('Campaign created.', 'success')
         return redirect(url_for('campaign.record', campaign_id=campaign.id))
 
-    return render_template('campaign/form.html', form=form, edit=edit,
+    return render_template('campaign/form.html', form=form, edit=edit, campaign_id=campaign_id,
                            descriptions=FIELD_DESCRIPTIONS,
                            CAMPAIGN_NESTED_CHOICES=CAMPAIGN_NESTED_CHOICES,
                            CUSTOM_CAMPAIGN_CHOICES=CUSTOM_CAMPAIGN_CHOICES)
@@ -112,7 +114,20 @@ def record(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     form = CampaignRecordForm()
 
+    if form.validate_on_submit():
+        flash('Campaign audio updated.', 'success')
+        return redirect(url_for('campaign.launch', campaign_id=campaign.id))
+
     return render_template('campaign/record.html', campaign=campaign, form=form)
+
+
+@campaign.route('/launch/<int:campaign_id>', methods=['GET', 'POST'])
+@login_required
+def launch(campaign_id):
+    campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
+    form = CampaignLaunchForm()
+
+    return render_template('campaign/launch.html', campaign=campaign, form=form)
 
 
 @campaign.route('/status/<int:campaign_id>', methods=['GET', 'POST'])

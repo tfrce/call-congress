@@ -61,29 +61,6 @@
 
     </fieldset>
 
-    <fieldset class="border">
-        <legend>Embed</legend>
-
-        {{ render_field_default(form.display_script) }}
-        {{ render_field_default(form.embed_code, field_class='readonly') }}
-
-        <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#embed-advanced">Advanced Options</button>
-
-
-        <div class="panel panel-info collapse out" id="embed-advanced">
-            <div class="panel-heading">
-                <h3 class="panel-title">Advanced</h3>
-            </div>
-
-            <div class="panel-body">
-                {{ render_field_default(form.success_endpoint) }}
-                {{ render_field_default(form.form_id) }}
-                {{ render_field_default(form.display_script_id) }}
-            </div>
-        </div>
-
-    </fieldset>
-
     <div class="form-group container">
         <div class="form-actions">
             
