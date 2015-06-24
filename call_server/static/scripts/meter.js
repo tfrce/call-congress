@@ -9,7 +9,7 @@
   CallPower.Views.AudioMeter = Backbone.View.extend({
     el: $('.meter'),
 
-    initialize: function(sourceId) {
+    initialize: function(sourceId, getUserMediaCallback) {
       this.template = _.template($('#meter-canvas-tmpl').html());
 
       // bind getUserMedia triggered events to this backbone view
@@ -37,6 +37,10 @@
 
       if (sourceId) {
         this.filters["audio"]["optional"] = [{ "sourceId": sourceId }];
+      }
+
+      if(getUserMediaCallback) {
+        this.getUserMediaCallback = getUserMediaCallback;
       }
     },
 
@@ -78,6 +82,10 @@
       // create a new volume meter and connect it
       this.meter = createAudioMeter(this.audioContext);
       this.mediaStreamSource.connect(this.meter);
+
+      if(this.getUserMediaCallback) {
+        this.getUserMediaCallback(this.mediaStreamSource, this.audioContext);
+      }
 
       // kick off the visual updating
       this.drawLoop();

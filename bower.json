@@ -25,6 +25,7 @@
     "startbootstrap-sb-admin-2": "~1.0.7",
     "backbone": "~1.1.2",
     "html.sortable": "0.2.8",
-    "volume-meter": "cwilso/volume-meter"
+    "volume-meter": "cwilso/volume-meter",
+    "Recorderjs": "mattdiamond/Recorderjs"
   }
 }

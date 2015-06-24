@@ -144,8 +144,12 @@ def configure_assets(app):
                        'bower_components/backbone/backbone.js',
                        'bower_components/html.sortable/dist/html.sortable.min.js',
                        'bower_components/volume-meter/volume-meter.js',
+                       'bower_components/Recorderjs/recorder.js',
                        filters='rjsmin', output='dist/js/vendor.js')
     assets.register('vendor_js', vendor_js)
+
+    recorder_worker_js = Bundle('bower_components/Recorderjs/recorderWorker.js', output='dist/js/recorderWorker.js')
+    assets.register('recorder_worker_js', recorder_worker_js)
 
     vendor_css = Bundle('bower_components/bootstrap/dist/css/bootstrap.css',
                         'bower_components/bootstrap/dist/css/bootstrap-theme.css',
@@ -153,7 +157,7 @@ def configure_assets(app):
     assets.register('vendor_css', vendor_css)
 
     site_js = Bundle('scripts/*.js',
-                     filters='rjsmin', output='dist/js/site.js')
+                     output='dist/js/site.js')
     assets.register('site_js', site_js)
 
     site_css = Bundle('styles/*.css',

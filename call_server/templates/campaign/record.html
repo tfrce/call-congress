@@ -83,4 +83,8 @@
     <canvas id="meter" class="col-xs-12 col-sm-6" height="<%= HEIGHT %>"></canvas>
 </script>
 
+{% assets "recorder_worker_js" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+
 {% endblock %}
