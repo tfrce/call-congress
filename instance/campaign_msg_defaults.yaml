@@ -1,0 +1,11 @@
+msg_intro: Hi, this is {{name}} from {{organization}}. Welcome to Call Power.
+msg_intro_confirm: Press star to get started.
+msg_location: >
+    Please enter your zip code so we can lookup your Congress person.
+msg_invalid_location: Sorry, that zip code didn't work. Please try again.
+msg_call_block_intro: >
+    {{#many_reps}}We'll now connect you to {{n_reps}} representatives. Press
+    star for the next rep.{{/many_reps}}
+msg_rep_intro: We're now connecting you to {{title}} {{name}}
+msg_between_calls: You're doing great - here's the next call.
+msg_final_thanks: Thank you!

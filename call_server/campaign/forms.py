@@ -73,6 +73,7 @@ class CampaignRecordForm(Form):
     msg_location = FileField(_('Location Prompt'), [Required()])
     msg_invalid_location = FileField(_('Invalid Location'))
     msg_choose_target = FileField(_('Choose Target'))
+    msg_call_block_intro = FileField(_('Call Block Introduction'))
     msg_between_calls = FileField(_('Between Calls'))
     msg_final_thanks = FileField(_('Final Thanks'), [Required()])
 
@@ -92,6 +93,7 @@ class CampaignLaunchForm(Form):
     display_script_id = TextField(_('Display Script ID'))
 
     submit = SubmitField(_('Launch'))
+
 
 class CampaignStatusForm(Form):
     status_code = RadioField(_("Status"), [AnyOf([str(val) for val in CAMPAIGN_STATUS.keys()])],

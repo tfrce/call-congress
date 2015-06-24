@@ -30,8 +30,8 @@ def statistics():
 @login_required
 def system():
     twilio_numbers = TwilioPhoneNumber.query.all()
-    print twilio_numbers
     return render_template('admin/system.html',
+                           message_defaults=current_app.config.CAMPAIGN_MESSAGE_DEFAULTS,
                            twilio_numbers=twilio_numbers,
                            twilio_auth=current_app.config.get('TW_CLIENT').auth)
 

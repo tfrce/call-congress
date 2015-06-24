@@ -9,8 +9,12 @@
         <div class="modal-body">
             <div class="container-fluid">
                 <div class="row">
+                    <label class="control-label  col-sm-2">Description</label>
+                    <p><%= modal.description %></p>
+                </div>
+                <div class="row">
                     <label class="control-label  col-sm-2">Example Text</label>
-                    <textarea class="col-sm-8"><%= modal.example_text %></textarea>
+                    <samp><%= modal.example_text %></samp>
                 </div>
 
                 <br>

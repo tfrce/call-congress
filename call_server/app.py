@@ -11,7 +11,8 @@ import logging
 from flask import Flask, g, request, session
 from flask.ext.assets import Bundle
 
-from utils import json_markup
+from utils import json_markup, OrderedDictYAMLLoader
+import yaml
 
 from .config import DefaultConfig
 
@@ -57,9 +58,11 @@ def create_app(config=None, app_name=None, blueprints=None):
     configure_login(app)
     configure_assets(app)
 
+    # finally instance specific configurations
     context_processors(app)
+    instance_defaults(app)
 
-    app.logger.info('call_server started')
+    app.logger.info('Call Power started')
     app.logger.info('db at %s' % db.engine.url)
     return app
 
@@ -171,6 +174,13 @@ def context_processors(app):
 
     # json filter
     app.jinja_env.filters['json'] = json_markup
+
+
+def instance_defaults(app):
+    with app.open_instance_resource('campaign_field_descriptions.yaml') as f:
+        app.config.CAMPAIGN_FIELD_DESCRIPTIONS = yaml.load(f.read(), Loader=OrderedDictYAMLLoader)
+    with app.open_instance_resource('campaign_msg_defaults.yaml') as f:
+        app.config.CAMPAIGN_MESSAGE_DEFAULTS = yaml.load(f.read(), Loader=OrderedDictYAMLLoader)
 
 
 def configure_logging(app):

@@ -62,15 +62,21 @@
                 <th>{{ _('Type') }}</th>
                 <th>{{ _('Message') }}</th>
             </tr>
-        <tr></tr>
+        {% for msg_key,msg_text in message_defaults.items() %}
+            <tr>
+                <td>{{msg_key}}</td>
+                <td>{{msg_text}}</td>
+            </tr>
+        {% endfor %}
     </table>
+    <span class="help-block">Edit these defaults in <samp>APPLICATION_ROOT/instance/campaign_msg_defaults.yaml</samp></span>
     </fieldset>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script type="text/javascript">
-    /* TODO, move this to the map app js */
+    /* TODO, move this to the main app js */
     $(function(){
         $('button.js-reveal').on('click', function(event) {
             var input = $(event.target).parent().siblings('input');

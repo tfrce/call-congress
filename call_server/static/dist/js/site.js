@@ -401,7 +401,6 @@ $(document).ready(function () {
       // get available sources (Chrome only)
       if (MediaStreamTrack.getSources !== undefined) {
         MediaStreamTrack.getSources( this.getSources );
-        this.setSource();
       } else {
         this.setSource();
       }
@@ -425,6 +424,7 @@ $(document).ready(function () {
           sourceSelect.append(option);
         }
       }
+      this.setSource();
     },
 
     setSource: function() {
@@ -471,8 +471,6 @@ $(document).ready(function () {
     },
 
     initialize: function() {
-      console.log('record form');
-
       this.checkGetUserMedia();
     },
 
@@ -489,12 +487,12 @@ $(document).ready(function () {
 
     onRecord: function(event) {
       event.preventDefault();
-      console.log('launch record modal');
 
       // pull modal info from related fields
       var inputGroup = $(event.target).parents('.input-group');
       var modal = { name: inputGroup.prev('label').text(),
-                    example_text: inputGroup.next('.description').text()
+                    description: inputGroup.find('.description .help-inline').text(),
+                    example_text: inputGroup.find('.description .example-text').text()
                   };
       this.microphoneView = new CallPower.Views.MicrophoneModal();
       this.microphoneView.render(modal);

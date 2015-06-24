@@ -27,7 +27,8 @@
 
         <div class="description">
             <span class="glyphicon glyphicon-info-sign info"></span>
-            <span class="help-inline">{{ field.description|safe }}</span>
+            <span class="help-inline">{{ descriptions.get(field.id)|safe }}</span>
+            <span class="example-text hidden">{{ example_text.get(field.id)|safe }}</span>
         </div>
         {% if field.errors -%}
             {% for error in field.errors -%}
