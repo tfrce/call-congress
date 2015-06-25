@@ -6,7 +6,7 @@
             </button>
           <h4 class="modal-title">Record <%= modal.name %></h4>
         </div>
-        <div class="modal-body">
+        <form class="modal-body">
             <div class="container-fluid">
                 <div class="row">
                     <label class="control-label col-sm-2">Description</label>
@@ -27,9 +27,10 @@
                     </div>
 
                     <div class="btn-group">
-                        <button class="btn btn-default upload">
+                        <button class="btn btn-default btn-file">
                             <span class="glyphicon glyphicon-file"></span>
                             <span class="text">Upload</span>
+                            <input class="upload" type="file" />
                         </button>
                     </div>
                 </div>
@@ -59,6 +60,6 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
