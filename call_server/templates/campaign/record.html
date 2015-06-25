@@ -83,8 +83,17 @@
     <canvas id="meter" class="col-xs-12 col-sm-6" height="<%= HEIGHT %>"></canvas>
 </script>
 
-{% assets "recorder_worker_js" %}
+{% assets "audio_js" %}
 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 {% endassets %}
+
+{# define encoding assets in template instead of creating a bunch of bundles #}
+{% assets output="dist/js/libopus.js", "bower_components/Recorderjs/libopus.js" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{%endassets%}
+<!-- define worker assets, but do not insert script tags -->
+{% assets output="dist/js/oggopusDecoder.js", "bower_components/Recorderjs/oggopusDecoder.js" %}{%endassets%}
+{% assets output="dist/js/oggopusEncoder.js", "bower_components/Recorderjs/oggopusEncoder.js" %}{%endassets%}
+{% assets output="dist/js/resampler.js", "bower_components/Recorderjs/resampler.js" %}{%endassets%}
 
 {% endblock %}

@@ -9,39 +9,22 @@
   CallPower.Views.AudioMeter = Backbone.View.extend({
     el: $('.meter'),
 
-    initialize: function(sourceId, getUserMediaCallback) {
+    initialize: function(recorder) {
       this.template = _.template($('#meter-canvas-tmpl').html());
 
       // bind getUserMedia triggered events to this backbone view
-      _.bindAll(this, 'createMeterFromStream', 'drawLoop');
+      _.bindAll(this, 'drawLoop');
 
-      this.mediaStreamSource = null;
-      this.audioContext = null;
       this.meter = null;
       this.WIDTH = 500; //default, gets reset on page render
       this.HEIGHT = 25;
       this.canvasContext = null;
       this.rafID = null;
 
-      // suppress chrome audio filters, which can cause feedback
-      this.filters = {
-        "audio": {
-              "mandatory": {
-                  "googEchoCancellation": "false",
-                  "googAutoGainControl": "false",
-                  "googNoiseSuppression": "false",
-                  "googHighpassFilter": "false"
-              },
-        }
-      };
-
-      if (sourceId) {
-        this.filters["audio"]["optional"] = [{ "sourceId": sourceId }];
-      }
-
-      if(getUserMediaCallback) {
-        this.getUserMediaCallback = getUserMediaCallback;
-      }
+      // get stream source from audio context
+      this.mediaStreamSource = recorder.audioContext.createMediaStreamSource(recorder.stream);
+      this.meter = createAudioMeter(recorder.audioContext);
+      this.mediaStreamSource.connect(this.meter);
     },
 
     render: function() {
@@ -57,49 +40,10 @@
       this.WIDTH = $('#meter').width();
       $('#meter').attr('width', this.WIDTH);
 
-      // connect meter to stream
-      navigator.getUserMedia(this.filters, this.createMeterFromStream, this.streamError);
-
-      return this;
-    },
-
-    destroy: function() {
-      this.undelegateEvents();
-      this.$el.removeData().unbind();
-
-      this.remove();
-      Backbone.View.prototype.remove.call(this);
-    },
-
-    createMeterFromStream: function(stream) {
-      // get audio context
-      window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
-      this.audioContext = new AudioContext();
-
-      // create an AudioNode from the stream
-      this.mediaStreamSource = this.audioContext.createMediaStreamSource(stream);
-
-      // create a new volume meter and connect it
-      this.meter = createAudioMeter(this.audioContext);
-      this.mediaStreamSource.connect(this.meter);
-
-      if(this.getUserMediaCallback) {
-        this.getUserMediaCallback(this.mediaStreamSource, this.audioContext);
-      }
-
       // kick off the visual updating
       this.drawLoop();
-    },
 
-    streamError: function(e) {
-      var msg = 'Please allow microphone access in the permissions popup.';
-      if (window.chrome !== undefined) {
-        msg = msg + '<br>You may need to remove this site from your media exceptions at <a href="">chrome://settings/content</a>';
-      }
-      var flash = $('<div class="alert alert-warning">'+
-                    '<button type="button" class="close" data-dismiss="alert">×</button>'+
-                    msg+'</div>');
-      $('#global_message_container').empty().append(flash).show();
+      return this;
     },
 
     drawLoop: function(time) {
@@ -117,6 +61,15 @@
 
       // set up the next visual callback
       this.rafID = window.requestAnimationFrame( this.drawLoop );
+    },
+
+    destroy: function() {
+      this.meter.shutdown();
+      this.undelegateEvents();
+      this.$el.removeData().unbind();
+
+      this.remove();
+      Backbone.View.prototype.remove.call(this);
     },
 
   });

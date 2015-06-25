@@ -259,39 +259,22 @@ $(document).ready(function () {
   CallPower.Views.AudioMeter = Backbone.View.extend({
     el: $('.meter'),
 
-    initialize: function(sourceId, getUserMediaCallback) {
+    initialize: function(recorder) {
       this.template = _.template($('#meter-canvas-tmpl').html());
 
       // bind getUserMedia triggered events to this backbone view
-      _.bindAll(this, 'createMeterFromStream', 'drawLoop');
+      _.bindAll(this, 'drawLoop');
 
-      this.mediaStreamSource = null;
-      this.audioContext = null;
       this.meter = null;
       this.WIDTH = 500; //default, gets reset on page render
       this.HEIGHT = 25;
       this.canvasContext = null;
       this.rafID = null;
 
-      // suppress chrome audio filters, which can cause feedback
-      this.filters = {
-        "audio": {
-              "mandatory": {
-                  "googEchoCancellation": "false",
-                  "googAutoGainControl": "false",
-                  "googNoiseSuppression": "false",
-                  "googHighpassFilter": "false"
-              },
-        }
-      };
-
-      if (sourceId) {
-        this.filters["audio"]["optional"] = [{ "sourceId": sourceId }];
-      }
-
-      if(getUserMediaCallback) {
-        this.getUserMediaCallback = getUserMediaCallback;
-      }
+      // get stream source from audio context
+      this.mediaStreamSource = recorder.audioContext.createMediaStreamSource(recorder.stream);
+      this.meter = createAudioMeter(recorder.audioContext);
+      this.mediaStreamSource.connect(this.meter);
     },
 
     render: function() {
@@ -307,49 +290,10 @@ $(document).ready(function () {
       this.WIDTH = $('#meter').width();
       $('#meter').attr('width', this.WIDTH);
 
-      // connect meter to stream
-      navigator.getUserMedia(this.filters, this.createMeterFromStream, this.streamError);
-
-      return this;
-    },
-
-    destroy: function() {
-      this.undelegateEvents();
-      this.$el.removeData().unbind();
-
-      this.remove();
-      Backbone.View.prototype.remove.call(this);
-    },
-
-    createMeterFromStream: function(stream) {
-      // get audio context
-      window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
-      this.audioContext = new AudioContext();
-
-      // create an AudioNode from the stream
-      this.mediaStreamSource = this.audioContext.createMediaStreamSource(stream);
-
-      // create a new volume meter and connect it
-      this.meter = createAudioMeter(this.audioContext);
-      this.mediaStreamSource.connect(this.meter);
-
-      if(this.getUserMediaCallback) {
-        this.getUserMediaCallback(this.mediaStreamSource, this.audioContext);
-      }
-
       // kick off the visual updating
       this.drawLoop();
-    },
 
-    streamError: function(e) {
-      var msg = 'Please allow microphone access in the permissions popup.';
-      if (window.chrome !== undefined) {
-        msg = msg + '<br>You may need to remove this site from your media exceptions at <a href="">chrome://settings/content</a>';
-      }
-      var flash = $('<div class="alert alert-warning">'+
-                    '<button type="button" class="close" data-dismiss="alert">×</button>'+
-                    msg+'</div>');
-      $('#global_message_container').empty().append(flash).show();
+      return this;
     },
 
     drawLoop: function(time) {
@@ -367,6 +311,15 @@ $(document).ready(function () {
 
       // set up the next visual callback
       this.rafID = window.requestAnimationFrame( this.drawLoop );
+    },
+
+    destroy: function() {
+      this.meter.shutdown();
+      this.undelegateEvents();
+      this.$el.removeData().unbind();
+
+      this.remove();
+      Backbone.View.prototype.remove.call(this);
     },
 
   });
@@ -389,7 +342,7 @@ $(document).ready(function () {
 
     initialize: function() {
       this.template = _.template($('#microphone-modal-tmpl').html(), { 'variable': 'modal' });
-      _.bindAll(this, 'setup', 'destroy', 'getSources', 'connectRecorder');
+      _.bindAll(this, 'setup', 'destroy', 'getSources', 'streamError', 'connectMeter');
     },
 
     render: function(modal) {
@@ -414,7 +367,21 @@ $(document).ready(function () {
     },
 
     destroy: function() {
+      this.recorder.stop();
       this.meter.destroy();
+    },
+
+    streamError: function(e) {
+      this.recorder.state = "error";
+
+      var msg = 'Please allow microphone access in the permissions popup.';
+      if (window.chrome !== undefined) {
+        msg = msg + '<br>You may need to remove this site from your media exceptions at <a href="">chrome://settings/content</a>';
+      }
+      var flash = $('<div class="alert alert-warning">'+
+                    '<button type="button" class="close" data-dismiss="alert">×</button>'+
+                    msg+'</div>');
+      $('#global_message_container').empty().append(flash).show();
     },
 
     getSources: function(sourceInfos) {
@@ -437,44 +404,79 @@ $(document).ready(function () {
     setSource: function() {
       var selectedSourceId = $('select.source', this.$el).children('option:selected').val();
 
-      // create and render meter
-      this.meter = new CallPower.Views.AudioMeter(selectedSourceId, this.connectRecorder);
+      var recorderConfig = {
+        bitRate: 8000, // downsample to what Twilio expects
+        monitorGain: 0, // turn it up
+        encoderPath: '/static/dist/js/oggopusEncoder.js',
+        streamOptions: {
+            mandatory: {
+              // disable chrome filters
+              googEchoCancellation: false,
+              googAutoGainControl: false,
+              googNoiseSuppression: false,
+              googHighpassFilter: false
+            }
+        }
+      };
+
+      if (selectedSourceId) {
+         // set selected source in config
+        recorderConfig.streamOptions.optional = [{ sourceId: selectedSourceId }];
+      } // if not, uses default
+
+      // create recorder
+      this.recorder = new Recorder(recorderConfig);
+      this.recorder.addEventListener('streamError', this.streamError);
+      this.recorder.addEventListener('streamReady', this.connectMeter);
+      this.recorder.initStream();
+
+     
+    },
+
+    connectMeter: function() {
+       // connect audio meter
+      this.meter = new CallPower.Views.AudioMeter(this.recorder);
       this.meter.render();
     },
 
-    connectRecorder: function(source, audioContext) {
-      console.log('connectRecorder callback');
-      this.recorder = new Recorder(source, {
-        workerPath: '/static/dist/ds/recorderWorker.js'
-      });
-      this.recorder.recording = false;
-      this.audioContext = audioContext;
-    },
-
     onRecord: function() {
-      console.log('recorder.recording', this.recorder.recording);
-      if (this.recorder.recording) {
-        console.log('stop recording');
-        
-        // stop recording
-        this.recorder.stop();
-        this.recorder.recording = false;
+      console.log('recorder.state='+this.recorder.state);
 
-        // update button to show record
-        $('button.record .glyphicon', this.$el).removeClass('glyphicon-stop').addClass('glyphicon-record');
-        $('button.record .text', this.$el).text('Record');
-
-      } else {
+      if (this.recorder.state === 'error') {
+        console.log('reset source');
+        this.setSource();
+      } 
+      else if (this.recorder.state === 'inactive') {
         console.log('start recording');
 
         // start recording
-        this.recorder.record();
-        this.recorder.recording = true;
+        this.recorder.start();
 
-        // update button to show stop
-        $('button.record .glyphicon', this.$el).removeClass('glyphicon-record').addClass('glyphicon-stop');
-        $('button.record .text', this.$el).text('Stop');
+        $('button.record .glyphicon', this.$el).removeClass('glyphicon-record').addClass('glyphicon-pause');
+        $('button.record .text', this.$el).text('Pause');
+      }
+      else if (this.recorder.state === 'recording') {
+        console.log('pause recording');
+        
+        // stop recording
+        this.recorder.pause();
 
+        // update button to show record
+        $('button.record .glyphicon', this.$el).removeClass('glyphicon-pause').addClass('glyphicon-record');
+        $('button.record .text', this.$el).text('Record');
+      }
+      else if (this.recorder === 'paused') {
+        console.log('start recording');
+
+        // start recording
+        this.recorder.resume();
+
+        // update button to show pause
+        $('button.record .glyphicon', this.$el).removeClass('glyphicon-record').addClass('glyphicon-pause');
+        $('button.record .text', this.$el).text('Pause');
+      }
+      else {
+        console.error('recorder in invalid state');
       }
     },
 
@@ -494,7 +496,7 @@ $(document).ready(function () {
     },
 
     onReset: function() {
-      this.recorder.clear();
+      this.recorder.stop();
     },
 
     onSave: function() {

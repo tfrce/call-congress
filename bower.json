@@ -26,6 +26,7 @@
     "backbone": "~1.1.2",
     "html.sortable": "0.2.8",
     "volume-meter": "cwilso/volume-meter",
-    "Recorderjs": "mattdiamond/Recorderjs"
+    "Recorderjs": "chris-rudmin/Recorderjs",
+    "opus-recorderjs": "chris-rudmin/Recorderjs#~0.4.1"
   }
 }
