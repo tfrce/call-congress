@@ -429,6 +429,10 @@ $(document).ready(function () {
     },
 
     confirmClose: function(event) {
+      if (this.recorder && this.recorder.state === 'recording') {
+        return false;
+      }
+
       if (this.playback.attr('src')) {
         return confirm('You have recorded unsaved audio. Are you sure you want to close?');
       } else {
@@ -513,7 +517,9 @@ $(document).ready(function () {
       this.meter.render();
     },
 
-    onRecord: function() {
+    onRecord: function(event) {
+      event.preventDefault();
+      
       if (this.recorder.state === 'error') {
         // reset source
         this.setSource();
