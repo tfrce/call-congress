@@ -395,7 +395,7 @@ $(document).ready(function () {
 
     initialize: function() {
       this.template = _.template($('#microphone-modal-tmpl').html(), { 'variable': 'modal' });
-      _.bindAll(this, 'setup', 'destroy', 'getSources', 'streamError', 'connectMeter', 'dataAvailable');
+      _.bindAll(this, 'setup', 'confirmClose', 'destroy', 'getSources', 'streamError', 'connectMeter', 'dataAvailable');
     },
 
     render: function(modal) {
@@ -404,6 +404,7 @@ $(document).ready(function () {
       this.$el.html(html);
 
       this.$el.on('shown.bs.modal', this.setup);
+      this.$el.on('hide.bs.modal', this.confirmClose);
       this.$el.on('hidden.bs.modal', this.destroy);
       this.$el.modal('show');
 
@@ -420,16 +421,26 @@ $(document).ready(function () {
         }
       } else {
         $('button.record', this.$el).attr('disabled', true)
-          .attr('title','Recording not supported in this browser. Please record with another application and upload the file here.');
-        $('.control-group.source', this.$el).hide();
+          .attr('title','Sorry, recording is not supported in this browser.');
+        $('.control-group.source').html('<em>Please record an audio file with another application and upload it here.</em>');
       }
 
       this.playback = $('audio[name="playback"]', this.$el);
     },
 
+    confirmClose: function(event) {
+      if (this.playback.attr('src')) {
+        return confirm('You have recorded unsaved audio. Are you sure you want to close?');
+      } else {
+        return true;
+      }
+    },
+
     destroy: function() {
-      this.recorder.stop();
-      this.meter.destroy();
+      if (this.recorder) {
+        this.recorder.stop();
+        this.meter.destroy();
+      }
     },
 
     streamError: function(e) {
