@@ -15,7 +15,7 @@
 
     initialize: function() {
       this.template = _.template($('#microphone-modal-tmpl').html(), { 'variable': 'modal' });
-      _.bindAll(this, 'setup', 'destroy', 'getSources', 'streamError', 'connectMeter');
+      _.bindAll(this, 'setup', 'destroy', 'getSources', 'streamError', 'connectMeter', 'dataAvailable');
     },
 
     render: function(modal) {
@@ -37,6 +37,8 @@
       } else {
         this.setSource();
       }
+
+      this.playback = $('audio.playback', this.$el);
     },
 
     destroy: function() {
@@ -79,7 +81,6 @@
 
       var recorderConfig = {
         bitRate: 8000, // downsample to what Twilio expects
-        monitorGain: 0, // turn it up
         encoderPath: '/static/dist/js/oggopusEncoder.js',
         streamOptions: {
             mandatory: {
@@ -99,11 +100,14 @@
 
       // create recorder
       this.recorder = new Recorder(recorderConfig);
+      
+      // connect events
       this.recorder.addEventListener('streamError', this.streamError);
       this.recorder.addEventListener('streamReady', this.connectMeter);
-      this.recorder.initStream();
+      this.recorder.addEventListener('dataAvailable', this.dataAvailable);
 
-     
+      // start stream
+      this.recorder.initStream();
     },
 
     connectMeter: function() {
@@ -113,66 +117,58 @@
     },
 
     onRecord: function() {
-      console.log('recorder.state='+this.recorder.state);
-
       if (this.recorder.state === 'error') {
-        console.log('reset source');
+        // reset source
         this.setSource();
-      } 
+      }
       else if (this.recorder.state === 'inactive') {
-        console.log('start recording');
-
         // start recording
         this.recorder.start();
 
-        $('button.record .glyphicon', this.$el).removeClass('glyphicon-record').addClass('glyphicon-pause');
-        $('button.record .text', this.$el).text('Pause');
+        // button to stop
+        $('button.record .glyphicon', this.$el).removeClass('glyphicon-record').addClass('glyphicon-stop');
+        $('button.record .text', this.$el).text('Stop');
       }
       else if (this.recorder.state === 'recording') {
-        console.log('pause recording');
-        
         // stop recording
-        this.recorder.pause();
+        this.recorder.stop();
+        this.recorder.state = 'stopped'; // set custom state, so we know to re-init
 
-        // update button to show record
-        $('button.record .glyphicon', this.$el).removeClass('glyphicon-pause').addClass('glyphicon-record');
-        $('button.record .text', this.$el).text('Record');
+        // button to reset
+        $('button.record .glyphicon', this.$el).removeClass('glyphicon-stop').addClass('glyphicon-step-backward');
+        $('button.record .text', this.$el).text('Reset');
       }
-      else if (this.recorder === 'paused') {
-        console.log('start recording');
+      else if (this.recorder.state === 'stopped') {
+        // re-init streams
+        this.recorder.initStream();
+        this.recorder.state = 'inactive';
 
-        // start recording
-        this.recorder.resume();
+        // clear playback
+        this.playback.attr('controls', false);
+        this.playback.attr('src', '');
 
-        // update button to show pause
-        $('button.record .glyphicon', this.$el).removeClass('glyphicon-record').addClass('glyphicon-pause');
-        $('button.record .text', this.$el).text('Pause');
+        // button to record
+        $('button.record .glyphicon', this.$el).removeClass('glyphicon-step-backward').addClass('glyphicon-record');
+        $('button.record .text', this.$el).text('Record');
       }
       else {
         console.error('recorder in invalid state');
       }
     },
 
-    onPlay: function() {
-      var self = this;
-      this.recorder.getBuffer(function(buffers) {
-        var playbackSource = self.audioContext.createBufferSource();
-        var playbackBuffer = self.audioContext.createBuffer( 2, buffers[0].length, self.audioContext.sampleRate );
-        playbackBuffer.getChannelData(0).set(buffers[0]);
-        playbackBuffer.getChannelData(1).set(buffers[1]);
-        playbackSource.buffer = playbackBuffer;
+    dataAvailable: function(data) {
+      this.audioBlob = data.detail;
+      this.playback.attr('controls', true);
+      this.playback.attr('src',URL.createObjectURL(this.audioBlob));
 
-        playbackSource.connect( self.audioContext.destination );
-        playbackSource.start(0);
+      // reload media blob when done playing
+      this.playback.on('ended', function() {
+        this.load();
       });
-
-    },
-
-    onReset: function() {
-      this.recorder.stop();
     },
 
     onSave: function() {
+      // save blob to parent form as file
 
     },
 
