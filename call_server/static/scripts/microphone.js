@@ -31,11 +31,17 @@
     },
 
     setup: function() {
-      // get available sources (Chrome only)
-      if (MediaStreamTrack.getSources !== undefined) {
-        MediaStreamTrack.getSources( this.getSources );
+      if (Recorder && Recorder.isRecordingSupported()) {
+        // get available sources (Chrome only)
+        if (MediaStreamTrack.getSources !== undefined) {
+          MediaStreamTrack.getSources( this.getSources );
+        } else {
+          this.setSource();
+        }
       } else {
-        this.setSource();
+        $('button.record', this.$el).attr('disabled', true)
+          .attr('title','Recording not supported in this browser. Please record');
+        $('.control-group.source', this.$el).hide();
       }
 
       this.playback = $('audio.playback', this.$el);
@@ -100,7 +106,7 @@
 
       // create recorder
       this.recorder = new Recorder(recorderConfig);
-      
+
       // connect events
       this.recorder.addEventListener('streamError', this.streamError);
       this.recorder.addEventListener('streamReady', this.connectMeter);

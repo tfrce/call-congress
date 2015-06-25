@@ -26,21 +26,28 @@
                         </button>
                     </div>
 
-                    <div class="btn-group pull-right">
-                        <audio class="playback"></audio>
+                    <div class="btn-group">
+                        <button class="btn btn-default upload">
+                            <span class="glyphicon glyphicon-file"></span>
+                            <span class="text">Upload</span>
+                        </button>
                     </div>
                 </div>
 
                 <div class="row center-block col-xs-12">
                     <div class="meter"></div>
+
+                    <audio class="playback"></audio>
                 </div>
 
                 <div class="row">
-                    <label class="control-label" for="source">Source</label>
-                    <select class="source" name="source">
-                        <option value="">Default</option>
-                    </select>
-                 
+                    <div class="control-group source">
+                        <label class="control-label" for="source">Source</label>
+                        <select class="source" name="source">
+                            <option value="">Default</option>
+                        </select>
+                    </div>
+
                     <div class="input-group pull-right">
                         <button class="btn btn-default save">
                             <span class="glyphicon glyphicon-circle-arrow-down"></span>
