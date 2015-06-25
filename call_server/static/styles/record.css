@@ -10,3 +10,16 @@
     border: 1px solid #ddd;
     background: #eee;
 }
+
+.microphone.modal audio {
+    vertical-align: middle;
+}
+
+@-webkit-keyframes recording {
+    0% {color: black;}
+    100% {color: red;}
+}
+
+.glyphicon-record.active {
+	-webkit-animation: recording 0.75s ease-in-out alternate infinite;
+}

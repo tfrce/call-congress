@@ -1,6 +1,6 @@
 .hide-initial {
     display: none;
-    /* because bootstrap's default .hide and .hiddden use !important
+    /* because bootstrap's default .hide and .hidden use !important
     * which we can't easily override later with js */
 }
 

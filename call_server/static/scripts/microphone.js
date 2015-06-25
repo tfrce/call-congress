@@ -40,11 +40,11 @@
         }
       } else {
         $('button.record', this.$el).attr('disabled', true)
-          .attr('title','Recording not supported in this browser. Please record');
+          .attr('title','Recording not supported in this browser. Please record with another application and upload the file here.');
         $('.control-group.source', this.$el).hide();
       }
 
-      this.playback = $('audio.playback', this.$el);
+      this.playback = $('audio[name="playback"]', this.$el);
     },
 
     destroy: function() {
@@ -131,6 +131,10 @@
         // start recording
         this.recorder.start();
 
+        // show audio row and recording indicator
+        $('.playback').show();
+        $('.playback .glyphicon-record').addClass('active').show();
+
         // button to stop
         $('button.record .glyphicon', this.$el).removeClass('glyphicon-record').addClass('glyphicon-stop');
         $('button.record .text', this.$el).text('Stop');
@@ -139,6 +143,8 @@
         // stop recording
         this.recorder.stop();
         this.recorder.state = 'stopped'; // set custom state, so we know to re-init
+
+        $('.playback .glyphicon-record').removeClass('active').hide();
 
         // button to reset
         $('button.record .glyphicon', this.$el).removeClass('glyphicon-stop').addClass('glyphicon-step-backward');
@@ -152,6 +158,7 @@
         // clear playback
         this.playback.attr('controls', false);
         this.playback.attr('src', '');
+        $('.playback').hide();
 
         // button to record
         $('button.record .glyphicon', this.$el).removeClass('glyphicon-step-backward').addClass('glyphicon-record');
@@ -163,6 +170,7 @@
     },
 
     dataAvailable: function(data) {
+      console.log('dataAvailable');
       this.audioBlob = data.detail;
       this.playback.attr('controls', true);
       this.playback.attr('src',URL.createObjectURL(this.audioBlob));

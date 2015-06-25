@@ -25,6 +25,59 @@ $(document).ready(function () {
 /*global CallPower, Backbone */
 
 (function () {
+  CallPower.Views.CampaignAudioForm = Backbone.View.extend({
+    el: $('form#record'),
+
+    events: {
+      'click .record': 'onRecord',
+      'click .play': 'onPlay',
+      'click .upload': 'onUpload',
+      'click .version': 'onVersion',
+
+      'submit': 'submitForm'
+    },
+
+    initialize: function() {
+  
+    },
+
+    onRecord: function(event) {
+      event.preventDefault();
+
+      // pull modal info from related fields
+      var inputGroup = $(event.target).parents('.input-group');
+      var modal = { name: inputGroup.prev('label').text(),
+                    description: inputGroup.find('.description .help-inline').text(),
+                    example_text: inputGroup.find('.description .example-text').text()
+                  };
+      this.microphoneView = new CallPower.Views.MicrophoneModal();
+      this.microphoneView.render(modal);
+    },
+
+    validateForm: function() {
+      var isValid = true;
+
+      // call validators
+      
+      return isValid;
+    },
+
+    submitForm: function(event) {
+      event.preventDefault();
+
+      if (this.validateForm()) {
+        $(this.$el).unbind('submit').submit();
+        return true;
+      }
+      return false;
+    }
+
+  });
+
+})();
+/*global CallPower, Backbone */
+
+(function () {
   CallPower.Views.CampaignForm = Backbone.View.extend({
     el: $('form#campaign'),
 
@@ -358,14 +411,20 @@ $(document).ready(function () {
     },
 
     setup: function() {
-      // get available sources (Chrome only)
-      if (MediaStreamTrack.getSources !== undefined) {
-        MediaStreamTrack.getSources( this.getSources );
+      if (Recorder && Recorder.isRecordingSupported()) {
+        // get available sources (Chrome only)
+        if (MediaStreamTrack.getSources !== undefined) {
+          MediaStreamTrack.getSources( this.getSources );
+        } else {
+          this.setSource();
+        }
       } else {
-        this.setSource();
+        $('button.record', this.$el).attr('disabled', true)
+          .attr('title','Recording not supported in this browser. Please record with another application and upload the file here.');
+        $('.control-group.source', this.$el).hide();
       }
 
-      this.playback = $('audio.playback', this.$el);
+      this.playback = $('audio[name="playback"]', this.$el);
     },
 
     destroy: function() {
@@ -427,7 +486,7 @@ $(document).ready(function () {
 
       // create recorder
       this.recorder = new Recorder(recorderConfig);
-      
+
       // connect events
       this.recorder.addEventListener('streamError', this.streamError);
       this.recorder.addEventListener('streamReady', this.connectMeter);
@@ -444,32 +503,34 @@ $(document).ready(function () {
     },
 
     onRecord: function() {
-      console.log('recorder.state='+this.recorder.state);
       if (this.recorder.state === 'error') {
         // reset source
         this.setSource();
       }
       else if (this.recorder.state === 'inactive') {
-        console.log('start recording');
         // start recording
         this.recorder.start();
+
+        // show audio row and recording indicator
+        $('.playback').show();
+        $('.playback .glyphicon-record').addClass('active').show();
 
         // button to stop
         $('button.record .glyphicon', this.$el).removeClass('glyphicon-record').addClass('glyphicon-stop');
         $('button.record .text', this.$el).text('Stop');
       }
       else if (this.recorder.state === 'recording') {
-        console.log('stop recording');
         // stop recording
         this.recorder.stop();
         this.recorder.state = 'stopped'; // set custom state, so we know to re-init
+
+        $('.playback .glyphicon-record').removeClass('active').hide();
 
         // button to reset
         $('button.record .glyphicon', this.$el).removeClass('glyphicon-stop').addClass('glyphicon-step-backward');
         $('button.record .text', this.$el).text('Reset');
       }
       else if (this.recorder.state === 'stopped') {
-        console.log('re-init streams');
         // re-init streams
         this.recorder.initStream();
         this.recorder.state = 'inactive';
@@ -477,6 +538,7 @@ $(document).ready(function () {
         // clear playback
         this.playback.attr('controls', false);
         this.playback.attr('src', '');
+        $('.playback').hide();
 
         // button to record
         $('button.record .glyphicon', this.$el).removeClass('glyphicon-step-backward').addClass('glyphicon-record');
@@ -485,8 +547,6 @@ $(document).ready(function () {
       else {
         console.error('recorder in invalid state');
       }
-      console.log('recorder.state='+this.recorder.state);
-      console.log('');
     },
 
     dataAvailable: function(data) {
@@ -510,85 +570,21 @@ $(document).ready(function () {
   });
 
 })();
-/*global CallPower, Backbone */
-
-(function () {
-  CallPower.Views.RecordForm = Backbone.View.extend({
-    el: $('form#record'),
-
-    events: {
-      'click .record': 'onRecord',
-      'click .play': 'onPlay',
-      'click .upload': 'onUpload',
-      'click .version': 'onVersion',
-
-      'submit': 'submitForm'
-    },
-
-    initialize: function() {
-      this.checkGetUserMedia();
-    },
-
-    checkGetUserMedia: function() {
-      // browser prefix shim
-      navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-
-      if (navigator.getUserMedia === undefined) {
-        this.$el.find('button.record')
-          .attr('title', 'This feature is not available in your browser.')
-          .attr('disabled', 'disabled');
-      }
-    },
-
-    onRecord: function(event) {
-      event.preventDefault();
-
-      // pull modal info from related fields
-      var inputGroup = $(event.target).parents('.input-group');
-      var modal = { name: inputGroup.prev('label').text(),
-                    description: inputGroup.find('.description .help-inline').text(),
-                    example_text: inputGroup.find('.description .example-text').text()
-                  };
-      this.microphoneView = new CallPower.Views.MicrophoneModal();
-      this.microphoneView.render(modal);
-    },
-
-    validateForm: function() {
-      var isValid = true;
-
-      // call validators
-      
-      return isValid;
-    },
-
-    submitForm: function(event) {
-      event.preventDefault();
-
-      if (this.validateForm()) {
-        $(this.$el).unbind('submit').submit();
-        return true;
-      }
-      return false;
-    }
-
-  });
-
-})();
 (function () {
   CallPower.Routers.Campaign = Backbone.Router.extend({
     routes: {
       "campaign/create": "campaignForm",
       "campaign/edit/:id": "campaignForm",
       "campaign/copy/:id": "campaignForm",
-      "campaign/record/:id": "recordForm",
+      "campaign/audio/:id": "audioForm",
     },
 
     campaignForm: function(id) {
       CallPower.campaignForm = new CallPower.Views.CampaignForm();
     },
 
-    recordForm: function(id) {
-      CallPower.recordForm = new CallPower.Views.RecordForm();
+    audioForm: function(id) {
+      CallPower.campaignAudioForm = new CallPower.Views.CampaignAudioForm();
     }
   });
 })();
