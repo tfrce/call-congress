@@ -1,7 +1,7 @@
 /*global CallPower, Backbone */
 
 (function () {
-  CallPower.Views.RecordForm = Backbone.View.extend({
+  CallPower.Views.CampaignAudioForm = Backbone.View.extend({
     el: $('form#record'),
 
     events: {
@@ -14,18 +14,7 @@
     },
 
     initialize: function() {
-      this.checkGetUserMedia();
-    },
-
-    checkGetUserMedia: function() {
-      // browser prefix shim
-      navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-
-      if (navigator.getUserMedia === undefined) {
-        this.$el.find('button.record')
-          .attr('title', 'This feature is not available in your browser.')
-          .attr('disabled', 'disabled');
-      }
+  
     },
 
     onRecord: function(event) {

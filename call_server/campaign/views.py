@@ -10,7 +10,7 @@ from ..utils import choice_items, choice_keys, choice_values_flat
 
 from .constants import CAMPAIGN_NESTED_CHOICES, CUSTOM_CAMPAIGN_CHOICES, EMPTY_CHOICES
 from .models import Campaign, Target, CampaignTarget
-from .forms import CampaignForm, CampaignRecordForm, CampaignLaunchForm, CampaignStatusForm, TargetForm
+from .forms import CampaignForm, CampaignAudioForm, CampaignLaunchForm, CampaignStatusForm, TargetForm
 
 campaign = Blueprint('campaign', __name__, url_prefix='/admin/campaign')
 
@@ -87,7 +87,7 @@ def form(campaign_id=None):
             flash('Campaign updated.', 'success')
         else:
             flash('Campaign created.', 'success')
-        return redirect(url_for('campaign.record', campaign_id=campaign.id))
+        return redirect(url_for('campaign.audio', campaign_id=campaign.id))
 
     return render_template('campaign/form.html', form=form, edit=edit, campaign_id=campaign_id,
                            descriptions=current_app.config.CAMPAIGN_FIELD_DESCRIPTIONS,
@@ -108,17 +108,17 @@ def copy(campaign_id):
     return redirect(url_for('campaign.form', campaign_id=new_campaign.id))
 
 
-@campaign.route('/record/<int:campaign_id>', methods=['GET', 'POST'])
+@campaign.route('/audio/<int:campaign_id>', methods=['GET', 'POST'])
 @login_required
-def record(campaign_id):
+def audio(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
-    form = CampaignRecordForm()
+    form = CampaignAudioForm()
 
     if form.validate_on_submit():
         flash('Campaign audio updated.', 'success')
         return redirect(url_for('campaign.launch', campaign_id=campaign.id))
 
-    return render_template('campaign/record.html', campaign=campaign, form=form,
+    return render_template('campaign/audio.html', campaign=campaign, form=form,
                            descriptions=current_app.config.CAMPAIGN_FIELD_DESCRIPTIONS,
                            example_text=current_app.config.CAMPAIGN_MESSAGE_DEFAULTS)
 

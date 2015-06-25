@@ -66,7 +66,7 @@ class CampaignForm(Form):
         return True
 
 
-class CampaignRecordForm(Form):
+class CampaignAudioForm(Form):
     next = HiddenField()
     name = TextField(_('Campaign Name'))
     msg_intro = FileField(_('Introduction'), [Required()])

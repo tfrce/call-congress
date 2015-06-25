@@ -4,15 +4,15 @@
       "campaign/create": "campaignForm",
       "campaign/edit/:id": "campaignForm",
       "campaign/copy/:id": "campaignForm",
-      "campaign/record/:id": "recordForm",
+      "campaign/audio/:id": "audioForm",
     },
 
     campaignForm: function(id) {
       CallPower.campaignForm = new CallPower.Views.CampaignForm();
     },
 
-    recordForm: function(id) {
-      CallPower.recordForm = new CallPower.Views.RecordForm();
+    audioForm: function(id) {
+      CallPower.campaignAudioForm = new CallPower.Views.CampaignAudioForm();
     }
   });
 })();
