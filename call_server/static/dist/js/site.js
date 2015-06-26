@@ -26,7 +26,7 @@ $(document).ready(function () {
 
 (function () {
   CallPower.Views.CampaignAudioForm = Backbone.View.extend({
-    el: $('form#record'),
+    el: $('form#audio'),
 
     events: {
       'click .record': 'onRecord',
@@ -52,6 +52,14 @@ $(document).ready(function () {
                   };
       this.microphoneView = new CallPower.Views.MicrophoneModal();
       this.microphoneView.render(modal);
+    },
+
+    onPlay: function(event) {
+      event.preventDefault();
+    },
+
+    onVersion: function(event) {
+      event.preventDefault();
     },
 
     validateForm: function() {
@@ -319,8 +327,8 @@ $(document).ready(function () {
       _.bindAll(this, 'drawLoop');
 
       this.meter = null;
-      this.WIDTH = 500; //default, gets reset on page render
-      this.HEIGHT = 25;
+      this.WIDTH = 500; // default, gets reset on page render
+      this.HEIGHT = 30; // match button height
       this.canvasContext = null;
       this.rafID = null;
 
@@ -387,9 +395,10 @@ $(document).ready(function () {
 
     events: {
       'change select.source': 'setSource',
-      'click .record': 'onRecord',
-      'click .play': 'onPlay',
-      'click .reset': 'onReset',
+      'click .nav-tabs': 'switchTab',
+      'click .btn-record': 'onRecord',
+      'click .btn-file': 'onFile',
+      'click .btn-text-to-speech': 'toggleText',
       'submit': 'onSave'
     },
 
@@ -413,6 +422,8 @@ $(document).ready(function () {
 
     setup: function() {
       if (Recorder && Recorder.isRecordingSupported()) {
+        $('.nav-tabs a[href="#record"]', this.$el).tab('show');
+
         // get available sources (Chrome only)
         if (MediaStreamTrack.getSources !== undefined) {
           MediaStreamTrack.getSources( this.getSources );
@@ -420,12 +431,27 @@ $(document).ready(function () {
           this.setSource();
         }
       } else {
-        $('button.record', this.$el).attr('disabled', true)
+        console.log('switch to upload tab');
+        // switch to upload tab
+        $('.nav-tabs a[href="#upload"]', this.$el).tab('show');
+
+        // disable record tab
+        $('.nav-tabs a[href="#record"]', this.$el).parent('li').addClass('disabled')
           .attr('title','Sorry, recording is not supported in this browser.');
-        $('.control-group.source').html('<em>Please record an audio file with another application and upload it here.</em>');
       }
 
       this.playback = $('audio[name="playback"]', this.$el);
+    },
+
+    switchTab: function(event) {
+      event.preventDefault();
+      // set up tab behavior manually instead of relying on data-toggle
+      // because we have multiple modals on the page and IDs could conflict
+
+      var tabID = $(event.target).attr('href');
+      console.log('switch '+tabID);
+      $('.nav-tabs a[href="'+tabID+'"]', this.$el).tab('show');
+      return true;
     },
 
     confirmClose: function(event) {
@@ -519,7 +545,7 @@ $(document).ready(function () {
 
     onRecord: function(event) {
       event.preventDefault();
-      
+
       if (this.recorder.state === 'error') {
         // reset source
         this.setSource();
@@ -533,8 +559,8 @@ $(document).ready(function () {
         $('.playback .glyphicon-record').addClass('active').show();
 
         // button to stop
-        $('button.record .glyphicon', this.$el).removeClass('glyphicon-record').addClass('glyphicon-stop');
-        $('button.record .text', this.$el).text('Stop');
+        $('button.btn-record .glyphicon', this.$el).removeClass('glyphicon-record').addClass('glyphicon-stop');
+        $('button.btn-record .text', this.$el).text('Stop');
       }
       else if (this.recorder.state === 'recording') {
         // stop recording
@@ -544,8 +570,8 @@ $(document).ready(function () {
         $('.playback .glyphicon-record').removeClass('active').hide();
 
         // button to reset
-        $('button.record .glyphicon', this.$el).removeClass('glyphicon-stop').addClass('glyphicon-step-backward');
-        $('button.record .text', this.$el).text('Reset');
+        $('button.btn-record .glyphicon', this.$el).removeClass('glyphicon-stop').addClass('glyphicon-step-backward');
+        $('button.btn-record .text', this.$el).text('Reset');
       }
       else if (this.recorder.state === 'stopped') {
         // re-init streams
@@ -558,8 +584,8 @@ $(document).ready(function () {
         $('.playback').hide();
 
         // button to record
-        $('button.record .glyphicon', this.$el).removeClass('glyphicon-step-backward').addClass('glyphicon-record');
-        $('button.record .text', this.$el).text('Record');
+        $('button.btn-record .glyphicon', this.$el).removeClass('glyphicon-step-backward').addClass('glyphicon-record');
+        $('button.btn-record .text', this.$el).text('Record');
       }
       else {
         console.error('recorder in invalid state');
@@ -572,17 +598,34 @@ $(document).ready(function () {
       this.playback.attr('controls', true);
       this.playback.attr('src',URL.createObjectURL(this.audioBlob));
 
-      // reload media blob when done playing
+      // reload media blob when done playing, because Chrome won't do it automatically
       this.playback.on('ended', function() {
         this.load();
       });
     },
 
-    onSave: function() {
-      // save blob to parent form as file
+    validateForm: function() {
+      var isValid = true;
 
+      // require either recording, file upload selected, or text-to-speech entered
+      isValid = isValid && (this.playback.attr('src'))
+      
+      return isValid;
     },
 
+    onSave: function(event) {
+      event.preventDefault();
+      console.log('onSave');
+
+      // save blob to parent form as file
+
+
+      if (this.validateForm()) {
+        $(this.$el).unbind('submit').submit();
+        return true;
+      }
+      return false;
+    },
 
   });
 

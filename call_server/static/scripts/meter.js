@@ -16,8 +16,8 @@
       _.bindAll(this, 'drawLoop');
 
       this.meter = null;
-      this.WIDTH = 500; //default, gets reset on page render
-      this.HEIGHT = 25;
+      this.WIDTH = 500; // default, gets reset on page render
+      this.HEIGHT = 30; // match button height
       this.canvasContext = null;
       this.rafID = null;
 

@@ -17,43 +17,89 @@
                     <samp><%= modal.example_text %></samp>
                 </div>
 
-                <br>
-                <div class="row text-center col-xs-12">
-                    <div class="btn-group">
-                        <button class="btn btn-default record">
-                            <span class="glyphicon glyphicon-record"></span>
-                            <span class="text">Record</span>
-                        </button>
-                    </div>
+                <div class="row">
+                    <ul class="nav nav-tabs center">
+                        <li class="active"> <a href="#record" role="tab">
+                            <span class="glyphicon glyphicon-bullhorn"></span> Record</a>
+                        </li>
+                        <li> <a href="#upload" role="tab">
+                            <span class="glyphicon glyphicon-file"></span> Upload</a>
+                        </li>
+                        <li> <a href="#text-to-speech" role="tab">
+                            <span class="glyphicon glyphicon-text-color"></span> Text</a>
+                        </li>
+                    </ul>
 
-                    <div class="btn-group">
-                        <button class="btn btn-default btn-file">
-                            <span class="glyphicon glyphicon-file"></span>
-                            <span class="text">Upload</span>
-                            <input class="upload" type="file" />
-                        </button>
-                    </div>
-                </div>
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="record">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <label class="control-label col-xs-2">Record</label>
 
-                <div class="row center-block col-xs-12">
-                    <div class="meter"></div>
+                                    <div class="btn-group col-xs-1">
+                                        <button class="btn btn-default btn-record">
+                                            <span class="glyphicon glyphicon-record"></span>
+                                            <span class="text">Start</span>
+                                        </button>
+                                    </div>
 
-                    <div class="control-group playback" style="display:none;">
-                        <span class="glyphicon glyphicon-record active" style="display:none;">Recording</span>
-                        <audio name="playback"></audio>
+                                    <div class="meter"></div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="playback col-xs-offset-2 col-xs-10" style="display:none;">
+                                        <span class="glyphicon glyphicon-record active" style="display:none;"> Recording</span>
+                                        <audio name="playback"></audio>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="control-group col-xs-12">
+                                        <label class="control-label" for="source">Source</label>
+                                        <select class="source" name="source">
+                                            <option value="">Default</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div role="tabpanel" class="tab-pane" id="upload">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <label class="control-label col-xs-2" for="file">Upload</label>
+                                    <span class="btn btn-default btn-file">
+                                        <span class="glyphicon glyphicon-open"></span> Choose File
+                                        <input type="file" name="file_storage" />
+                                    </span>
+                                </div>
+                                <div class="row">
+                                    <br>
+                                    <p class="help-text col-xs-12">
+                                        <em>Please record your audio with another application and upload the file here.</em>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div role="tabpanel" class="tab-pane" id="text-to-speech">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <label class="control-label col-xs-2" for="text-to-speech">Text to Speech</label>
+                                    <div class="input-group col-xs-6">
+                                        <span class="input-group-addon">Template</span>
+                                        <textarea class="col-xs-12" type="text" name="text_to_speech"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="row">
-                    <div class="control-group source">
-                        <label class="control-label" for="source">Source</label>
-                        <select class="source" name="source">
-                            <option value="">Default</option>
-                        </select>
-                    </div>
-
                     <div class="input-group pull-right">
-                        <button class="btn btn-default save">
+                        <button class="btn btn-default save" type="submit">
                             <span class="glyphicon glyphicon-circle-arrow-down"></span>
                             <span class="text">Save</span>
                         </button>

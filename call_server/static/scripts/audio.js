@@ -2,7 +2,7 @@
 
 (function () {
   CallPower.Views.CampaignAudioForm = Backbone.View.extend({
-    el: $('form#record'),
+    el: $('form#audio'),
 
     events: {
       'click .record': 'onRecord',
@@ -28,6 +28,14 @@
                   };
       this.microphoneView = new CallPower.Views.MicrophoneModal();
       this.microphoneView.render(modal);
+    },
+
+    onPlay: function(event) {
+      event.preventDefault();
+    },
+
+    onVersion: function(event) {
+      event.preventDefault();
     },
 
     validateForm: function() {

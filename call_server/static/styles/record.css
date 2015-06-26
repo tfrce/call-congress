@@ -2,10 +2,39 @@
     display: block;
 }
 
-.microphone.modal .meter canvas {
-    display: block;
+/* allow nav-tabs to be centered instead of floated left */
+.nav-tabs.center > li {
+    float:none;
+    display:inline-block;
+    *display:inline; /* ie7 fix */
+     zoom:1; /* hasLayout ie7 trigger */
+}
+
+.nav-tabs.center {
+    text-align:center;
+}
+
+/* tab-content vertical spacing */
+.tab-content {
+    margin-bottom: 20px;
+}
+
+/* tab-pane match border from the nav */
+.tab-content .tab-pane {
+    padding: 20px 0;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+.meter { 
+    display: inline-block;
+    margin-left: 30px;
+}
+.meter canvas {
+    display: inline-block;
+    vertical-align: middle;
     width: 100%;
-    margin: 1em auto;
     padding: 0;
     border: 1px solid #ddd;
     background: #eee;

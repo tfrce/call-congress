@@ -7,9 +7,10 @@
 
     events: {
       'change select.source': 'setSource',
-      'click .record': 'onRecord',
-      'click .play': 'onPlay',
-      'click .reset': 'onReset',
+      'click .nav-tabs': 'switchTab',
+      'click .btn-record': 'onRecord',
+      'click .btn-file': 'onFile',
+      'click .btn-text-to-speech': 'toggleText',
       'submit': 'onSave'
     },
 
@@ -33,6 +34,8 @@
 
     setup: function() {
       if (Recorder && Recorder.isRecordingSupported()) {
+        $('.nav-tabs a[href="#record"]', this.$el).tab('show');
+
         // get available sources (Chrome only)
         if (MediaStreamTrack.getSources !== undefined) {
           MediaStreamTrack.getSources( this.getSources );
@@ -40,12 +43,25 @@
           this.setSource();
         }
       } else {
-        $('button.record', this.$el).attr('disabled', true)
+        // switch to upload tab
+        $('.nav-tabs a[href="#upload"]', this.$el).tab('show');
+
+        // disable record tab
+        $('.nav-tabs a[href="#record"]', this.$el).parent('li').addClass('disabled')
           .attr('title','Sorry, recording is not supported in this browser.');
-        $('.control-group.source').html('<em>Please record an audio file with another application and upload it here.</em>');
       }
 
       this.playback = $('audio[name="playback"]', this.$el);
+    },
+
+    switchTab: function(event) {
+      event.preventDefault();
+      // set up tab behavior manually instead of relying on data-toggle
+      // because we have multiple modals on the page and IDs could conflict
+
+      var tabID = $(event.target).attr('href');
+      $('.nav-tabs a[href="'+tabID+'"]', this.$el).tab('show');
+      return true;
     },
 
     confirmClose: function(event) {
@@ -139,7 +155,7 @@
 
     onRecord: function(event) {
       event.preventDefault();
-      
+
       if (this.recorder.state === 'error') {
         // reset source
         this.setSource();
@@ -153,8 +169,8 @@
         $('.playback .glyphicon-record').addClass('active').show();
 
         // button to stop
-        $('button.record .glyphicon', this.$el).removeClass('glyphicon-record').addClass('glyphicon-stop');
-        $('button.record .text', this.$el).text('Stop');
+        $('button.btn-record .glyphicon', this.$el).removeClass('glyphicon-record').addClass('glyphicon-stop');
+        $('button.btn-record .text', this.$el).text('Stop');
       }
       else if (this.recorder.state === 'recording') {
         // stop recording
@@ -164,8 +180,8 @@
         $('.playback .glyphicon-record').removeClass('active').hide();
 
         // button to reset
-        $('button.record .glyphicon', this.$el).removeClass('glyphicon-stop').addClass('glyphicon-step-backward');
-        $('button.record .text', this.$el).text('Reset');
+        $('button.btn-record .glyphicon', this.$el).removeClass('glyphicon-stop').addClass('glyphicon-step-backward');
+        $('button.btn-record .text', this.$el).text('Reset');
       }
       else if (this.recorder.state === 'stopped') {
         // re-init streams
@@ -178,8 +194,8 @@
         $('.playback').hide();
 
         // button to record
-        $('button.record .glyphicon', this.$el).removeClass('glyphicon-step-backward').addClass('glyphicon-record');
-        $('button.record .text', this.$el).text('Record');
+        $('button.btn-record .glyphicon', this.$el).removeClass('glyphicon-step-backward').addClass('glyphicon-record');
+        $('button.btn-record .text', this.$el).text('Record');
       }
       else {
         console.error('recorder in invalid state');
@@ -187,22 +203,37 @@
     },
 
     dataAvailable: function(data) {
-      console.log('dataAvailable');
       this.audioBlob = data.detail;
       this.playback.attr('controls', true);
       this.playback.attr('src',URL.createObjectURL(this.audioBlob));
 
-      // reload media blob when done playing
+      // reload media blob when done playing, because Chrome won't do it automatically
       this.playback.on('ended', function() {
         this.load();
       });
     },
 
-    onSave: function() {
-      // save blob to parent form as file
+    validateForm: function() {
+      var isValid = true;
 
+      // require either recording, file upload selected, or text-to-speech entered
+      isValid = isValid && (this.playback.attr('src'))
+      
+      return isValid;
     },
 
+    onSave: function(event) {
+      event.preventDefault();
+
+      // save blob to parent form as file
+
+
+      if (this.validateForm()) {
+        $(this.$el).unbind('submit').submit();
+        return true;
+      }
+      return false;
+    },
 
   });
 

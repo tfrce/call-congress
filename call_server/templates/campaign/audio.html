@@ -26,7 +26,7 @@
 {% block body %}
 <h3>Campaign Audio</h3>
 
-<form class="form-horizontal" id="record" method="POST" action="" >
+<form class="form-horizontal" id="audio" method="POST" action="" >
     {{ form.hidden_tag() }}
     <fieldset class="border">
         <legend>Record</legend>
@@ -80,7 +80,7 @@
 </script>
 
 <script type="text/template" id="meter-canvas-tmpl">
-    <canvas id="meter" class="col-xs-12 col-sm-6" height="<%= HEIGHT %>"></canvas>
+    <canvas id="meter" class="col-xs-6" height="<%= HEIGHT %>"></canvas>
 </script>
 
 {% assets "audio_js" %}
