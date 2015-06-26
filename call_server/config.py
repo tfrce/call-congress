@@ -70,12 +70,12 @@ class ProductionConfig(DefaultConfig):
 
 
 class DevelopmentConfig(DefaultConfig):
+    SERVER_NAME = 'localhost:5000'
     TESTING = False
     DEBUG = True
     DEBUG_INFO = False
     WTF_CSRF_ENABLED = True
     DEBUG_TB_INTERCEPT_REDIRECTS = False
-    SERVER_NAME = 'localhost:5000'
     SECRET_KEY = os.environ.get('SECRET_KEY', 'NotARealSecretKey,YouShouldSetOneInYour.Env')
 
     MAIL_DEBUG = True
