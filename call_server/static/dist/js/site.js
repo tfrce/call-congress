@@ -431,7 +431,6 @@ $(document).ready(function () {
           this.setSource();
         }
       } else {
-        console.log('switch to upload tab');
         // switch to upload tab
         $('.nav-tabs a[href="#upload"]', this.$el).tab('show');
 
@@ -449,8 +448,10 @@ $(document).ready(function () {
       // because we have multiple modals on the page and IDs could conflict
 
       var tabID = $(event.target).attr('href');
-      console.log('switch '+tabID);
-      $('.nav-tabs a[href="'+tabID+'"]', this.$el).tab('show');
+      var tab = $('.nav-tabs a[href="'+tabID+'"]', this.$el)
+      if (!tab.parent('li').hasClass('disabled')) {
+        tab.tab('show');
+      }
       return true;
     },
 
@@ -593,7 +594,6 @@ $(document).ready(function () {
     },
 
     dataAvailable: function(data) {
-      console.log('dataAvailable');
       this.audioBlob = data.detail;
       this.playback.attr('controls', true);
       this.playback.attr('src',URL.createObjectURL(this.audioBlob));
@@ -615,7 +615,6 @@ $(document).ready(function () {
 
     onSave: function(event) {
       event.preventDefault();
-      console.log('onSave');
 
       // save blob to parent form as file
 

@@ -60,7 +60,10 @@
       // because we have multiple modals on the page and IDs could conflict
 
       var tabID = $(event.target).attr('href');
-      $('.nav-tabs a[href="'+tabID+'"]', this.$el).tab('show');
+      var tab = $('.nav-tabs a[href="'+tabID+'"]', this.$el)
+      if (!tab.parent('li').hasClass('disabled')) {
+        tab.tab('show');
+      }
       return true;
     },
 
