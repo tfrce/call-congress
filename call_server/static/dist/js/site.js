@@ -27,7 +27,7 @@ window.flashMessage = function(message, status, global) {
     } else {
         $('#flash_message_container').append(flash);
     }
-}
+};
 
 $(document).ready(function () {
     var csrftoken = $('meta[name=csrf-token]').attr('content');
@@ -80,10 +80,21 @@ $(document).ready(function () {
 
     onPlay: function(event) {
       event.preventDefault();
+      console.log('onPlay');
     },
 
     onVersion: function(event) {
       event.preventDefault();
+      console.log('onVersion');
+
+      var inputGroup = $(event.target).parents('.input-group');
+      var modal = {
+        name: inputGroup.prev('label').text(),
+        key: inputGroup.prev('label').attr('for'),
+        campaign_id: $('input[name="campaign_id"]').val()
+      };
+      this.versionsView = new CallPower.Views.VersionsModal();
+      this.versionsView.render(modal);
     },
 
     validateForm: function() {
@@ -484,7 +495,13 @@ $(document).ready(function () {
         return false;
       }
 
-      if (this.playback.attr('src') && !!this.audioBlob) {
+      console.log('confirmClose');
+      console.log(this.playback.attr('src'));
+      console.log(!!this.playback.attr('src'));
+      console.log(this.audioBlob);
+      console.log(!!this.audioBlob);
+      if (!!this.playback.attr('src') && !this.audioBlob) {
+        // there is audio in the player, but not stored as a blob
         return confirm('You have recorded unsaved audio. Are you sure you want to close?');
       } else {
         return true;
@@ -620,6 +637,7 @@ $(document).ready(function () {
     },
 
     dataAvailable: function(data) {
+      console.log('dataAvailable', this);
       this.audioBlob = data.detail;
       this.playback.attr('controls', true);
       this.playback.attr('src',URL.createObjectURL(this.audioBlob));
@@ -1110,6 +1128,89 @@ $(document).ready(function () {
         if(item) { item.set('order', index); }
       });
     },
+
+  });
+
+})();
+/*global CallPower, Backbone */
+
+(function () {
+  CallPower.Models.AudioRecording = Backbone.Model.extend({
+    defaults: {
+      campaign: null,
+      key: null,
+      description: null,
+      version: null
+    },
+
+  });
+
+  CallPower.Collections.AudioRecordingList = Backbone.Collection.extend({
+    model: CallPower.Models.AudioRecording,
+    url: '/api/recording',
+    comparator: 'version',
+    parse: function(response) {
+      return response.objects;
+    }
+  });
+
+  CallPower.Views.RecordingItemView = Backbone.View.extend({
+    tagName: 'tr',
+
+    initialize: function() {
+      this.template = _.template($('#recording-item-tmpl').html(), { 'variable': 'data' });
+    },
+
+    render: function() {
+      var html = this.template(this.model.toJSON());
+      this.$el.html(html);
+      return this;
+    },
+
+  });
+
+  CallPower.Views.VersionsModal = Backbone.View.extend({
+    tagName: 'div',
+    className: 'versions modal fade',
+
+    initialize: function() {
+      this.template = _.template($('#recording-modal-tmpl').html(), { 'variable': 'modal' });
+
+      this.collection = new CallPower.Collections.AudioRecordingList();
+      this.collection.fetch(); // stop trying to make fetch happen
+      this.renderCollection();
+
+      this.listenTo(this.collection, 'add remove select', this.renderCollection);
+    },
+
+    render: function(modal) {
+      console.log('versions view render', modal);
+      this.modal = modal;
+      var html = this.template(modal);
+      this.$el.html(html);
+      
+      this.$el.modal('show');
+
+      return this;
+    },
+
+    renderCollection: function() {
+      var $list = this.$('table tbody').empty();
+
+      var rendered_items = [];
+      this.collection.each(function(model) {
+        var item = new CallPower.Views.RecordingItemView({
+          model: model,
+        });
+        var $el = item.render().$el;
+
+        rendered_items.push($el);
+      }, this);
+      $list.append(rendered_items);
+
+    },
+
+
 
   });
 

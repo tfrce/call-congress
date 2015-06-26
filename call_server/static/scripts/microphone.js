@@ -72,7 +72,13 @@
         return false;
       }
 
-      if (this.playback.attr('src') && !!this.audioBlob) {
+      console.log('confirmClose');
+      console.log(this.playback.attr('src'));
+      console.log(!!this.playback.attr('src'));
+      console.log(this.audioBlob);
+      console.log(!!this.audioBlob);
+      if (!!this.playback.attr('src') && !this.audioBlob) {
+        // there is audio in the player, but not stored as a blob
         return confirm('You have recorded unsaved audio. Are you sure you want to close?');
       } else {
         return true;
@@ -208,6 +214,7 @@
     },
 
     dataAvailable: function(data) {
+      console.log('dataAvailable', this);
       this.audioBlob = data.detail;
       this.playback.attr('controls', true);
       this.playback.attr('src',URL.createObjectURL(this.audioBlob));

@@ -34,7 +34,7 @@
 
         <div class="form-group">
             <label class="control-label col-sm-2">Campaign Name</label>
-            <div class="col-sm-6">{{campaign.name}}</div>
+            <div class="col-sm-6" id="campaign_name">{{campaign.name}}</div>
         </div>
 
         {{ render_audio_default(form.msg_intro) }}
@@ -82,6 +82,23 @@
 
 <script type="text/template" id="meter-canvas-tmpl">
     <canvas id="meter" class="col-xs-6" height="<%= HEIGHT %>"></canvas>
+</script>
+
+<script type="text/template" id="recording-modal-tmpl">
+{% include "campaign/versions.html" %}
+</script>
+
+<script type="text/template" id="recording-item-tmpl">
+    <td><%= data.campaign_name %></td>
+    <td><%= data.version %></td>
+    <td><%= data.description %></td>
+    <td><audio src="<%= data.file_url %>" controls/></td>
+    <td><% if (data.selected) { %>
+        <span class="glyphicon glyphicon-check"></span>
+        <% } else { %>
+        <a href="#" class="select">select</a>
+        <% } %>
+    </td>
 </script>
 
 {% assets "audio_js" %}
