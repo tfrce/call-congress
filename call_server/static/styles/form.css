@@ -114,9 +114,12 @@ input.form-control[type="radio"] {
     visibility: visible;
 }
 
-
+[contenteditable] {
+    border-bottom: 1px dotted lightblue;
+}
 [contenteditable]:hover, [contenteditable]:focus {
     background: #FFFFD3;
+    border-bottom: none;
     cursor: text;
 }
 [contenteditable]:focus {
