@@ -1,8 +1,8 @@
 {
-  "name": "call-congress",
+  "name": "Call Power",
   "version": "0.0.0",
   "homepage": "https://github.com/EFForg/call-congress",
-  "description": "a simple server that connects calls between citizens and their representatives using the Twilio API",
+  "description": "Connecting people to power through their phones",
   "authors": [
     "Josh Levinger <josh@spacedog.xyz>",
     "Sina Khanifar <sina.khanifar@gmail.com>",
