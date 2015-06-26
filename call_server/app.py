@@ -1,4 +1,4 @@
-#TODO, figure out how to load gevent monkey patch only in production
+# TODO, figure out how to load gevent monkey patch only in production
 # try:
 #     from gevent.monkey import patch_all
 #     patch_all()
@@ -106,24 +106,24 @@ def register_blueprints(app, blueprints):
 def configure_babel(app):
     @babel.localeselector
     def get_locale():
-        #TODO, first check user config?
+        # TODO, first check user config?
         g.accept_languages = app.config.get('ACCEPT_LANGUAGES')
         accept_languages = g.accept_languages.keys()
         browser_default = request.accept_languages.best_match(accept_languages)
         if 'language' in session:
             language = session['language']
-            #current_app.logger.debug('lang from session: %s' % language)
-            if not language in accept_languages:
-                #clear it
-                #current_app.logger.debug('invalid %s, clearing' % language)
+            # current_app.logger.debug('lang from session: %s' % language)
+            if language not in accept_languages:
+                # clear it
+                # current_app.logger.debug('invalid %s, clearing' % language)
                 session['language'] = None
                 language = browser_default
         else:
             language = browser_default
-            #current_app.logger.debug('lang from browser: %s' % language)
+            # current_app.logger.debug('lang from browser: %s' % language)
         session['language'] = language  # save it to session
 
-        #and to user model?
+        # and to user model?
         return language
 
 
