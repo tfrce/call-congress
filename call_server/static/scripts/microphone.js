@@ -72,7 +72,7 @@
         return false;
       }
 
-      if (this.playback.attr('src')) {
+      if (this.playback.attr('src') && !!this.audioBlob) {
         return confirm('You have recorded unsaved audio. Are you sure you want to close?');
       } else {
         return true;
@@ -84,6 +84,11 @@
         this.recorder.stop();
         this.meter.destroy();
       }
+      this.undelegateEvents();
+      this.$el.removeData().unbind();
+
+      this.remove();
+      Backbone.View.prototype.remove.call(this);
     },
 
     streamError: function(e) {
@@ -93,10 +98,7 @@
       if (window.chrome !== undefined) {
         msg = msg + '<br>You may need to remove this site from your media exceptions at <a href="">chrome://settings/content</a>';
       }
-      var flash = $('<div class="alert alert-warning">'+
-                    '<button type="button" class="close" data-dismiss="alert">×</button>'+
-                    msg+'</div>');
-      $('#global_message_container').empty().append(flash).show();
+      window.flashMessage(msg, 'warning', true);
     },
 
     getSources: function(sourceInfos) {
@@ -245,9 +247,13 @@
 
 
     validateForm: function() {
-      console.log('validateForm');
       var isValid = true;
       var self = this;
+
+      if (!$('.tab-pane#record').hasClass('active')) {
+        // if we are not on the recording tab, delete the blob
+        delete this.audioBlob;
+      }
 
       isValid = this.validateField($('.tab-pane.active#record'), function() {
         return !!self.playback.attr('src');
@@ -261,41 +267,53 @@
         return !!self.textToSpeech;
       }, 'Please enter text to read') && isValid;
 
-      console.log(isValid);
-      
       return isValid;
     },
 
     onSave: function(event) {
       event.preventDefault();
+
+      // submit file via ajax with html5 FormData
+      // probably will not work in old IE
       var formData = new FormData();
-
-      var formArray = $('form.modal-body', this.$el).serializeArray();
-      _.each(formArray, function(item) {
-        formData.append(item.name, item.key);
+      
+      // add inputs individually, so we can control how we add files
+      var formItems = $('form.modal-body', this.$el).find('input[type!="file"], select, textarea');
+      _.each(formItems, function(item) {
+        var $item = $(item);
+        if ($item.val()) {
+          formData.append($item.attr('name'), $item.val());
+        }
       });
+      // create file from blob
+      if (this.audioBlob) {
+        formData.append('file_storage', this.audioBlob);
+      }
 
-      formData.append('csrf_token', $('input[name="csrf_token"]').val());
-      formData.append('file_storage', this.audioBlob);
-      formData.append('description', ''); // TODO, fill this in with user input...
-
-      console.log('formData', formData);
-
+      var self = this;
       if (this.validateForm()) {
         $(this.$el).unbind('submit').submit();
         $.ajax($('form.modal-body').attr('action'), {
           method: "POST",
-          processData: false,
-          contentType: false,
           data: formData,
+          processData: false, // stop jQuery from munging our carefully constructed FormData
+          contentType: false, // or faffing with the content-type
           success: function(response) {
-            console.log('success');
-            console.log(response);
+            // build friendly message like "Audio recording uploaded: Introduction version 3"
+            var fieldDescription = $('form label[for="'+response.key+'"]').text();
+            var msg = response.message + ': '+fieldDescription + ' version ' + response.version;
+            // and display to user
+            window.flashMessage(msg, 'success');
+
+            // close the parent modal
+            self.$el.modal('hide');
           },
           error: function(xhr, status, error) {
             console.error(status, error);
+            window.flashMessage(response.errors, 'error');
           }
-        })
+        });
+        this.delegateEvents(); // re-bind the submit handler
         return true;
       }
       return false;

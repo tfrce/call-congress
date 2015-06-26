@@ -122,16 +122,19 @@ class AudioRecording(db.Model):
     key = db.Column(db.String(STRING_LEN), nullable=False)
     selected = db.Column(db.Boolean, default=False)
 
-    file_storage = db.Column(FlaskStoreType(location='audio'), nullable=True)
+    file_storage = db.Column(FlaskStoreType(location='audio/'), nullable=True)
     text_to_speech = db.Column(db.Text)
-    version = db.Column(db.Integer, unique=True, autoincrement=True)
+    version = db.Column(db.Integer, unique=True)
     description = db.Column(db.String(STRING_LEN))
 
     campaign = db.relationship('Campaign', backref="audiorecordings")
 
-
     # ensure that each campaign/key can only have one selected version
-    __table_args__ = (db.UniqueConstraint('campaign_id', 'key', 'selected'), )
+    # postgres create partial index for fast lookups
+    __table_args__ = (db.Index('only_one_selected_version', campaign_id, key, selected,
+                               unique=True,
+                               postgresql_where=(~selected)),
+                    )
 
     def __unicode__(self):
         return "%s %s %s" % (self.campaign.name, self.key, self.version)

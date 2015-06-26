@@ -79,7 +79,6 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('version')
     )
-    op.create_index('only_one_selected_version', 'campaign_recording', ['campaign_id', 'key', 'selected'], unique=True, postgresql_where=sa.text(u'campaign_recording.selected = 0'))
     
     op.create_table('campaign_target_sets',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -118,7 +117,6 @@ def downgrade():
     op.drop_table('campaign_phone_numbers')
     op.drop_table('calls')
     op.drop_table('campaign_target_sets')
-    op.drop_index('only_one_selected_version')
 
     op.drop_table('campaign_recording')
     op.drop_table('campaign_campaign')

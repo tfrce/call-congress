@@ -1,6 +1,5 @@
-button .text {
-    display: block;
-}
+button .text { display: block; }
+button .text.inline { display: inline; }
 
 /* allow nav-tabs to be centered instead of floated left */
 .nav-tabs.center > li {

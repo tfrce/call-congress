@@ -1,8 +1,7 @@
 from flask import (Blueprint, render_template, current_app, request,
-                   flash, url_for, redirect, session, abort)
+                   flash, url_for, redirect, session, abort, jsonify)
 from flask.ext.login import login_required
 
-import json
 import sqlalchemy
 
 from ..extensions import db, csrf
@@ -132,27 +131,38 @@ def audio(campaign_id):
 @campaign.route('/audio/<int:campaign_id>/upload', methods=['POST'])
 @login_required
 def uploadRecording(campaign_id):
-    print "uploadRecording", request.data
-
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     form = AudioRecordingForm()
 
     if form.validate_on_submit():
-        recording = AudioRecording(campaign=campaign)
-        print str(recording)
+        message_key = form.data.get('key')
+        # unset selected for all other versions
+        other_versions = AudioRecording.query.filter_by(campaign_id=campaign.id, key=message_key)
+        other_versions.update({'selected': False})
 
+        # get highest version to date
+        with db.session.no_autoflush:
+            last_version = db.session.query(db.func.max(AudioRecording.version)) \
+                .filter_by(campaign_id=campaign.id, key=message_key) \
+                .scalar()
+
+        recording = AudioRecording(campaign=campaign)
         form.populate_obj(recording)
+
+        recording.version = int(last_version or 0) + 1
+
+        uploaded_blob = request.files.get('file_storage')
+        if uploaded_blob:
+            uploaded_blob.filename = "campaign_{}_{}_{}.ogg".format(campaign.id, message_key, recording.version)
+            recording.file_storage = uploaded_blob
 
         db.session.add(recording)
         db.session.commit()
 
-        print recording
-
         message = "Audio recording uploaded"
-        flash(message, 'success')
-        return json.dumps({'success': True, 'message': message})
+        return jsonify({'success': True, 'message': message, 'key': message_key, 'version': recording.version})
     else:
-        return json.dumps({'success': False, 'errors': form.errors})
+        return jsonify({'success': False, 'errors': form.errors})
 
 
 @campaign.route('/launch/<int:campaign_id>', methods=['GET', 'POST'])
