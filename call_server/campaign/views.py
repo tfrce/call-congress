@@ -8,9 +8,10 @@ import sqlalchemy
 from ..extensions import db
 from ..utils import choice_items, choice_keys, choice_values_flat
 
-from .constants import CAMPAIGN_NESTED_CHOICES, CUSTOM_CAMPAIGN_CHOICES, EMPTY_CHOICES
-from .models import Campaign, Target, CampaignTarget
-from .forms import CampaignForm, CampaignAudioForm, CampaignLaunchForm, CampaignStatusForm, TargetForm
+from .constants import CAMPAIGN_NESTED_CHOICES, CUSTOM_CAMPAIGN_CHOICES, EMPTY_CHOICES, LIVE
+from .models import Campaign, Target, CampaignTarget, AudioRecording
+from .forms import (CampaignForm, CampaignAudioForm, AudioRecordingForm,
+                    CampaignLaunchForm, CampaignStatusForm, TargetForm)
 
 campaign = Blueprint('campaign', __name__, url_prefix='/admin/campaign')
 
@@ -115,6 +116,11 @@ def audio(campaign_id):
     form = CampaignAudioForm()
 
     if form.validate_on_submit():
+        form.populate_obj(campaign)
+
+        db.session.add(campaign)
+        db.session.commit()
+
         flash('Campaign audio updated.', 'success')
         return redirect(url_for('campaign.launch', campaign_id=campaign.id))
 
@@ -123,11 +129,40 @@ def audio(campaign_id):
                            example_text=current_app.config.CAMPAIGN_MESSAGE_DEFAULTS)
 
 
+@campaign.route('/audio/<int:campaign_id>/upload', methods=['POST'])
+@login_required
+def uploadRecording(campaign_id):
+    campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
+    form = AudioRecordingForm()
+
+    if form.validate_on_submit():
+        recording = AudioRecording(campaign=campaign)
+        form.populate_obj(recording)
+
+        db.session.add(recording)
+        db.session.commit()
+
+        message = "Audio recording uploaded"
+        flash(message, 'success')
+        return json.dumps({'success': True, 'message': message})
+    else:
+        return json.dumps({'success': False, 'errors': form.errors})
+
+
 @campaign.route('/launch/<int:campaign_id>', methods=['GET', 'POST'])
 @login_required
 def launch(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     form = CampaignLaunchForm()
+
+    if form.validate_on_submit():
+        campaign.status = LIVE
+
+        db.session.add(campaign)
+        db.session.commit()
+
+        flash('Campaign launched!', 'success')
+        return redirect(url_for('campaign.index'))
 
     return render_template('campaign/launch.html', campaign=campaign, form=form)
 

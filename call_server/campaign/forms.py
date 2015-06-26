@@ -14,7 +14,7 @@ from .constants import (CAMPAIGN_CHOICES, CAMPAIGN_NESTED_CHOICES,
                         CAMPAIGN_STATUS)
 from ..political_data.constants import US_STATES
 
-from .models import Campaign, Target, TwilioPhoneNumber
+from .models import TwilioPhoneNumber
 
 from ..utils import choice_items, choice_keys, choice_values, choice_values_flat
 
@@ -69,15 +69,22 @@ class CampaignForm(Form):
 class CampaignAudioForm(Form):
     next = HiddenField()
     name = TextField(_('Campaign Name'))
-    msg_intro = FileField(_('Introduction'), [Required()])
-    msg_location = FileField(_('Location Prompt'), [Required()])
-    msg_invalid_location = FileField(_('Invalid Location'))
-    msg_choose_target = FileField(_('Choose Target'))
-    msg_call_block_intro = FileField(_('Call Block Introduction'))
-    msg_between_calls = FileField(_('Between Calls'))
-    msg_final_thanks = FileField(_('Final Thanks'), [Required()])
+    msg_intro = TextField(_('Introduction'), [Required()])
+    msg_location = TextField(_('Location Prompt'), [Required()])
+    msg_invalid_location = TextField(_('Invalid Location'))
+    msg_choose_target = TextField(_('Choose Target'))
+    msg_call_block_intro = TextField(_('Call Block Introduction'))
+    msg_between_calls = TextField(_('Between Calls'))
+    msg_final_thanks = TextField(_('Final Thanks'), [Required()])
 
     submit = SubmitField(_('Save and Test'))
+
+
+class AudioRecordingForm(Form):
+    key = TextField(_('Key'), [Required()])
+    file_storage = FileField(_('File'), [Required()])
+    text_to_speech = FileField(_('Text to Speech'), [Optional()])
+    description = TextField(_('Description'), [Required()])
 
 
 class CampaignLaunchForm(Form):
