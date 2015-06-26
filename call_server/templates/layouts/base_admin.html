@@ -50,6 +50,7 @@
 {% endblock %}
 
 {% block before_scripts %}
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <script>
     window.CallPower = {
       Config: {
