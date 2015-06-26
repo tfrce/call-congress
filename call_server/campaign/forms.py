@@ -82,9 +82,9 @@ class CampaignAudioForm(Form):
 
 class AudioRecordingForm(Form):
     key = TextField(_('Key'), [Required()])
-    file_storage = FileField(_('File'), [Required()])
+    file_storage = FileField(_('File'), [Optional()])
     text_to_speech = FileField(_('Text to Speech'), [Optional()])
-    description = TextField(_('Description'), [Required()])
+    description = TextField(_('Description'), [Optional()])
 
 
 class CampaignLaunchForm(Form):

@@ -6,7 +6,8 @@
             </button>
           <h4 class="modal-title">Record <%= modal.name %></h4>
         </div>
-        <form class="modal-body">
+        <form class="modal-body" method="POST" action="<%= modal.campaign_id %>/upload">
+            <input type="hidden" name="key" value="<%= modal.key %>" />
             <div class="container-fluid">
                 <div class="row">
                     <label class="control-label col-sm-2">Description</label>
@@ -38,8 +39,7 @@
 
                                     <div class="btn-group col-xs-1">
                                         <button class="btn btn-default btn-record">
-                                            <span class="glyphicon glyphicon-record"></span>
-                                            <span class="text">Start</span>
+                                            <span class="glyphicon glyphicon-record"></span> Start
                                         </button>
                                     </div>
 
@@ -62,6 +62,7 @@
                                     </div>
                                 </div>
 
+                                <div class="help-block"></div>
                             </div>
                         </div>
 
@@ -80,6 +81,7 @@
                                         <em>Please record your audio with another application and upload the file here.</em>
                                     </p>
                                 </div>
+                                <div class="help-block"></div>
                             </div>
                         </div>
 
@@ -92,16 +94,17 @@
                                         <textarea class="col-xs-12" type="text" name="text_to_speech"></textarea>
                                     </div>
                                 </div>
+                                <div class="help-block"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="formGroup row save">
+                    <div class="help-block"></div>
                     <div class="input-group pull-right">
-                        <button class="btn btn-default save" type="submit">
-                            <span class="glyphicon glyphicon-circle-arrow-down"></span>
-                            <span class="text">Save</span>
+                        <button class="btn btn-primary save" type="submit">
+                            <span class="glyphicon glyphicon-circle-arrow-down"></span> Save
                         </button>
                     </div>
                 </div>

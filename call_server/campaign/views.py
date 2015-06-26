@@ -5,7 +5,7 @@ from flask.ext.login import login_required
 import json
 import sqlalchemy
 
-from ..extensions import db
+from ..extensions import db, csrf
 from ..utils import choice_items, choice_keys, choice_values_flat
 
 from .constants import CAMPAIGN_NESTED_CHOICES, CUSTOM_CAMPAIGN_CHOICES, EMPTY_CHOICES, LIVE
@@ -132,15 +132,21 @@ def audio(campaign_id):
 @campaign.route('/audio/<int:campaign_id>/upload', methods=['POST'])
 @login_required
 def uploadRecording(campaign_id):
+    print "uploadRecording", request.data
+
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     form = AudioRecordingForm()
 
     if form.validate_on_submit():
         recording = AudioRecording(campaign=campaign)
+        print str(recording)
+
         form.populate_obj(recording)
 
         db.session.add(recording)
         db.session.commit()
+
+        print recording
 
         message = "Audio recording uploaded"
         flash(message, 'success')

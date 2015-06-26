@@ -47,8 +47,10 @@ $(document).ready(function () {
       // pull modal info from related fields
       var inputGroup = $(event.target).parents('.input-group');
       var modal = { name: inputGroup.prev('label').text(),
+                    key: inputGroup.prev('label').attr('for'),
                     description: inputGroup.find('.description .help-inline').text(),
-                    example_text: inputGroup.find('.description .example-text').text()
+                    example_text: inputGroup.find('.description .example-text').text(),
+                    campaign_id: $('input[name="campaign_id"]').val()
                   };
       this.microphoneView = new CallPower.Views.MicrophoneModal();
       this.microphoneView.render(modal);
@@ -397,8 +399,8 @@ $(document).ready(function () {
       'change select.source': 'setSource',
       'click .nav-tabs': 'switchTab',
       'click .btn-record': 'onRecord',
-      'click .btn-file': 'onFile',
-      'click .btn-text-to-speech': 'toggleText',
+      'change input[type="file"]': 'chooseFile',
+      'blur textarea[name="text_to_speech"]': 'validateTextToSpeech',
       'submit': 'onSave'
     },
 
@@ -448,7 +450,7 @@ $(document).ready(function () {
       // because we have multiple modals on the page and IDs could conflict
 
       var tabID = $(event.target).attr('href');
-      var tab = $('.nav-tabs a[href="'+tabID+'"]', this.$el)
+      var tab = $('.nav-tabs a[href="'+tabID+'"]', this.$el);
       if (!tab.parent('li').hasClass('disabled')) {
         tab.tab('show');
       }
@@ -604,11 +606,52 @@ $(document).ready(function () {
       });
     },
 
-    validateForm: function() {
-      var isValid = true;
+    chooseFile: function() {
+      this.filename = $('input[type="file"]').val().split(/(\\|\/)/g).pop();
+    },
 
-      // require either recording, file upload selected, or text-to-speech entered
-      isValid = isValid && (this.playback.attr('src'))
+    validateTextToSpeech: function() {
+      // TODO, run through simple jinja-like validator
+      // provide auto-completion of available context?
+
+      this.textToSpeech = $('textarea[name="text_to_speech"]').val();
+    },
+
+    validateField: function(parentGroup, validator, message) {
+      // run validator for parentGroup, if present
+      if (!parentGroup.length) {
+        return true;
+      }
+
+      var isValid = validator(parentGroup);
+      
+      // put message in last help-block
+      $('.help-block', parentGroup).last().text((!isValid) ? message : '');
+
+      // toggle error states
+      parentGroup.toggleClass('has-error', !isValid);
+      return isValid;
+    },
+
+
+    validateForm: function() {
+      console.log('validateForm');
+      var isValid = true;
+      var self = this;
+
+      isValid = this.validateField($('.tab-pane.active#record'), function() {
+        return !!self.playback.attr('src');
+      }, 'Please record your message') && isValid;
+
+      isValid = this.validateField($('.tab-pane.active#upload'), function() {
+        return !!self.filename;
+      }, 'Please select a file to upload') && isValid;
+
+      isValid = this.validateField($('.tab-pane.active#text-to-speech'), function() {
+        return !!self.textToSpeech;
+      }, 'Please enter text to read') && isValid;
+
+      console.log(isValid);
       
       return isValid;
     },
@@ -616,11 +659,29 @@ $(document).ready(function () {
     onSave: function(event) {
       event.preventDefault();
 
-      // save blob to parent form as file
+      var formArray = $('form.modal-body', this.$el).serializeArray();
+      var formData = _.object(_.pluck(formArray, 'name'), _.pluck(formArray, 'value'));
+      // flatten
 
+      formData.csrf_token = $('input[name="csrf_token"]').val();
+      formData.file_storage = this.audioBlob;
+      formData.description = ''; // TODO, fill this in with user input...
+
+      console.log('formData', formData);
 
       if (this.validateForm()) {
         $(this.$el).unbind('submit').submit();
+        $.ajax($('form.modal-body').attr('action'), {
+          method: "POST",
+          data: formData,
+          success: function(response) {
+            console.log('success');
+            console.log(response);
+          },
+          error: function(xhr, status, error) {
+            console.error(status, error);
+          }
+        })
         return true;
       }
       return false;

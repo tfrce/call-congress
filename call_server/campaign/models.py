@@ -122,7 +122,7 @@ class AudioRecording(db.Model):
     key = db.Column(db.String(STRING_LEN), nullable=False)
     selected = db.Column(db.Boolean, default=False)
 
-    file_storage = db.Column(FlaskStoreType(location='audio'))
+    file_storage = db.Column(FlaskStoreType(location='audio'), nullable=True)
     text_to_speech = db.Column(db.Text)
     version = db.Column(db.Integer, unique=True, autoincrement=True)
     description = db.Column(db.String(STRING_LEN))

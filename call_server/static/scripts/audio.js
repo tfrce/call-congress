@@ -23,8 +23,10 @@
       // pull modal info from related fields
       var inputGroup = $(event.target).parents('.input-group');
       var modal = { name: inputGroup.prev('label').text(),
+                    key: inputGroup.prev('label').attr('for'),
                     description: inputGroup.find('.description .help-inline').text(),
-                    example_text: inputGroup.find('.description .example-text').text()
+                    example_text: inputGroup.find('.description .example-text').text(),
+                    campaign_id: $('input[name="campaign_id"]').val()
                   };
       this.microphoneView = new CallPower.Views.MicrophoneModal();
       this.microphoneView.render(modal);

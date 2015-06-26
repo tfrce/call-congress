@@ -28,6 +28,7 @@
 
 <form class="form-horizontal" id="audio" method="POST" action="" >
     {{ form.hidden_tag() }}
+    <input type="hidden" value="{{campaign.id}}" name="campaign_id" />
     <fieldset class="border">
         <legend>Record</legend>
 
