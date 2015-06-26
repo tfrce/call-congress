@@ -39,7 +39,7 @@ class DefaultConfig(object):
 
     STORE_PROVIDER = 'flask_store.providers.local.LocalProvider'
     STORE_DOMAIN = 'http://127.0.0.1:5000'
-    STORE_PATH = 'instance/uploads/'
+    STORE_PATH = '%s/instance/uploads/' % os.path.abspath(os.curdir)
 
 
 class ProductionConfig(DefaultConfig):

@@ -130,7 +130,7 @@ def audio(campaign_id):
 
 @campaign.route('/audio/<int:campaign_id>/upload', methods=['POST'])
 @login_required
-def uploadRecording(campaign_id):
+def upload_recording(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     form = AudioRecordingForm()
 

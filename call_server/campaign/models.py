@@ -136,5 +136,11 @@ class AudioRecording(db.Model):
                                postgresql_where=(~selected)),
                     )
 
+    def file_url(self):
+        return self.file_storage.absolute_url
+
+    def campaign_name(self):
+        return self.campaign.name
+
     def __unicode__(self):
         return "%s %s %s" % (self.campaign.name, self.key, self.version)
