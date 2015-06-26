@@ -21,9 +21,9 @@ from .admin import admin
 from .user import User, user
 from .call import call
 from .campaign import campaign
-from .api import api
+from .api import configure_restless, restless_preprocessors
 
-from extensions import cache, db, babel, assets, login_manager, csrf, mail, store
+from extensions import cache, db, babel, assets, login_manager, csrf, mail, store, rest
 
 DEFAULT_BLUEPRINTS = (
     site,
@@ -31,7 +31,6 @@ DEFAULT_BLUEPRINTS = (
     user,
     call,
     campaign,
-    api
 )
 
 
@@ -57,6 +56,7 @@ def create_app(config=None, app_name=None, blueprints=None):
     configure_babel(app)
     configure_login(app)
     configure_assets(app)
+    configure_restless(app)
 
     # finally instance specific configurations
     context_processors(app)
@@ -92,6 +92,9 @@ def init_extensions(app):
     mail.init_app(app)
     login_manager.init_app(app)
     store.init_app(app)
+    rest.init_app(app, flask_sqlalchemy_db=db,
+                  preprocessors=restless_preprocessors)
+    rest.app = app
 
     if app.config.get('DEBUG'):
         from flask_debugtoolbar import DebugToolbarExtension
