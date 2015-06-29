@@ -1,23 +1,43 @@
 Installation
 ==============
 
-Account Keys
+Configure Settings
 ------------
 
-The app uses environment variables to store account keys. For development you will need to set:
+The app requires several account keys to run. These should not be stored in version control, but in environment variables. For development, you can export these from your virtualenv/bin/activate script, or put them in a .env file and load them with [autoenv](https://github.com/kennethreitz/autoenv).
 
-* SUNLIGHTLABS_KEY
-* TWILIO_DEV_ACCOUNT_SID
-* TWILIO_DEV_AUTH_TOKEN
-* TW_NUMBER
+At a minimum, you will need to set:
 
-and for production:
+* SECRET_KEY, to secure login sessions cryptographically
+    * This will be created for you automatically if you use the deploy to Heroku button, or you can generate one using with this Javascript one-liner: `chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-=!@#$%^&*()_+:<>{}[]".split(''); key = ''; for (i = 0; i < 50; i++) key += chars[Math.floor(Math.random() * chars.length)]; alert(key);`
+* SUNLIGHT_API_KEY, to do Congressional lookups. Sign up for one at [SunlightFoundation.com](https://sunlightfoundation.com/api/accounts/register/)
+* TWILIO_ACCOUNT_SID, for an account with at least one purchased phone number
+* TWILIO_AUTH_TOKEN, for the same account
+* INSTALLED_ORG, displayed on the site homepage
+* SITENAME, defaults to CallPower
 
-* SUNLIGHTLABS_KEY
-* TWILIO_ACCOUNT_SID
-* TWILIO_AUTH_TOKEN
-* APPLICATION_ROOT (url for application server)
-* TASKFORCE_KEY (used for querying statistics)
+To test Twilio functionality in development, you will need to set:
+
+* APPLICATION_ROOT to point to a web-routable address. Twilio provides [ngrok](https://ngrok.com) to do this for free.
+
+For production, you will also need to set:
+
+* DATABASE_URI, a sqlalchemy [connection string](https://pythonhosted.org/Flask-SQLAlchemy/config.html#connection-uri-format) for a postgres or mysql database addresses
+* APPLICATION_ROOT to the address where this application will live
+* CACHE_MEMCACHED_SERVERS, a list or tuple of memcached servers
+
+If you are storing assets on Amazon S3, or another [Flask-Store provider](http://flask-store.soon.build)
+
+* S3_ACCESS_KEY
+* S3_SECRET_KEY
+
+If you would like to let users reset their passwords over email:
+
+* MAIL_SERVER, defaults to `localhost`
+* MAIL_PORT, defaults to 1025
+* MAIL_USERNAME
+* MAIL_PASSWORD
+* MAIL_DEFAULT_SENDER, defaults to `info@callpower.org`
 
 
 Development mode
@@ -33,17 +53,23 @@ To install locally and run in debug mode use:
     python manager.py migrate up
 
     # compile assets
+    npm install -g bower
     bower install
     python manager.py assets build
+    
+    # create an admin user
+    python manager.py createadminuser
  
     # run local server for debugging
     python manager.py run
-    # for testing twilio, need internet-visible urls to do call handling
-    ngrok -subdomain="1cf55a5a" 5000
+    
+    # for testing twilio
+    # run in another tab
+    ngrok 5000
 
 When the dev server is running, the front-end will be accessible at [http://localhost:5000/](http://localhost:5000/).
 
-Unit tests can also be run, using:
+Unit tests can also be run with:
 
     python tests/test.py
 
@@ -52,18 +78,24 @@ Production server
 To run in production:
 
     # create ENV variables
+    
     # open correct port
     iptables -A INPUT -p tcp --dport 80 -j ACCEPT
     
     # initialize the database
     python manage.py migrate up
+    
+    # create an admin user
+    python manager.py createadminuser
 
     # run server - will charge real $ and connect real calls
     foreman start
+    
+Make sure your webserver can serve audio files out of `APPLICATION_ROOT/instance/uploads`. Or if you are using Amazon S3, ensure your buckets are configured for public access.
 
-Updating for changes in congress
+Performance Tips
 --------------------------------
-Just download the latest data from Sunlight Congress API using:
+TBD, fill in once we benchmark
 
-    cd data && make -B
-    git commit data/districts.csv data/legislators.csv
+- How many dynos / uwsgi processes for incoming calls 
+- gevent monkey-patch

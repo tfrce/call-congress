@@ -23,8 +23,8 @@ class DefaultConfig(object):
     SITENAME = os.environ.get('SITENAME')
 
     TW_CLIENT = twilio.rest.TwilioRestClient(
-        os.environ.get('TWILIO_DEV_ACCOUNT_SID'),
-        os.environ.get('TWILIO_DEV_AUTH_TOKEN'))
+        os.environ.get('TWILIO_ACCOUNT_SID'),
+        os.environ.get('TWILIO_AUTH_TOKEN'))
     # limit on the length of the call
     TW_TIME_LIMIT = 60 * 20  # 4 minutes
 
@@ -49,16 +49,11 @@ class ProductionConfig(DefaultConfig):
 
     CACHE_TYPE = 'memcached'
 
-    TW_CLIENT = twilio.rest.TwilioRestClient(
-        os.environ.get('TWILIO_ACCOUNT_SID'),
-        os.environ.get('TWILIO_AUTH_TOKEN'))
-    TW_NUMBER = os.environ.get('TWILIO_NUMBER')
-
-    MAIL_SERVER = os.environ.get('MAIL_SERVER')
-    MAIL_PORT = os.environ.get('MAIL_PORT')
+    MAIL_SERVER = os.environ.get('MAIL_SERVER', 'localhost')
+    MAIL_PORT = os.environ.get('MAIL_PORT', 1025)
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER', 'info@callpower.org')
 
     SQLALCHEMY_POOL_RECYCLE = 60 * 60  # 1 hour
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI')
@@ -87,8 +82,5 @@ class TestingConfig(DefaultConfig):
     TESTING = True
     WTF_CSRF_ENABLED = False
     SQLALCHEMY_DATABASE_URI = 'sqlite://'  # keep testing db in memory
-    APPLICATION_ROOT = 'http://1cf55a5a.ngrok.com'
-    TW_NUMBER = '5005550006'  # development number
-
     CACHE_TYPE = 'null'
     CACHE_NO_NULL_WARNING = True
