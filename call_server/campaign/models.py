@@ -55,8 +55,14 @@ class Campaign(db.Model):
 
         return val
 
+    def targets_list(self):
+        return ['%s %s' % (s.name, s.number) for s in self.target_set]
+
     def target_set_display(self):
-        return "<br>".join(['%s %s' % (s.name, s.number) for s in self.target_set])
+        return "<br>".join(self.targets_list())
+
+    def phone_number_list(self):
+        return [str(n.number) for n in self.phone_number_set]
 
     @classmethod
     def duplicate(self):
