@@ -159,7 +159,7 @@ def configure_assets(app):
                         filters='cssmin', output='dist/css/vendor.css')
     assets.register('vendor_css', vendor_css)
 
-    site_js = Bundle('scripts/*.js',
+    site_js = Bundle('scripts/site/*.js',
                      output='dist/js/site.js')
     assets.register('site_js', site_js)
 
