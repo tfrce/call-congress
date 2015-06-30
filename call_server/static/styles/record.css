@@ -26,6 +26,11 @@ button .text.inline { display: inline; }
     border-bottom: 1px solid #ddd;
 }
 
+.playback {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
 .meter { 
     display: inline-block;
     margin-left: 30px;

@@ -22,8 +22,8 @@
       this.rafID = null;
 
       // get stream source from audio context
-      this.mediaStreamSource = recorder.audioContext.createMediaStreamSource(recorder.stream);
-      this.meter = createAudioMeter(recorder.audioContext);
+      this.mediaStreamSource = recorder.source;
+      this.meter = createAudioMeter(recorder.context);
       this.mediaStreamSource.connect(this.meter);
     },
 

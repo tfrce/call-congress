@@ -92,7 +92,11 @@
     <td><%= data.campaign_name %></td>
     <td><%= data.version %></td>
     <td><%= data.description %></td>
-    <td><audio src="<%= data.file_url %>" controls/></td>
+    <td>
+        <audio controls>
+            <source type="audio/mpeg" src="<%= data.file_url %>"></source>
+        </audio>
+    </td>
     <td><% if (data.selected) { %>
         <span class="glyphicon glyphicon-check"></span>
         <% } else { %>
@@ -106,12 +110,7 @@
 {% endassets %}
 
 {# define encoding assets in template instead of creating a bunch of bundles #}
-{% assets output="dist/js/libopus.js", "bower_components/Recorderjs/libopus.js" %}
-<script type="text/javascript" src="{{ ASSET_URL }}"></script>
-{%endassets%}
 <!-- define worker assets, but do not insert script tags -->
-{% assets output="dist/js/oggopusDecoder.js", "bower_components/Recorderjs/oggopusDecoder.js" %}{%endassets%}
-{% assets output="dist/js/oggopusEncoder.js", "bower_components/Recorderjs/oggopusEncoder.js" %}{%endassets%}
-{% assets output="dist/js/resampler.js", "bower_components/Recorderjs/resampler.js" %}{%endassets%}
-
+{% assets output="dist/js/lib/lame.all.js", "bower_components/audioRecord/src/lame.all.js" %}{%endassets%}
+{% assets output="dist/js/lib/recorderWorker.js", "bower_components/audioRecord/src/recorderWorker.js" %}{%endassets%}
 {% endblock %}

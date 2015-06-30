@@ -60,6 +60,12 @@ $(document).ready(function () {
     },
 
     initialize: function() {
+      window.AudioContext = window.AudioContext || window.webkitAudioContext;
+      navigator.getUserMedia = ( navigator.getUserMedia ||
+                       navigator.webkitGetUserMedia ||
+                       navigator.mozGetUserMedia ||
+                       navigator.msGetUserMedia);
+      window.URL = window.URL || window.webkitURL;
   
     },
 
@@ -368,8 +374,8 @@ $(document).ready(function () {
       this.rafID = null;
 
       // get stream source from audio context
-      this.mediaStreamSource = recorder.audioContext.createMediaStreamSource(recorder.stream);
-      this.meter = createAudioMeter(recorder.audioContext);
+      this.mediaStreamSource = recorder.source;
+      this.meter = createAudioMeter(recorder.context);
       this.mediaStreamSource.connect(this.meter);
     },
 
@@ -421,7 +427,7 @@ $(document).ready(function () {
   });
 
 })();
-/*global CallPower, Backbone, Recorder */
+/*global CallPower, Backbone, audioRecorder */
 
 (function () {
   CallPower.Views.MicrophoneModal = Backbone.View.extend({
@@ -439,7 +445,7 @@ $(document).ready(function () {
 
     initialize: function() {
       this.template = _.template($('#microphone-modal-tmpl').html(), { 'variable': 'modal' });
-      _.bindAll(this, 'setup', 'confirmClose', 'destroy', 'getSources', 'streamError', 'connectMeter', 'dataAvailable');
+      _.bindAll(this, 'setup', 'confirmClose', 'destroy', 'getSources', 'streamError', 'connectRecorder', 'dataAvailable');
     },
 
     render: function(modal) {
@@ -456,7 +462,7 @@ $(document).ready(function () {
     },
 
     setup: function() {
-      if (Recorder && Recorder.isRecordingSupported()) {
+      if (this.isRecordingSupported()) {
         $('.nav-tabs a[href="#record"]', this.$el).tab('show');
 
         // get available sources (Chrome only)
@@ -475,6 +481,11 @@ $(document).ready(function () {
       }
 
       this.playback = $('audio[name="playback"]', this.$el);
+    },
+
+    isRecordingSupported: function() {
+      return !!(navigator.getUserMedia || navigator.webkitGetUserMedia ||
+                navigator.mozGetUserMedia || navigator.msGetUserMedia);
     },
 
     switchTab: function(event) {
@@ -496,10 +507,6 @@ $(document).ready(function () {
       }
 
       console.log('confirmClose');
-      console.log(this.playback.attr('src'));
-      console.log(!!this.playback.attr('src'));
-      console.log(this.audioBlob);
-      console.log(!!this.audioBlob);
       if (!!this.playback.attr('src') && !this.audioBlob) {
         // there is audio in the player, but not stored as a blob
         return confirm('You have recorded unsaved audio. Are you sure you want to close?');
@@ -550,10 +557,7 @@ $(document).ready(function () {
     setSource: function() {
       var selectedSourceId = $('select.source', this.$el).children('option:selected').val();
 
-      var recorderConfig = {
-        bitRate: 8000, // downsample to what Twilio expects
-        encoderPath: '/static/dist/js/oggopusEncoder.js',
-        streamOptions: {
+      var mediaConstraints = { audio: {
             mandatory: {
               // disable chrome filters
               googEchoCancellation: false,
@@ -566,22 +570,30 @@ $(document).ready(function () {
 
       if (selectedSourceId) {
          // set selected source in config
-        recorderConfig.streamOptions.optional = [{ sourceId: selectedSourceId }];
+        mediaConstraints.audio.optional = [{ sourceId: selectedSourceId }];
       } // if not, uses default
 
-      // create recorder
-      this.recorder = new Recorder(recorderConfig);
-
-      // connect events
-      this.recorder.addEventListener('streamError', this.streamError);
-      this.recorder.addEventListener('streamReady', this.connectMeter);
-      this.recorder.addEventListener('dataAvailable', this.dataAvailable);
-
-      // start stream
-      this.recorder.initStream();
+      navigator.getUserMedia(mediaConstraints, this.connectRecorder, this.streamError);
     },
 
-    connectMeter: function() {
+    connectRecorder: function(stream) {
+      var audioContext = new AudioContext;
+      var source = audioContext.createMediaStreamSource(stream);
+
+      var recorderConfig = {
+        workerPath: '/static/dist/js/lib/recorderWorker.js',
+        mp3LibPath: '/static/dist/js/lib/lame.all.js',
+        vorbisLibPath: '/static/dist/js/lib/lame.all.js', // not really, but we only want mp3 recording
+        // reuse exisiting path to avoid double downloading large emscripten compiled js
+        recordAsMP3: true,
+        bitRate: 8,
+
+      };
+      this.recorder  = audioRecorder.fromSource(source, recorderConfig);
+      this.recorder.context = audioContext;
+      this.recorder.source = source;
+      this.recorder.state = 'inactive';
+
        // connect audio meter
       this.meter = new CallPower.Views.AudioMeter(this.recorder);
       this.meter.render();
@@ -590,13 +602,16 @@ $(document).ready(function () {
     onRecord: function(event) {
       event.preventDefault();
 
+       // track custom state beyond what audioRecord.js provides
+
       if (this.recorder.state === 'error') {
         // reset source
         this.setSource();
       }
       else if (this.recorder.state === 'inactive') {
         // start recording
-        this.recorder.start();
+        this.recorder.record();
+        this.recorder.state = 'recording';
 
         // show audio row and recording indicator
         $('.playback').show();
@@ -606,10 +621,11 @@ $(document).ready(function () {
         $('button.btn-record .glyphicon', this.$el).removeClass('glyphicon-record').addClass('glyphicon-stop');
         $('button.btn-record .text', this.$el).text('Stop');
       }
-      else if (this.recorder.state === 'recording') {
+      else if (this.recorder.state === 'recording' || this.recorder.recording) {
         // stop recording
         this.recorder.stop();
-        this.recorder.state = 'stopped'; // set custom state, so we know to re-init
+        this.recorder.state = 'stopped';
+        this.recorder.exportMP3(this.dataAvailable);
 
         $('.playback .glyphicon-record').removeClass('active').hide();
 
@@ -618,8 +634,8 @@ $(document).ready(function () {
         $('button.btn-record .text', this.$el).text('Reset');
       }
       else if (this.recorder.state === 'stopped') {
-        // re-init streams
-        this.recorder.initStream();
+        // clear buffers and restart
+        this.recorder.clear();
         this.recorder.state = 'inactive';
 
         // clear playback
@@ -637,8 +653,8 @@ $(document).ready(function () {
     },
 
     dataAvailable: function(data) {
-      console.log('dataAvailable', this);
-      this.audioBlob = data.detail;
+      console.log('dataAvailable', this, data);
+      this.audioBlob = data;
       this.playback.attr('controls', true);
       this.playback.attr('src',URL.createObjectURL(this.audioBlob));
 

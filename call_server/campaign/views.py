@@ -153,7 +153,7 @@ def upload_recording(campaign_id):
 
         uploaded_blob = request.files.get('file_storage')
         if uploaded_blob:
-            uploaded_blob.filename = "campaign_{}_{}_{}.ogg".format(campaign.id, message_key, recording.version)
+            uploaded_blob.filename = "campaign_{}_{}_{}.mp3".format(campaign.id, message_key, recording.version)
             recording.file_storage = uploaded_blob
 
         db.session.add(recording)

@@ -150,7 +150,7 @@ def configure_assets(app):
     assets.register('vendor_js', vendor_js)
 
     audio_js = Bundle('bower_components/volume-meter/volume-meter.js',
-                      'bower_components/Recorderjs/recorder.js',
+                      'bower_components/audioRecord/src/audioRecord.js',
                       filters='rjsmin', output='dist/js/vendor_audio.js')
     assets.register('audio_js', audio_js)
 
