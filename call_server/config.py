@@ -38,7 +38,7 @@ class DefaultConfig(object):
     MAIL_SERVER = 'localhost'
 
     STORE_PROVIDER = 'flask_store.providers.local.LocalProvider'
-    STORE_DOMAIN = 'http://127.0.0.1:5000'
+    STORE_DOMAIN = 'http://localhost:5000'
     STORE_PATH = '%s/instance/uploads/' % os.path.abspath(os.curdir)
 
 
