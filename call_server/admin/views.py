@@ -12,22 +12,25 @@ from ..utils import get_one_or_create
 
 admin = Blueprint('admin', __name__, url_prefix='/admin')
 
+# all admin routes require login
+@admin.before_request
+@login_required
+def before_request():
+    pass
+
 
 @admin.route('/')
-@login_required
 def dashboard():
     campaigns = Campaign.query.filter(Campaign.status_code >= PAUSED)
     return render_template('admin/dashboard.html', campaigns=campaigns)
 
 
 @admin.route('/statistics')
-@login_required
 def statistics():
     return render_template('admin/statistics.html')
 
 
 @admin.route('/system')
-@login_required
 def system():
     twilio_numbers = TwilioPhoneNumber.query.all()
     return render_template('admin/system.html',
@@ -37,7 +40,6 @@ def system():
 
 
 @admin.route('/twilio/resync', methods=['POST'])
-@login_required
 def twilio_resync():
     """ One-way sync of Twilio numbers from REST Client down to our database
     Adds new numbers, saves voice_application_sid, and removes stale entries."""

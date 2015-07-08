@@ -14,9 +14,13 @@ from .forms import (CampaignForm, CampaignAudioForm, AudioRecordingForm,
 
 campaign = Blueprint('campaign', __name__, url_prefix='/admin/campaign')
 
+# all campaign routes require login
+@campaign.before_request
+@login_required
+def before_request():
+    pass
 
 @campaign.route('/')
-@login_required
 def index():
     campaigns = Campaign.query.all()
     return render_template('campaign/list.html', campaigns=campaigns)
@@ -24,7 +28,6 @@ def index():
 
 @campaign.route('/create', methods=['GET', 'POST'])
 @campaign.route('/edit/<int:campaign_id>', methods=['GET', 'POST'])
-@login_required
 def form(campaign_id=None):
     edit = False
     if campaign_id:
@@ -96,7 +99,6 @@ def form(campaign_id=None):
 
 
 @campaign.route('/copy/<int:campaign_id>', methods=['GET', 'POST'])
-@login_required
 def copy(campaign_id):
     orig_campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     new_campaign = orig_campaign.duplicate()
@@ -109,7 +111,6 @@ def copy(campaign_id):
 
 
 @campaign.route('/audio/<int:campaign_id>', methods=['GET', 'POST'])
-@login_required
 def audio(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     form = CampaignAudioForm()
@@ -129,7 +130,6 @@ def audio(campaign_id):
 
 
 @campaign.route('/audio/<int:campaign_id>/upload', methods=['POST'])
-@login_required
 def upload_recording(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     form = AudioRecordingForm()
@@ -166,7 +166,6 @@ def upload_recording(campaign_id):
 
 
 @campaign.route('/launch/<int:campaign_id>', methods=['GET', 'POST'])
-@login_required
 def launch(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     form = CampaignLaunchForm()
@@ -184,7 +183,6 @@ def launch(campaign_id):
 
 
 @campaign.route('/status/<int:campaign_id>', methods=['GET', 'POST'])
-@login_required
 def status(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     form = CampaignStatusForm(obj=campaign)
