@@ -13,7 +13,7 @@ class DefaultConfig(object):
     BABEL_DEFAULT_LOCALE = 'en'
     BABEL_DEFAULT_TIMEZONE = 'UTC'
     ACCEPT_LANGUAGES = {'en': 'English',
-                        'es': 'Spansih'}
+                        'es': 'Spanish'}
 
     CACHE_TYPE = 'simple'
 
