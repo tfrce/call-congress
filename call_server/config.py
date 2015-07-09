@@ -22,18 +22,20 @@ class DefaultConfig(object):
     INSTALLED_ORG = os.environ.get('INSTALLED_ORG')
     SITENAME = os.environ.get('SITENAME')
 
-    TW_CLIENT = twilio.rest.TwilioRestClient(
+    TWILIO_CLIENT = twilio.rest.TwilioRestClient(
         os.environ.get('TWILIO_ACCOUNT_SID'),
         os.environ.get('TWILIO_AUTH_TOKEN'))
     # limit on the length of the call
-    TW_TIME_LIMIT = 60 * 20  # 4 minutes
+    TWILIO_TIME_LIMIT = 60 * 20  # 4 minutes
 
     # limit on the amount of time to ring before giving up
-    TW_TIMEOUT = 40  # seconds
+    TWILIO_TIMEOUT = 40  # seconds
 
     SECRET_KEY = 'NotARealSecretKey'
 
     SUNLIGHT_API_KEY = os.environ.get('SUNLIGHT_API_KEY')
+
+    LOG_PHONE_NUMBERS = True
 
     MAIL_SERVER = 'localhost'
 
