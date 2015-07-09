@@ -64,6 +64,10 @@ class Campaign(db.Model):
     def phone_number_list(self):
         return [str(n.number) for n in self.phone_number_set]
 
+    def audio(self, key):
+        # convenience method for getting the selected audio recording by key
+        return AudioRecording.query.filter_by(campaign_id=self.id, key=key, selected=True).first()
+
     @classmethod
     def duplicate(self):
         arguments = dict()
@@ -102,6 +106,9 @@ class Target(db.Model):
 
     def __unicode__(self):
         return self.name
+
+    def full_name(self):
+        return unicode("{} {}".format(self.title, self.name), 'utf8')
 
 
 class TwilioPhoneNumber(db.Model):
