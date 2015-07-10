@@ -11,7 +11,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from .models import Call
 from ..campaign.models import Campaign, Target
-from ..political_data.utils import locate_targets
+from ..political_data.lookup import locate_targets
 
 call = Blueprint('call', __name__)
 call_methods = ['GET', 'POST']

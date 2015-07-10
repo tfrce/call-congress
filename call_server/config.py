@@ -16,6 +16,8 @@ class DefaultConfig(object):
                         'es': 'Spanish'}
 
     CACHE_TYPE = 'simple'
+    CACHE_THRESHOLD = 100000 # because we're caching political data
+    CACHE_DEFAULT_TIMEOUT = None
 
     CSRF_ENABLED = False
 
