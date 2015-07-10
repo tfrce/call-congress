@@ -1,26 +1,23 @@
-import os
-import flaskr
-import unittest
-import tempfile
+import nose
+from flask.ext.testing import TestCase
 
+from call_server.app import create_app, db
+from call_server.config import TestingConfig
 from call_server.extensions import assets
 
 
-class BaseTestCase(unittest.TestCase):
+class BaseTestCase(TestCase):
+
+    def create_app(self):
+        assets._named_bundles = {}
+        return create_app(TestingConfig)
 
     def setUp(self):
-        self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
-        flaskr.app.config['TESTING'] = True
-        self.app = flaskr.app.test_client()
-        flaskr.init_db()
-
-        # clear assets
-        assets._named_bundles = {}
+        db.create_all()
 
     def tearDown(self):
-        os.close(self.db_fd)
-        os.unlink(flaskr.app.config['DATABASE'])
-
+        db.session.remove()
+        db.drop_all()
 
 if __name__ == '__main__':
-    unittest.main()
+    nose.main()
