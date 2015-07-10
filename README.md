@@ -34,4 +34,6 @@ Read detailed instrustions at [INSTALLATION.md](INSTALLATION.md)
 Updating political data
 --------------------------------
 
-### TODO update for new local search cache
+Political data is downloaded from Sunlight as CSV files stored in this repository. These are read on startup and saved in a memory cache for fast local lookup.
+
+To update these files with new data after elections, run `cd call_server/political_data/data && make clean && make`
