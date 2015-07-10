@@ -1,6 +1,4 @@
 import random
-import urlparse
-
 import pystache
 import twilio.twiml
 
@@ -13,7 +11,7 @@ from .models import Call
 from ..campaign.models import Campaign, Target
 from ..political_data.lookup import locate_targets
 
-call = Blueprint('call', __name__)
+call = Blueprint('call', __name__, url_prefix='/call')
 call_methods = ['GET', 'POST']
 
 
@@ -21,16 +19,14 @@ def play_or_say(r, audio, **kwds):
     # take twilio response and play or say message from an AudioRecording
     # can use mustache templates to render keyword arguments
 
-    if audio.file_storage:
-        r.play(audio.file_url())
+    if audio:
+        if audio.file_storage:
+            r.play(audio.file_url())
+        else:
+            msg = pystache.render(audio.text_to_speech, kwds)
+            r.say(msg)
     else:
-        msg = pystache.render(audio.text_to_speech, kwds)
-        r.say(msg)
-
-
-def full_url_for(route, **kwds):
-    return urlparse.urljoin(current_app.config['APPLICATION_ROOT'],
-                            url_for(route, **kwds))
+        r.say('Error: no audio recording specified')
 
 
 def parse_params(r):
@@ -38,6 +34,7 @@ def parse_params(r):
         'userPhone': r.values.get('userPhone'),
         'campaignId': r.values.get('campaignId', 0),
         'zipcode': r.values.get('zipcode', None),
+        'targetIds': r.values.getlist('targetIds'),
     }
 
     # lookup campaign by ID
@@ -63,7 +60,7 @@ def intro_zip_gather(params, campaign):
 
 def zip_gather(resp, params, campaign):
     with resp.gather(numDigits=5, method="POST",
-                     action=url_for("zip_parse", **params)) as g:
+                     action=url_for("call.zip_parse", **params)) as g:
         play_or_say(g, campaign.audio('msg_ask_zip'))
 
     return str(resp)
@@ -82,7 +79,7 @@ def make_calls(params, campaign):
     play_or_say(resp, campaign.audio('msg_call_block_intro'),
                 n_targets=n_targets, many_reps=n_targets > 1)
 
-    resp.redirect(url_for('make_single_call', call_index=0, **params))
+    resp.redirect(url_for('call.make_single', call_index=0, **params))
 
     return str(resp)
 
@@ -118,11 +115,11 @@ def create():
     try:
         call = current_app.config['TWILIO_CLIENT'].calls.create(
             to=params['userPhone'],
-            from_=random.choice([n.number for n in campaign.phone_number_set]),
-            url=full_url_for("connection", **params),
+            from_=random.choice([str(n.number) for n in campaign.phone_number_set]),
+            url=url_for('call.connection', _external=True, **params),
             timeLimit=current_app.config['TWILIO_TIME_LIMIT'],
             timeout=current_app.config['TWILIO_TIMEOUT'],
-            status_callback=full_url_for("call_complete_status", **params))
+            status_callback=url_for("call.complete_status", _external=True, **params))
 
         result = jsonify(message=call.status, debugMode=current_app.debug)
         result.status_code = 200 if call.status != 'failed' else 500
@@ -136,7 +133,7 @@ def create():
 @call.route('/connection', methods=call_methods)
 def connection():
     """
-    Call handler to connect a user with their congress person(s).
+    Call handler to connect a user with the campaign target(s).
     Required Params:
         campaignId
     Optional Params:
@@ -153,7 +150,7 @@ def connection():
 
         play_or_say(resp, campaign.audio('msg_intro'))
 
-        action = url_for("_make_calls", **params)
+        action = url_for("call._make_calls", **params)
 
         with resp.gather(numDigits=1, method="POST", timeout=10,
                          action=action) as g:
@@ -164,8 +161,8 @@ def connection():
         return intro_zip_gather(params, campaign)
 
 
-@call.route('/incoming_call', methods=call_methods)
-def incoming_call():
+@call.route('/incoming', methods=call_methods)
+def incoming():
     """
     Handles incoming calls to the twilio numbers.
     Required Params: campaignId
@@ -211,8 +208,8 @@ def zip_parse():
     return make_calls(params, campaign)
 
 
-@call.route('/make_single_call', methods=call_methods)
-def make_single_call():
+@call.route('/make_single', methods=call_methods)
+def make_single():
     params, campaign = parse_params(request)
 
     if not params or not campaign:
@@ -229,19 +226,19 @@ def make_single_call():
     play_or_say(resp, campaign.audio('msg_rep_intro'), name=full_name)
 
     if current_app.debug:
-        print u'DEBUG: Call #{}, {} ({}) from {} in make_single_call()'.format(
+        print u'DEBUG: Call #{}, {} ({}) from {} in call.make_single()'.format(
             i, full_name, target_phone, params['userPhone'])
 
     resp.dial(target_phone, callerId=params['userPhone'],
               timeLimit=current_app.config['TWILIO_TIME_LIMIT'],
               timeout=current_app.config['TWILIO_TIMEOUT'], hangupOnStar=True,
-              action=url_for('call_complete', **params))
+              action=url_for('call.complete', **params))
 
     return str(resp)
 
 
-@call.route('/call_complete', methods=call_methods)
-def call_complete():
+@call.route('/complete', methods=call_methods)
+def complete():
     params, campaign = parse_params(request)
     i = int(request.values.get('call_index', 0))
 
@@ -258,6 +255,8 @@ def call_complete():
     }
     if current_app.config['LOG_PHONE_NUMBERS']:
         call_data['phone_number'] = params['userPhone']
+        # user phone numbers are hashed by the init method
+        # but some installations may not want to log at all
 
     try:
         current_app.db.session.add(Call(**call_data))
@@ -278,13 +277,13 @@ def call_complete():
 
         play_or_say(resp, campaign.audio('msg_between_thanks'))
 
-        resp.redirect(url_for('make_single_call', **params))
+        resp.redirect(url_for('call.make_single', **params))
 
     return str(resp)
 
 
-@call.route('/call_complete_status', methods=call_methods)
-def call_complete_status():
+@call.route('/complete_status', methods=call_methods)
+def complete_status():
     # async callback from twilio on call complete
     params, _ = parse_params(request)
 
