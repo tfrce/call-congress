@@ -53,8 +53,8 @@
         key: inputGroup.prev('label').attr('for'),
         campaign_id: $('input[name="campaign_id"]').val()
       };
-      this.versionsView = new CallPower.Views.VersionsModal();
-      this.versionsView.render(modal);
+      this.versionsView = new CallPower.Views.VersionsModal(modal);
+      this.versionsView.render();
     },
 
     validateForm: function() {

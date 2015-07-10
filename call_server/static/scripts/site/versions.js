@@ -39,20 +39,24 @@
     tagName: 'div',
     className: 'versions modal fade',
 
-    initialize: function() {
+    events: {
+      'change [name=show_all]': 'onFilterCampaigns'
+    },
+
+    initialize: function(modalData) {
       this.template = _.template($('#recording-modal-tmpl').html(), { 'variable': 'modal' });
+      this.modalData = modalData;
 
       this.collection = new CallPower.Collections.AudioRecordingList();
-      this.collection.fetch(); // stop trying to make fetch happen
+      this.filterCollection({ key: this.modalData.key,
+                              campaign_id: this.modalData.campaign_id });
       this.renderCollection();
 
       this.listenTo(this.collection, 'add remove select', this.renderCollection);
     },
 
-    render: function(modal) {
-      console.log('versions view render', modal);
-      this.modal = modal;
-      var html = this.template(modal);
+    render: function() {
+      var html = this.template(this.modalData);
       this.$el.html(html);
       
       this.$el.modal('show');
@@ -76,7 +80,32 @@
 
     },
 
+    filterCollection: function(values) {
+      // filter fetch that matches the convoluted syntax used by flask-restless
+      var filters = [];
 
+      _.each(values, function(val, key) {
+        filters.push({ name: key,
+                        op: "eq",
+                        val: val});
+      });
+
+      this.collection.fetch({
+        data: { q: JSON.stringify({ filters: filters }) }
+      });
+    },
+
+    onFilterCampaigns: function() {
+      this.collection.reset(null);
+
+      var showAll = !!this.$('[name=show_all]:checked').length;
+      if (showAll) {
+        this.filterCollection({ key: this.modalData.key });
+      } else {
+        this.filterCollection({ key: this.modalData.key,
+                                campaign_id: this.modalData.campaign_id });
+      }
+    },
 
   });
 
