@@ -7,12 +7,15 @@ from flask_jsonpify import jsonify
 from twilio import TwilioRestException
 from sqlalchemy.exc import SQLAlchemyError
 
+from ..extensions import csrf
+
 from .models import Call
 from ..campaign.models import Campaign, Target
 from ..political_data.lookup import locate_targets
 
 call = Blueprint('call', __name__, url_prefix='/call')
 call_methods = ['GET', 'POST']
+csrf.exempt(call)
 
 
 def play_or_say(r, audio, **kwds):

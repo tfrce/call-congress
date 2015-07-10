@@ -4,7 +4,7 @@ from flask.ext.login import login_required
 
 import sqlalchemy
 
-from ..extensions import db, csrf
+from ..extensions import db
 from ..utils import choice_items, choice_keys, choice_values_flat
 
 from .constants import CAMPAIGN_NESTED_CHOICES, CUSTOM_CAMPAIGN_CHOICES, EMPTY_CHOICES, LIVE
@@ -14,11 +14,13 @@ from .forms import (CampaignForm, CampaignAudioForm, AudioRecordingForm,
 
 campaign = Blueprint('campaign', __name__, url_prefix='/admin/campaign')
 
-# all campaign routes require login
+
 @campaign.before_request
 @login_required
 def before_request():
+    # all campaign routes require login
     pass
+
 
 @campaign.route('/')
 def index():
