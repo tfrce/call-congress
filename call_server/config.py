@@ -52,6 +52,10 @@ class ProductionConfig(DefaultConfig):
     APPLICATION_ROOT = os.environ.get('APPLICATION_ROOT', None)
 
     CACHE_TYPE = 'memcached'
+    CACHE_MEMCACHED_SERVERS = os.environ.get('CACHE_MEMCACHED_SERVERS')
+    CACHE_MEMCACHED_USERNAME = os.environ.get('CACHE_MEMCACHED_USERNAME')
+    CACHE_MEMCACHED_PASSWORD = os.environ.get('CACHE_MEMCACHED_PASSWORD')
+    CACHE_KEY_PREFIX = 'call-power'
 
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'localhost')
     MAIL_PORT = os.environ.get('MAIL_PORT', 1025)
