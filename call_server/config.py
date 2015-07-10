@@ -49,6 +49,7 @@ class DefaultConfig(object):
 class ProductionConfig(DefaultConfig):
     DEBUG = False
 
+    SERVER_NAME = os.environ.get('SERVER_NAME')
     APPLICATION_ROOT = os.environ.get('APPLICATION_ROOT', None)
 
     CACHE_TYPE = 'memcached'

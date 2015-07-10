@@ -31,8 +31,10 @@ def reset_assets():
 
 
 @manager.command
-def run():
+def run(server=None):
     """Run webserver for local development."""
+    if server:
+        app.config['SERVER_NAME'] = server
     app.run(debug=True, use_reloader=True, host=(os.environ.get('APP_HOST') or '127.0.0.1'))
 
 
