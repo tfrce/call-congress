@@ -18,6 +18,24 @@
     comparator: 'version',
     parse: function(response) {
       return response.objects;
+    },
+
+    fetchFilter: function(options) {
+      // filter fetch that matches the convoluted syntax used by flask-restless
+      // checks for values in options.filters
+
+      var filters = [];
+      _.each(options.filters, function(val, key) {
+        filters.push({ name: key,
+                        op: "eq",
+                        val: val});
+      });
+
+      var flaskQuery = {
+        q: JSON.stringify({ filters: filters })
+      };
+      var fetchOptions = _.extend({ data: flaskQuery }, options);
+      this.fetch(fetchOptions);
     }
   });
 
@@ -71,41 +89,60 @@
 
     initialize: function(viewData) {
       this.template = _.template($('#recording-modal-tmpl').html(), { 'variable': 'modal' });
+      _.bindAll(this, 'destroyViews');
+
       this.viewData = viewData;
 
       this.collection = new CallPower.Collections.AudioRecordingList();
-      this.filterCollection({ key: this.viewData.key,
-                              /*campaign_id: this.viewData.campaign_id*/ });
-      this.renderCollection();
+      this.collection.fetchFilter({
+        filters: { key: this.viewData.key,
+                 /*campaign_id: this.viewData.campaign_id*/
+                },
+        reset: true
+      });
+      this.views = [];
 
-      this.listenTo(this.collection, 'add remove', this.renderCollection);
+      this.listenTo(this.collection, 'reset add remove', this.render);
       this.listenTo(this.collection, 'select', this.selectVersion);
       this.listenTo(this.collection, 'delete', this.deleteVersion);
+
+      this.$el.on('hidden.bs.modal', this.destroyViews);
     },
 
     render: function() {
+      // clear any existing subviews
+      this.destroyViews();
+
+      // render template
       var html = this.template(this.viewData);
       this.$el.html(html);
-      
+      var $list = this.$('table tbody').empty();
+
+      // create subviews for each item in collection
+      this.views = this.collection.map(this.createItemView, this);
+      $list.append( _.map(this.views,
+        function(view) { return view.render().el; },
+        this)
+      );
+
+      // show the modal
       this.$el.modal('show');
 
       return this;
     },
 
-    renderCollection: function() {
-      var $list = this.$('table tbody').empty();
+    destroyViews: function() {
+      // destroy each subview
+      _.invoke(this.views, 'destroy');
+      this.views.length = 0;
+    },
 
-      var rendered_items = [];
-      this.collection.each(function(model) {
-        var item = new CallPower.Views.RecordingItemView({
-          model: model,
-        });
-        var $el = item.render().$el;
+    hide: function() {
+      this.$el.modal('hide');
+    },
 
-        rendered_items.push($el);
-      }, this);
-      $list.append(rendered_items);
-
+    createItemView: function (model) {
+      return new CallPower.Views.RecordingItemView({ model: model });
     },
 
     selectVersion: function(data) {
@@ -123,8 +160,8 @@
               // and display to user
               window.flashMessage(msg, 'success');
 
-              // close the parent modal
-              self.$el.modal('hide');
+              // close the modal, and cleanup subviews
+              self.hide();
             } else {
               console.error(response);
               window.flashMessage(response.errors, 'error', true);
@@ -152,7 +189,7 @@
               window.flashMessage(msg, 'success');
 
               // close the parent modal
-              self.destroy();
+              self.hide();
             } else {
               console.error(response);
               window.flashMessage(response.errors, 'error', true);
@@ -164,30 +201,15 @@
       });
     },
 
-    filterCollection: function(values) {
-      // filter fetch that matches the convoluted syntax used by flask-restless
-      var filters = [];
-
-      _.each(values, function(val, key) {
-        filters.push({ name: key,
-                        op: "eq",
-                        val: val});
-      });
-
-      this.collection.fetch({
-        data: { q: JSON.stringify({ filters: filters }) }
-      });
-    },
-
     onFilterCampaigns: function() {
       this.collection.reset(null);
 
       var showAll = !!this.$('[name=show_all]:checked').length;
       if (showAll) {
-        this.filterCollection({ key: this.viewData.key });
+        this.collection.fetchFilter({ filters: { key: this.viewData.key } });
       } else {
-        this.filterCollection({ key: this.viewData.key,
-                                /*campaign_id: this.viewData.campaign_id*/ });
+        this.collection.fetchFilter({ filters: { key: this.viewData.key,
+                                /*campaign_id: this.viewData.campaign_id*/ } });
       }
     },
   });
