@@ -53,26 +53,36 @@ class Campaign(db.Model):
             sub = campaign_subchoices.get(self.campaign_subtype, '')
             val = '%s - %s' % (val, sub)
             if self.campaign_type == 'state':
-                #special case, show specific state
+                # special case, show specific state
                 val = '%s - %s' % (self.campaign_state, sub)
 
         return val
 
-    def targets_list(self):
-        return ['%s %s' % (s.name, s.number) for s in self.target_set]
+    def targets(self):
+        return [(s.name, str(s.number)) for s in self.target_set]
 
-    def target_set_display(self):
-        return "<br>".join(self.targets_list())
+    def targets_display(self):
+        return "<br>".join(["%s %s" % (t) for t in self.targets()])
 
-    def phone_number_list(self):
+    def phone_numbers(self):
         return [str(n.number) for n in self.phone_number_set]
+
+    def audio_list(self):
+        return CampaignAudioRecording.query.filter(
+                    CampaignAudioRecording.campaign_id == self.id,
+                    CampaignAudioRecording.selected == True).all()
+
+    def audio_msgs(self):
+        table = {}
+        for r in self.audio_list():
+            table[r.recording.key] = r.recording.file_url()
+        return table
 
     def audio(self, key):
         # convenience method for getting this campaign's selected audio recording by key
-        campaignAudio = CampaignAudioRecording.query.filter(
-                    CampaignAudioRecording.campaign_id == self.id,
-                    CampaignAudioRecording.selected == True). \
-                filter(CampaignAudioRecording.recording.has(key=key)).first()
+        campaignAudio = self.audio_list().filter(
+            CampaignAudioRecording.recording.has(key=key)
+        ).first()
 
         if campaignAudio:
             return campaignAudio.recording
@@ -162,6 +172,10 @@ class AudioRecording(db.Model):
     def selected_campaigns(self):
         names = [s.campaign.name for s in self.selected_recordings()]
         return ','.join(names)
+
+    def selected_campaign_ids(self):
+        ids = [s.campaign.id for s in self.selected_recordings()]
+        return ids
 
     def __unicode__(self):
         return "%s v%s" % (self.key, self.version)

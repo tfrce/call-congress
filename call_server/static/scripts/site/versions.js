@@ -7,14 +7,15 @@
       campaign: null,
       key: null,
       description: null,
-      version: null
+      version: null,
+      selected_campaign_ids: null
     },
 
   });
 
   CallPower.Collections.AudioRecordingList = Backbone.Collection.extend({
     model: CallPower.Models.AudioRecording,
-    url: '/api/recording',
+    url: '/api/audiorecording',
     comparator: 'version',
     parse: function(response) {
       return response.objects;
