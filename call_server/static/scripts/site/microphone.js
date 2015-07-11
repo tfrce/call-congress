@@ -316,14 +316,19 @@
           processData: false, // stop jQuery from munging our carefully constructed FormData
           contentType: false, // or faffing with the content-type
           success: function(response) {
-            // build friendly message like "Audio recording uploaded: Introduction version 3"
-            var fieldDescription = $('form label[for="'+response.key+'"]').text();
-            var msg = response.message + ': '+fieldDescription + ' version ' + response.version;
-            // and display to user
-            window.flashMessage(msg, 'success');
+            if (response.success) {
+              // build friendly message like "Audio recording uploaded: Introduction version 3"
+              var fieldDescription = $('form label[for="'+response.key+'"]').text();
+              var msg = response.message + ': '+fieldDescription + ' version ' + response.version;
+              // and display to user
+              window.flashMessage(msg, 'success');
 
-            // close the parent modal
-            self.$el.modal('hide');
+              // close the parent modal
+              self.$el.modal('hide');
+            } else {
+              console.error(response);
+              window.flashMessage(response.errors, 'error', true);
+            }
           },
           error: function(xhr, status, error) {
             console.error(status, error);

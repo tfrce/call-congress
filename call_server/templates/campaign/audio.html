@@ -89,7 +89,7 @@
 </script>
 
 <script type="text/template" id="recording-item-tmpl">
-    <td><%= data.campaign_name %></td>
+    <td><%= data.selected_campaigns %></td>
     <td><%= data.version %></td>
     <td><%= data.description %></td>
     <td>
@@ -98,10 +98,11 @@
         </audio>
     </td>
     <td><% if (data.selected) { %>
-        <span class="glyphicon glyphicon-check"></span>
+        <span class="glyphicon glyphicon-ok-sign"></span>
         <% } else { %>
-        <a href="#" class="select">select</a>
+        <button type="button" class="btn btn-default select"><span class="glyphicon glyphicon-ok-circle"></span></button>
         <% } %>
+        <button type="button" class="btn btn-default delete"><span class="glyphicon glyphicon-remove-circle"></span></button>
     </td>
 </script>
 

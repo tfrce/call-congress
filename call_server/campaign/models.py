@@ -68,8 +68,16 @@ class Campaign(db.Model):
         return [str(n.number) for n in self.phone_number_set]
 
     def audio(self, key):
-        # convenience method for getting the selected audio recording by key
-        return AudioRecording.query.filter_by(campaign_id=self.id, key=key, selected=True).first()
+        # convenience method for getting this campaign's selected audio recording by key
+        campaignAudio = CampaignAudioRecording.query.filter(
+                    CampaignAudioRecording.campaign_id == self.id,
+                    CampaignAudioRecording.selected == True). \
+                filter(CampaignAudioRecording.recording.has(key=key)).first()
+
+        if campaignAudio:
+            return campaignAudio.recording
+        else:
+            return None
 
     @classmethod
     def duplicate(self):

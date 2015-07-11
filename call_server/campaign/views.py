@@ -140,10 +140,10 @@ def upload_recording(campaign_id):
         message_key = form.data.get('key')
 
         # get highest version for this key to date
-        with db.session.no_autoflush:
-            last_version = db.session.query(db.func.max(AudioRecording.version)) \
-                .filter_by(key=message_key) \
-                .scalar()
+        last_version = db.session.query(db.func.max(AudioRecording.version)) \
+            .filter_by(key=message_key) \
+            .scalar()
+        print "last_version", last_version
 
         recording = AudioRecording()
         form.populate_obj(recording)
@@ -173,12 +173,52 @@ def upload_recording(campaign_id):
         db.session.commit()
 
         message = "Audio recording uploaded"
-        return jsonify({'success': True, 'message': message, 'key': message_key, 'version': recording.version})
+        return jsonify({'success': True, 'message': message,
+                        'key': message_key, 'version': recording.version})
     else:
         return jsonify({'success': False, 'errors': form.errors})
 
 
-@campaign.route('/launch/<int:campaign_id>', methods=['GET', 'POST'])
+@campaign.route('/<int:campaign_id>/audio/<int:recording_id>/select', methods=['POST'])
+def select_recording(campaign_id, recording_id):
+    print "select recording #", recording_id, "for campaign #", campaign_id
+    try:
+        campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
+        recording = AudioRecording.query.filter_by(id=recording_id).first_or_404()
+        campaignRecording = CampaignAudioRecording(campaign_id=campaign.id, recording=recording)
+        campaignRecording.selected = True
+
+        db.session.add(campaignRecording)
+        db.session.commit()
+
+        #unselect all other CampaignAudioRecordings with the same key and campaign
+        other_versions = CampaignAudioRecording.query.filter(
+                            CampaignAudioRecording.campaign_id == campaign_id,
+                            CampaignAudioRecording.recording.has(key=recording.key)).all()
+        for v in other_versions:
+            v.selected = False
+            db.session.add(v)
+        db.session.commit()
+
+        message = "Audio recording selected"
+        return jsonify({'success': True, 'message': message,
+                        'key': recording.key, 'version': recording.version})
+    except Exception, e:
+        print e
+        return jsonify({'success': False, 'errors': e})
+
+
+@campaign.route('/<int:campaign_id>/audio/<int:recording_id>/delete', methods=['DELETE'])
+def delete_recording(recording_id):
+    recording = AudioRecording.query.filter_by(id=recording_id).first_or_404()
+    db.session.delete(recording)
+    db.session.commit()
+    message = "Audio recording deleted"
+    return jsonify({'success': True, 'message': message,
+                    'key': recording.key, 'version': recording.version})
+
+
+@campaign.route('/<int:campaign_id>/launch', methods=['GET', 'POST'])
 def launch(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     form = CampaignLaunchForm()
