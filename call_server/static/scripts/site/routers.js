@@ -2,9 +2,9 @@
   CallPower.Routers.Campaign = Backbone.Router.extend({
     routes: {
       "campaign/create": "campaignForm",
-      "campaign/edit/:id": "campaignForm",
-      "campaign/copy/:id": "campaignForm",
-      "campaign/audio/:id": "audioForm",
+      "campaign/:id/edit": "campaignForm",
+      "campaign/:id/copy": "campaignForm",
+      "campaign/:id/audio": "audioForm",
     },
 
     campaignForm: function(id) {

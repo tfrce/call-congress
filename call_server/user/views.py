@@ -179,7 +179,7 @@ def reset_password():
 
 
 @user.route('/user/profile', methods=['GET', 'POST'], defaults={'user_id': None})
-@user.route('/user/profile/<int:user_id>', methods=['GET', 'POST'])
+@user.route('/user/<int:user_id>/profile', methods=['GET', 'POST'])
 @login_required
 def profile(user_id):
     if user_id:
@@ -230,7 +230,7 @@ def invite():
     return render_template('user/invite.html', form=form)
 
 
-@user.route('/admin/user/role/<int:user_id>', methods=['GET', 'POST'])
+@user.route('/admin/user/<int:user_id>/role', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def role(user_id):
@@ -249,7 +249,7 @@ def role(user_id):
     return render_template('user/role.html', user=user, form=form)
 
 
-@user.route('/user/remove/<int:user_id>', methods=['GET', 'POST'])
+@user.route('/user/<int:user_id>/remove', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def remove(user_id):

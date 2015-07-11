@@ -29,7 +29,7 @@ def index():
 
 
 @campaign.route('/create', methods=['GET', 'POST'])
-@campaign.route('/edit/<int:campaign_id>', methods=['GET', 'POST'])
+@campaign.route('/<int:campaign_id>/edit', methods=['GET', 'POST'])
 def form(campaign_id=None):
     edit = False
     if campaign_id:
@@ -100,7 +100,7 @@ def form(campaign_id=None):
                            CUSTOM_CAMPAIGN_CHOICES=CUSTOM_CAMPAIGN_CHOICES)
 
 
-@campaign.route('/copy/<int:campaign_id>', methods=['GET', 'POST'])
+@campaign.route('/<int:campaign_id>/copy', methods=['GET', 'POST'])
 def copy(campaign_id):
     orig_campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     new_campaign = orig_campaign.duplicate()
@@ -112,7 +112,7 @@ def copy(campaign_id):
     return redirect(url_for('campaign.form', campaign_id=new_campaign.id))
 
 
-@campaign.route('/audio/<int:campaign_id>', methods=['GET', 'POST'])
+@campaign.route('/<int:campaign_id>/audio', methods=['GET', 'POST'])
 def audio(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     form = CampaignAudioForm()
@@ -131,7 +131,7 @@ def audio(campaign_id):
                            example_text=current_app.config.CAMPAIGN_MESSAGE_DEFAULTS)
 
 
-@campaign.route('/audio/<int:campaign_id>/upload', methods=['POST'])
+@campaign.route('/<int:campaign_id>/audio/upload', methods=['POST'])
 def upload_recording(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     form = AudioRecordingForm()
@@ -195,7 +195,7 @@ def launch(campaign_id):
     return render_template('campaign/launch.html', campaign=campaign, form=form)
 
 
-@campaign.route('/status/<int:campaign_id>', methods=['GET', 'POST'])
+@campaign.route('/<int:campaign_id>/status', methods=['GET', 'POST'])
 def status(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     form = CampaignStatusForm(obj=campaign)
