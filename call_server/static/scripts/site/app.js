@@ -18,7 +18,7 @@ window.renderTemplate = function(selector, context) {
 };
 
 window.flashMessage = function(message, status, global) {
-    if (status === 'undefined') { var status = 'info'; }
+    if (status === undefined) { var status = 'info'; }
     var flash = $('<div class="alert alert-'+status+'">'+
                           '<button type="button" class="close" data-dismiss="alert">×</button>'+
                           message+'</div>');

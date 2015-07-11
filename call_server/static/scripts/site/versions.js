@@ -175,6 +175,8 @@
     },
 
     deleteVersion: function(data) {
+      // TODO, confirm with user
+
       // make ajax DELETE to API
       var url = '/admin/campaign/'+this.viewData.campaign_id+'/audio/'+data.id+'/delete';
       var self = this;

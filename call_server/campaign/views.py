@@ -157,8 +157,8 @@ def upload_recording(campaign_id):
 
         # unset selected for all other versions
         other_versions = CampaignAudioRecording.query.filter(
-                            CampaignAudioRecording.campaign_id == campaign_id,
-                            CampaignAudioRecording.recording.has(key=message_key)).all()
+            CampaignAudioRecording.campaign_id == campaign_id,
+            CampaignAudioRecording.recording.has(key=message_key)).all()
         for v in other_versions:
             v.selected = False
             db.session.add(v)
@@ -167,7 +167,7 @@ def upload_recording(campaign_id):
         # link this recording to campaign through m2m, and set selected flag
         campaignRecording = CampaignAudioRecording(campaign_id=campaign.id, recording=recording)
         campaignRecording.selected = True
-        
+
         db.session.add(campaignRecording)
         db.session.commit()
 
@@ -184,10 +184,10 @@ def select_recording(campaign_id, recording_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     recording = AudioRecording.query.filter_by(id=recording_id).first_or_404()
 
-    #unselect all other CampaignAudioRecordings with the same key and campaign
+    # unselect all other CampaignAudioRecordings with the same key and campaign
     other_versions = CampaignAudioRecording.query.filter(
-                        CampaignAudioRecording.campaign_id == campaign_id,
-                        CampaignAudioRecording.recording.has(key=recording.key)).all()
+        CampaignAudioRecording.campaign_id == campaign_id,
+        CampaignAudioRecording.recording.has(key=recording.key)).all()
     for v in other_versions:
         v.selected = False
         db.session.add(v)
@@ -208,7 +208,7 @@ def select_recording(campaign_id, recording_id):
 @campaign.route('/<int:campaign_id>/audio/<int:recording_id>/delete', methods=['DELETE'])
 def delete_recording(campaign_id, recording_id):
     recording = AudioRecording.query.filter_by(id=recording_id).first_or_404()
-    campaignAudio = recording.campaign_audio_recordings.filter(campaign_id==campaign_id).all()
+    campaignAudio = recording.campaign_audio_recordings.filter(campaign_id == campaign_id).all()
 
     # delete cascade for campaign audio recordings
     for car in campaignAudio:

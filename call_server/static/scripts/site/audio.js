@@ -40,12 +40,11 @@
 
     onPlay: function(event) {
       event.preventDefault();
-      console.log('onPlay');
+      console.log('onPlay TBD');
     },
 
     onVersion: function(event) {
       event.preventDefault();
-      console.log('onVersion');
 
       var inputGroup = $(event.target).parents('.input-group');
       var modal = {
