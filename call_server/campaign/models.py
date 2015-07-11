@@ -31,6 +31,9 @@ class Campaign(db.Model):
                                        backref=db.backref('campaign', uselist=False))
     call_maximum = db.Column(db.SmallInteger, nullable=True)
 
+    audio_recordings = db.relationship('AudioRecording', secondary='campaign_audio_recordings',
+                                       backref=db.backref('campaign'))
+
     status_code = db.Column(db.SmallInteger, default=PAUSED)
 
     @property
@@ -85,8 +88,8 @@ class CampaignTarget(db.Model):
     target_id = db.Column(db.Integer, db.ForeignKey('campaign_target.id'))
     order = db.Column(db.Integer())
 
-    campaign = db.relationship('Campaign', backref='campaigntargets')
-    target = db.relationship('Target', backref='campaigntargets')
+    campaign = db.relationship('Campaign', backref='campaign_targets')
+    target = db.relationship('Target', backref='campaign_targets')
 
 
 class CampaignPhoneNumber(db.Model):
@@ -139,14 +142,18 @@ class AudioRecording(db.Model):
     version = db.Column(db.Integer, unique=True)
     description = db.Column(db.String(STRING_LEN))
 
-    campaign = db.relationship('Campaign', secondary='campaign_audio_recordings',
-                               backref=db.backref('audiorecording'))
-
     def file_url(self):
         if self.file_storage:
             return self.file_storage.absolute_url
         else:
             return None
+
+    def selected_recordings(self):
+        return self.campaign_audio_recordings.filter_by(selected=True).all()
+
+    def selected_campaigns(self):
+        names = [s.campaign.name for s in self.selected_recordings()]
+        return ','.join(names)
 
     def __unicode__(self):
         return "%s v%s" % (self.key, self.version)
@@ -160,3 +167,6 @@ class CampaignAudioRecording(db.Model):
     recording_id = db.Column(db.Integer, db.ForeignKey('campaign_recording.id'))
     selected = db.Column(db.Boolean, default=False)
 
+    campaign = db.relationship('Campaign')
+    recording = db.relationship('AudioRecording', backref=db.backref('campaign_audio_recordings',
+                                                                     lazy='dynamic'))

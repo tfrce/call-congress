@@ -8,7 +8,7 @@ from ..extensions import db
 from ..utils import choice_items, choice_keys, choice_values_flat
 
 from .constants import CAMPAIGN_NESTED_CHOICES, CUSTOM_CAMPAIGN_CHOICES, EMPTY_CHOICES, LIVE
-from .models import Campaign, Target, CampaignTarget, AudioRecording
+from .models import Campaign, Target, CampaignTarget, AudioRecording, CampaignAudioRecording
 from .forms import (CampaignForm, CampaignAudioForm, AudioRecordingForm,
                     CampaignLaunchForm, CampaignStatusForm, TargetForm)
 
@@ -138,27 +138,38 @@ def upload_recording(campaign_id):
 
     if form.validate_on_submit():
         message_key = form.data.get('key')
-        # unset selected for all other versions
-        other_versions = AudioRecording.query.filter_by(campaign_id=campaign.id, key=message_key)
-        other_versions.update({'selected': False})
 
-        # get highest version to date
+        # get highest version for this key to date
         with db.session.no_autoflush:
             last_version = db.session.query(db.func.max(AudioRecording.version)) \
-                .filter_by(campaign_id=campaign.id, key=message_key) \
+                .filter_by(key=message_key) \
                 .scalar()
 
-        recording = AudioRecording(campaign=campaign)
+        recording = AudioRecording()
         form.populate_obj(recording)
-
         recording.version = int(last_version or 0) + 1
 
+        # save uploaded blob to file storage
         uploaded_blob = request.files.get('file_storage')
         if uploaded_blob:
             uploaded_blob.filename = "campaign_{}_{}_{}.mp3".format(campaign.id, message_key, recording.version)
             recording.file_storage = uploaded_blob
-
         db.session.add(recording)
+
+        # unset selected for all other versions
+        other_versions = CampaignAudioRecording.query.filter(
+                            CampaignAudioRecording.campaign_id == campaign_id,
+                            CampaignAudioRecording.recording.has(key=message_key)).all()
+        for v in other_versions:
+            v.selected = False
+            db.session.add(v)
+        db.session.commit()
+
+        # link this recording to campaign through m2m, and set selected flag
+        campaignRecording = CampaignAudioRecording(campaign_id=campaign.id, recording=recording)
+        campaignRecording.selected = True
+        
+        db.session.add(campaignRecording)
         db.session.commit()
 
         message = "Audio recording uploaded"
