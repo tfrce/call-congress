@@ -36,7 +36,7 @@ def system():
     return render_template('admin/system.html',
                            message_defaults=current_app.config.CAMPAIGN_MESSAGE_DEFAULTS,
                            twilio_numbers=twilio_numbers,
-                           twilio_auth=current_app.config.get('TW_CLIENT').auth)
+                           twilio_auth=current_app.config.get('TWILIO_CLIENT').auth)
 
 
 @admin.route('/twilio/resync', methods=['POST'])
@@ -44,7 +44,7 @@ def twilio_resync():
     """ One-way sync of Twilio numbers from REST Client down to our database
     Adds new numbers, saves voice_application_sid, and removes stale entries."""
 
-    client = current_app.config.get('TW_CLIENT')
+    client = current_app.config.get('TWILIO_CLIENT')
     twilio_numbers = client.phone_numbers.list()
 
     new_numbers = []
