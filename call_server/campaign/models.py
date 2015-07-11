@@ -21,13 +21,13 @@ class Campaign(db.Model):
     campaign_subtype = db.Column(db.String(STRING_LEN))
 
     segment_by = db.Column(db.String(STRING_LEN))
-    target_set = db.relationship(u'Target', secondary=u'campaign_target_sets',
+    target_set = db.relationship('Target', secondary='campaign_target_sets',
                                  order_by='campaign_target_sets.c.order',
                                  backref=db.backref('campaign'))
     target_ordering = db.Column(db.String(STRING_LEN))
 
     allow_call_in = db.Column(db.Boolean, default=False)
-    phone_number_set = db.relationship(u'TwilioPhoneNumber', secondary=u'campaign_phone_numbers',
+    phone_number_set = db.relationship('TwilioPhoneNumber', secondary='campaign_phone_numbers',
                                        backref=db.backref('campaign', uselist=False))
     call_maximum = db.Column(db.SmallInteger, nullable=True)
 
@@ -85,15 +85,16 @@ class CampaignTarget(db.Model):
     target_id = db.Column(db.Integer, db.ForeignKey('campaign_target.id'))
     order = db.Column(db.Integer())
 
-    campaign = db.relationship('Campaign', backref="campaigntargets")
-    target = db.relationship('Target', backref="campaigntargets")
+    campaign = db.relationship('Campaign', backref='campaigntargets')
+    target = db.relationship('Target', backref='campaigntargets')
 
 
-t_campaign_phone_numbers = db.Table(
-    u'campaign_phone_numbers',
-    db.Column(u'campaign_id', db.ForeignKey('campaign_campaign.id')),
-    db.Column(u'phone_id', db.ForeignKey('campaign_phone.id'), unique=False)
-)
+class CampaignPhoneNumber(db.Model):
+    __tablename__ = 'campaign_phone_numbers'
+
+    id = db.Column(db.Integer, primary_key=True)
+    campaign_id = db.Column(db.Integer, db.ForeignKey('campaign_campaign.id'))
+    phone_id = db.Column(db.Integer, db.ForeignKey('campaign_phone.id'), unique=False)
 
 
 class Target(db.Model):
@@ -131,29 +132,31 @@ class AudioRecording(db.Model):
     __tablename__ = 'campaign_recording'
 
     id = db.Column(db.Integer, primary_key=True)
-    campaign_id = db.Column(db.Integer, db.ForeignKey('campaign_campaign.id'))
     key = db.Column(db.String(STRING_LEN), nullable=False)
-    selected = db.Column(db.Boolean, default=False)
 
     file_storage = db.Column(FlaskStoreType(location='audio/'), nullable=True)
     text_to_speech = db.Column(db.Text)
     version = db.Column(db.Integer, unique=True)
     description = db.Column(db.String(STRING_LEN))
 
-    campaign = db.relationship('Campaign', backref="audiorecordings")
-
-    # ensure that each campaign/key can only have one selected version
-    # postgres create partial index for fast lookups
-    __table_args__ = (db.Index('only_one_selected_version', campaign_id, key, selected,
-                               unique=True,
-                               postgresql_where=(~selected)),
-                    )
+    campaign = db.relationship('Campaign', secondary='campaign_audio_recordings',
+                               backref=db.backref('audiorecording'))
 
     def file_url(self):
-        return self.file_storage.absolute_url
-
-    def campaign_name(self):
-        return self.campaign.name
+        if self.file_storage:
+            return self.file_storage.absolute_url
+        else:
+            return None
 
     def __unicode__(self):
-        return "%s %s %s" % (self.campaign.name, self.key, self.version)
+        return "%s v%s" % (self.key, self.version)
+
+
+class CampaignAudioRecording(db.Model):
+    __tablename__ = 'campaign_audio_recordings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    campaign_id = db.Column(db.Integer, db.ForeignKey('campaign_campaign.id'))
+    recording_id = db.Column(db.Integer, db.ForeignKey('campaign_recording.id'))
+    selected = db.Column(db.Boolean, default=False)
+
