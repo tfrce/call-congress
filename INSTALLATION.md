@@ -67,11 +67,11 @@ To install locally and run in debug mode use:
     # run in another tab
     ngrok 5000
 
-When the dev server is running, the front-end will be accessible at [http://localhost:5000/](http://localhost:5000/).
+When the dev server is running, the front-end will be accessible at [http://localhost:5000/](http://localhost:5000/), and proxied to external routes at [http://ngrok.com](http://ngrok.com).
 
 Unit tests can also be run with:
 
-    python tests/test.py
+    python tests/run.py
 
 Production server
 ------------------
