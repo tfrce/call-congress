@@ -83,7 +83,7 @@ To run in production:
     iptables -A INPUT -p tcp --dport 80 -j ACCEPT
     
     # initialize the database
-    python manage.py migrate up
+    python manager.py migrate up
     
     # create an admin user
     python manager.py createadminuser
