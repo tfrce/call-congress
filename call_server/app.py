@@ -1,10 +1,10 @@
-# TODO, figure out how to load gevent monkey patch only in production
-# try:
-#     from gevent.monkey import patch_all
-#     patch_all()
-# except ImportError:
-#     if not DEBUG:
-#         print "unable to apply gevent monkey.patch_all"
+# TODO, figure out how to load gevent monkey patch cleanly in production
+try:
+    from gevent.monkey import patch_all
+    patch_all()
+except ImportError:
+    if not DEBUG:
+        print "unable to apply gevent monkey.patch_all"
 
 import logging
 
