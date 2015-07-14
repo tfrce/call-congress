@@ -25,6 +25,8 @@ class DefaultConfig(object):
     INSTALLED_ORG = os.environ.get('INSTALLED_ORG')
     SITENAME = os.environ.get('SITENAME')
 
+    STORE_PROVIDER = 'flask_store.providers.local.LocalProvider'
+
     TWILIO_CLIENT = twilio.rest.TwilioRestClient(
         os.environ.get('TWILIO_ACCOUNT_SID'),
         os.environ.get('TWILIO_AUTH_TOKEN'))
@@ -86,14 +88,7 @@ class DevelopmentConfig(DefaultConfig):
     MAIL_DEBUG = True
     MAIL_PORT = 1025
     MAIL_DEFAULT_SENDER = 'debug'
-
-    STORE_PROVIDER = 'flask_store.providers.s3.S3Provider'
-    STORE_S3_BUCKET = os.environ.get('STORE_S3_BUCKET')
-    STORE_S3_REGION = os.environ.get('STORE_S3_REGION')
-    STORE_S3_ACCESS_KEY = os.environ.get('S3_ACCESS_KEY')
-    STORE_S3_SECRET_KEY = os.environ.get('S3_SECRET_KEY')
-    STORE_PATH = 'uploads'
-    STORE_DOMAIN = 'https://%s.s3-%s.amazonaws.com/' % (STORE_S3_BUCKET, STORE_S3_REGION)
+    
 
 class TestingConfig(DefaultConfig):
     TESTING = True
