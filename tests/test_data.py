@@ -40,4 +40,4 @@ class TestData(BaseTestCase):
         ids = lookup.locate_targets('98004', cache=self.cache)
 
         self.assertEqual(len(ids), 4)
-        self.assertEqual(ids[0]['bioguide_id'], 'C000127')
+        self.assertEqual(ids[0], 'C000127')

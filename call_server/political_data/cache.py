@@ -22,14 +22,16 @@ def load_us_legislators():
                 # skip if out of office
                 continue
 
+            direct_key = 'us:bioguide:{0[bioguide_id]}'.format(l)
+            legislators[direct_key].append(l)
+
             if l['senate_class']:
                 l['chamber'] = 'senate'
-                cache_key = 'us:{0[chamber]}:{0[state]}'.format(l)
-                legislators[cache_key].append(l)
+                chamber_key = 'us:{0[chamber]}:{0[state]}'.format(l)
             else:
                 l['chamber'] = 'house'
-                cache_key = 'us:{0[chamber]}:{0[state]}:{0[district]}'.format(l)
-                legislators[cache_key].append(l)
+                chamber_key = 'us:{0[chamber]}:{0[state]}:{0[district]}'.format(l)
+            legislators[chamber_key].append(l)
 
     return legislators
 
