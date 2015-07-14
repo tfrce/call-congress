@@ -197,7 +197,7 @@ def zip_parse():
     target_ids = locate_targets(zipcode)
 
     if current_app.debug:
-        print 'DEBUG: zipcode = {}'.format(zipcode)
+        current_app.logger.debug('zipcode = {}'.format(zipcode))
 
     if not target_ids:
         resp = twilio.twiml.Response()
@@ -229,7 +229,7 @@ def make_single():
     play_or_say(resp, campaign.audio('msg_rep_intro'), name=full_name)
 
     if current_app.debug:
-        print u'DEBUG: Call #{}, {} ({}) from {} in call.make_single()'.format(
+        current_app.logger.debug('Call #{}, {} ({}) from {} in call.make_single()'.format(
             i, full_name, target_phone, params['userPhone'])
 
     resp.dial(target_phone, callerId=params['userPhone'],
