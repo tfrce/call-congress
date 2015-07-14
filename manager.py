@@ -19,6 +19,10 @@ app.db = db
 manager = Manager(app)
 
 alembic_config = Config(os.path.realpath(os.path.dirname(__name__)) + "/alembic.ini")
+# let the environment override the default db location in production
+if os.environ.get('SQLALCHEMY_DATABASE_URI'):
+    alembic_config.set_section_option('alembic', 'sqlalchemy.url',
+                                      os.environ.get('SQLALCHEMY_DATABASE_URI'))
 
 manager.add_command("assets", ManageAssets())
 
@@ -69,8 +73,7 @@ def migration(message):
 def stamp(revision):
     """Fake a migration to a particular revision"""
     reset_assets()
-    alembic_cfg = Config("alembic.ini")
-    command.stamp(alembic_cfg, revision)
+    command.stamp(alembic_config, revision)
 
 
 @manager.command
