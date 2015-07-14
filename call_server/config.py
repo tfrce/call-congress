@@ -6,6 +6,7 @@ class DefaultConfig(object):
     DEBUG = True
     TESTING = False
     APP_NAME = "call_server"
+    APPLICATION_ROOT = None # the path where the application is configured
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:////%s/dev.db' % os.path.abspath(os.curdir)
     SQLALCHEMY_ECHO = False
@@ -41,10 +42,6 @@ class DefaultConfig(object):
 
     MAIL_SERVER = 'localhost'
 
-    STORE_PROVIDER = 'flask_store.providers.local.LocalProvider'
-    STORE_DOMAIN = 'http://localhost:5000'
-    STORE_PATH = '%s/instance/uploads/' % os.path.abspath(os.curdir)
-
 
 class ProductionConfig(DefaultConfig):
     DEBUG = False
@@ -69,8 +66,12 @@ class ProductionConfig(DefaultConfig):
 
     STORE_PROVIDER = 'flask_store.providers.s3.S3Provider'
     # TODO, change to S3GeventProvider when we re-enable gevent
+    STORE_PATH = 'uploads'
+    STORE_S3_BUCKET = os.environ.get('STORE_S3_BUCKET')
+    STORE_S3_REGION = os.environ.get('STORE_S3_REGION')
     STORE_S3_ACCESS_KEY = os.environ.get('S3_ACCESS_KEY')
     STORE_S3_SECRET_KEY = os.environ.get('S3_SECRET_KEY')
+    STORE_DOMAIN = 'https://%s.s3-%s.amazonaws.com/' % (STORE_S3_BUCKET, STORE_S3_REGION)
 
 
 class DevelopmentConfig(DefaultConfig):
@@ -86,6 +87,13 @@ class DevelopmentConfig(DefaultConfig):
     MAIL_PORT = 1025
     MAIL_DEFAULT_SENDER = 'debug'
 
+    STORE_PROVIDER = 'flask_store.providers.s3.S3Provider'
+    STORE_S3_BUCKET = os.environ.get('STORE_S3_BUCKET')
+    STORE_S3_REGION = os.environ.get('STORE_S3_REGION')
+    STORE_S3_ACCESS_KEY = os.environ.get('S3_ACCESS_KEY')
+    STORE_S3_SECRET_KEY = os.environ.get('S3_SECRET_KEY')
+    STORE_PATH = 'uploads'
+    STORE_DOMAIN = 'https://%s.s3-%s.amazonaws.com/' % (STORE_S3_BUCKET, STORE_S3_REGION)
 
 class TestingConfig(DefaultConfig):
     TESTING = True
@@ -93,3 +101,7 @@ class TestingConfig(DefaultConfig):
     SQLALCHEMY_DATABASE_URI = 'sqlite://'  # keep testing db in memory
     CACHE_TYPE = 'null'
     CACHE_NO_NULL_WARNING = True
+
+    STORE_PROVIDER = 'flask_store.providers.local.LocalProvider'
+    STORE_DOMAIN = 'http://localhost:5000'
+    STORE_PATH = '%s/instance/uploads/' % os.path.abspath(os.curdir)

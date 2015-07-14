@@ -28,6 +28,8 @@ For production, you will also need to set:
 
 If you are storing assets on Amazon S3, or another [Flask-Store provider](http://flask-store.soon.build)
 
+* STORE_S3_BUCKET
+* STORE_S3_REGION
 * S3_ACCESS_KEY
 * S3_SECRET_KEY
 
