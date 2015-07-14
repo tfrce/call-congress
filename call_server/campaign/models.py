@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from flask import current_app
 from sqlalchemy_utils.types import phone_number
 from flask_store.sqla import FlaskStoreType
 
@@ -67,27 +68,28 @@ class Campaign(db.Model):
     def phone_numbers(self):
         return [str(n.number) for n in self.phone_number_set]
 
-    def audio_list(self):
+    def audio_query(self):
         return CampaignAudioRecording.query.filter(
                     CampaignAudioRecording.campaign_id == self.id,
-                    CampaignAudioRecording.selected == True).all()
+                    CampaignAudioRecording.selected == True)
 
     def audio_msgs(self):
         table = {}
-        for r in self.audio_list():
+        for r in self.audio_query().all():
             table[r.recording.key] = r.recording.file_url()
         return table
 
     def audio(self, key):
         # convenience method for getting this campaign's selected audio recording by key
-        campaignAudio = self.audio_list().filter(
+        campaignAudio = self.audio_query().filter(
             CampaignAudioRecording.recording.has(key=key)
         ).first()
 
         if campaignAudio:
             return campaignAudio.recording
         else:
-            return None
+            # if not defined by user, return default
+            return current_app.config.CAMPAIGN_MESSAGE_DEFAULTS.get(key)
 
     @classmethod
     def duplicate(self):

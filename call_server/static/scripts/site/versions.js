@@ -188,7 +188,7 @@
       
     },
 
-    ajaxPost: function(data, endpoint) {
+    ajaxPost: function(data, endpoint, hideOnComplete) {
       // make ajax POST to API
       var url = '/admin/campaign/'+this.viewData.campaign_id+'/audio/'+data.id+'/'+endpoint;
       var self = this;
@@ -204,7 +204,9 @@
               window.flashMessage(msg, 'success');
 
               // close the modal, and cleanup subviews
-              self.hide();
+              if (hideOnComplete) {
+                self.hide();
+              }
             } else {
               console.error(response);
               window.flashMessage(response.errors, 'error', true);
@@ -217,7 +219,7 @@
     },
 
     selectVersion: function(data) {
-      return this.ajaxPost(data, 'select');
+      return this.ajaxPost(data, 'select', true);
     },
 
     deleteVersion: function(data) {
