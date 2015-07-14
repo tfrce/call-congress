@@ -50,13 +50,13 @@
             </div>
 
             <div class="panel-body">
-                
+                {{ render_audio_default(form.msg_intro_location) }}
                 {{ render_audio_default(form.msg_invalid_location) }}
                 {{ render_audio_default(form.msg_choose_target) }}
             </div>
             </div>
         
-
+        {{ render_audio_default(form.msg_call_block_intro) }}
         {{ render_audio_default(form.msg_between_calls) }}
         {{ render_audio_default(form.msg_final_thanks) }}
 

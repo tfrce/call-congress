@@ -9,6 +9,7 @@ target_ordering: |
 
 msg_intro: Introduce yourself and the campaign briefly. First thing the caller hears when they start the call.
 msg_intro_confirm: If the caller dialed in, ask them to confirm to move forward by pressing the star key. Used to screen out voicemails.
+msg_intro_location: Introduce yourself and the campaign briefly, and also the need to enter their location.
 msg_location: Ask the caller to enter their location by zipcode.
 msg_invalid_location: If we could not understand their location entry, ask them to try again.
 msg_call_block_intro: Before beginning a block of calls, let the caller know what to expect.
