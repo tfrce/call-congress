@@ -236,7 +236,7 @@ def make_single():
 
     if current_app.debug:
         current_app.logger.debug('Call #{}, {} ({}) from {} in call.make_single()'.format(
-            i, full_name, target_phone, params['userPhone'])
+            i, full_name, target_phone, params['userPhone']))
 
     resp.dial(target_phone, callerId=params['userPhone'],
               timeLimit=current_app.config['TWILIO_TIME_LIMIT'],
