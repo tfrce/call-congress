@@ -4,6 +4,7 @@
   CallPower.Models.Target = Backbone.Model.extend({
     defaults: {
       id: null,
+      uid: null,
       title: null,
       name: null,
       number: null,
@@ -160,7 +161,7 @@
 
       this.collection.each(function(model, index) {
         // create new hidden inputs named target_set-N-FIELD
-        var fields = ['order','title','name','number'];
+        var fields = ['order','title','name','number','uid'];
         _.each(fields, function(field) {
           var input = $('<input name="target_set-'+index+'-'+field+'" type="hidden" />');
           input.val(model.get(field));
@@ -185,7 +186,7 @@
       var items = [];
       _(target_set_length).times(function(n) {
         var model = new CallPower.Models.Target();
-        var fields = ['order','title','name','number'];
+        var fields = ['order','title','name','number','uid'];
         _.each(fields, function(field) {
           // pull field values out of each input
           var sel = 'input[name="target_set-'+n+'-'+field+'"]';

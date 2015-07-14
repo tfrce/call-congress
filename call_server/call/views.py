@@ -226,7 +226,9 @@ def make_single():
 
     i = int(request.values.get('call_index', 0))
     params['call_index'] = i
-    current_target = Target.query.get(params['targetIds'][i])
+
+    target_bioguide = params['targetIds'][i]
+    current_target = Target.get_uid_or_cache(target_bioguide, 'us:bioguide')
     target_phone = str(current_target.number)
     full_name = current_target.full_name()
 

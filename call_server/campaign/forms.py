@@ -24,6 +24,7 @@ class TargetForm(Form):
     title = TextField(_('Title'), [Optional()])
     name = TextField(_('Name'), [Required()])
     number = PhoneNumberField(_('Phone Number'), [Required()])
+    uid = TextField(_('Unique ID'), [Optional()])
 
 
 class CampaignForm(Form):

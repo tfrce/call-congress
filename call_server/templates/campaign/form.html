@@ -105,6 +105,7 @@
                     <input type="hidden" name="target_set-{{loop.index0}}-title" value="{{t.title}}" />
                     <input type="hidden" name="target_set-{{loop.index0}}-name" value="{{t.name}}" />
                     <input type="hidden" name="target_set-{{loop.index0}}-number" value="{{t.number}}" />
+                    <input type="hidden" name="target_set-{{loop.index0}}-uid" value="{{t.uid}}" />
                     {% endfor %}
                 </div>
 
@@ -161,7 +162,8 @@
     <li class="result">
         <a data-object='{ "title":"<%= data.title %>",
                           "name":"<%= data.first_name %> <%= data.last_name %>",
-                          "number":"<%= data.phone %>"
+                          "number":"<%= data.phone %>",
+                          "uid": "<%= data.uid %>"
                         }'>
             <span class="text"><%= data.title %> <%= data.first_name %> <%= data.last_name %> (<%= data.party %>-<%= data.state %>)</span>
             <span class="phone"><%= data.phone %></span>

@@ -886,6 +886,8 @@ $(document).ready(function () {
         if (person.title === 'Sen')  { person.title = 'Senator'; }
         if (person.title === 'Rep')  { person.title = 'Representative'; }
 
+        person.uid = person.bioguide_id;
+
         // render display
         var li = renderTemplate("#search-results-item-tmpl", person);
 
@@ -929,6 +931,7 @@ $(document).ready(function () {
   CallPower.Models.Target = Backbone.Model.extend({
     defaults: {
       id: null,
+      uid: null,
       title: null,
       name: null,
       number: null,
@@ -1085,7 +1088,7 @@ $(document).ready(function () {
 
       this.collection.each(function(model, index) {
         // create new hidden inputs named target_set-N-FIELD
-        var fields = ['order','title','name','number'];
+        var fields = ['order','title','name','number','uid'];
         _.each(fields, function(field) {
           var input = $('<input name="target_set-'+index+'-'+field+'" type="hidden" />');
           input.val(model.get(field));
@@ -1110,7 +1113,7 @@ $(document).ready(function () {
       var items = [];
       _(target_set_length).times(function(n) {
         var model = new CallPower.Models.Target();
-        var fields = ['order','title','name','number'];
+        var fields = ['order','title','name','number','uid'];
         _.each(fields, function(field) {
           // pull field values out of each input
           var sel = 'input[name="target_set-'+n+'-'+field+'"]';

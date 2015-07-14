@@ -4,7 +4,7 @@ from flask import current_app
 from sqlalchemy_utils.types import phone_number
 from flask_store.sqla import FlaskStoreType
 
-from ..extensions import db
+from ..extensions import db, cache
 from ..utils import convert_to_dict, choice_values_flat
 from .constants import (CAMPAIGN_CHOICES, CAMPAIGN_NESTED_CHOICES, STRING_LEN, TWILIO_SID_LENGTH,
                         CAMPAIGN_STATUS, PAUSED)
@@ -124,6 +124,7 @@ class Target(db.Model):
     __tablename__ = 'campaign_target'
 
     id = db.Column(db.Integer, primary_key=True)
+    uid = db.Column(db.String(STRING_LEN), index=True, nullable=True)  # for US, this is bioguide_id
     title = db.Column(db.String(STRING_LEN), nullable=True)
     name = db.Column(db.String(STRING_LEN), nullable=False, unique=False)
     number = db.Column(phone_number.PhoneNumberType())
@@ -133,6 +134,17 @@ class Target(db.Model):
 
     def full_name(self):
         return unicode("{} {}".format(self.title, self.name), 'utf8')
+
+    @classmethod
+    def get_uid_or_cache(cls, uid, key_prefix):
+        t = Target.query.filter(Target.uid == uid).first()
+        if not t:
+            key = '%s:%s' % (key_prefix, uid)
+            l = cache.get(key)
+            if l:
+                t = l[0]
+        return t
+
 
 
 class TwilioPhoneNumber(db.Model):
