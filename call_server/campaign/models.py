@@ -160,6 +160,8 @@ class AudioRecording(db.Model):
     version = db.Column(db.Integer, unique=True)
     description = db.Column(db.String(STRING_LEN))
 
+    hidden = db.Column(db.Boolean, default=False)
+
     def file_url(self):
         if self.file_storage:
             return self.file_storage.absolute_url

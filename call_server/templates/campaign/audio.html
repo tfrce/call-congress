@@ -89,7 +89,7 @@
 </script>
 
 <script type="text/template" id="recording-item-tmpl">
-    <td><%= data.selected_campaigns %></td>
+    <td><%= data.selected_campaigns %> </td>
     <td><%= data.version %></td>
     <td><%= data.description %></td>
     <td>
@@ -97,12 +97,16 @@
             <source type="audio/mpeg" src="<%= data.file_url %>"></source>
         </audio>
     </td>
-    <td><% if (data.selected) { %>
-        <span class="glyphicon glyphicon-ok-sign"></span>
+    <td><% if (_.contains(data.selected_campaign_ids, data.campaign_id)) { %>
+            <span class="glyphicon glyphicon-ok-sign"></span>
         <% } else { %>
-        <button type="button" class="btn btn-default select"><span class="glyphicon glyphicon-ok-circle"></span></button>
+            <button type="button" class="btn btn-default select"><span class="glyphicon glyphicon-ok-circle"></span></button>
         <% } %>
-        <button type="button" class="btn btn-default delete"><span class="glyphicon glyphicon-remove-circle"></span></button>
+        <% if (data.hidden) { %>
+            <button type="button" class="btn btn-default undelete"><span class="glyphicon glyphicon-eye-open"></span></button>
+        <% } else { %>
+            <button type="button" class="btn btn-default delete"><span class="glyphicon glyphicon-remove-circle"></span></button>
+        <% } %>
     </td>
 </script>
 

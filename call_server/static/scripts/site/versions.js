@@ -8,6 +8,7 @@
       key: null,
       description: null,
       version: null,
+      hidden: null,
       selected_campaign_ids: null
     },
 
@@ -17,26 +18,25 @@
     model: CallPower.Models.AudioRecording,
     url: '/api/audiorecording',
     comparator: 'version',
+
+    initialize: function(key) {
+      this.key = key;
+    },
+
     parse: function(response) {
       return response.objects;
     },
 
-    fetchFilter: function(options) {
-      // filter fetch that matches the convoluted syntax used by flask-restless
-      // checks for values in options.filters
-
-      var filters = [];
-      _.each(options.filters, function(val, key) {
-        filters.push({ name: key,
-                        op: "eq",
-                        val: val});
-      });
-
+    fetch: function(options) {
+      // do specific pre-processing for server-side filters
+      // always filter on AudioRecording key
+      var keyFilter = [{name: 'key', op: 'eq', val: this.key}];
       var flaskQuery = {
-        q: JSON.stringify({ filters: filters })
+        q: JSON.stringify({ filters: keyFilter })
       };
       var fetchOptions = _.extend({ data: flaskQuery }, options);
-      this.fetch(fetchOptions);
+
+      return Backbone.Collection.prototype.fetch.call(this, fetchOptions);
     }
   });
 
@@ -46,18 +46,23 @@
     events: {
       'click button.select': 'onSelect',
       'click button.delete': 'onDelete',
+      'click button.undelete': 'onUnDelete',
       'mouseenter button.select': 'toggleSuccess',
       'mouseleave button.select': 'toggleSuccess',
       'mouseenter button.delete': 'toggleDanger',
       'mouseleave button.delete': 'toggleDanger',
+      'mouseenter button.undelete': 'toggleWarning',
+      'mouseleave button.undelete': 'toggleWarning',
     },
 
     initialize: function() {
       this.template = _.template($('#recording-item-tmpl').html(), { 'variable': 'data' });
     },
 
-    render: function() {
-      var html = this.template(this.model.toJSON());
+    render: function(campaign_id) {
+      var data = this.model.toJSON();
+      data.campaign_id = campaign_id;
+      var html = this.template(data);
       this.$el.html(html);
       return this;
     },
@@ -70,13 +75,21 @@
       $(event.target).toggleClass('btn-danger');
     },
 
+    toggleWarning: function(event) {
+      $(event.target).toggleClass('btn-warning');
+    },
+
     onSelect: function(event) {
       this.model.collection.trigger('select', this.model.attributes);
     },
 
     onDelete: function(event) {
       this.model.collection.trigger('delete', this.model.attributes);
-    }
+    },
+
+    onUnDelete: function(event) {
+      this.model.collection.trigger('undelete', this.model.attributes);
+    },
 
   });
 
@@ -85,7 +98,7 @@
     className: 'versions modal fade',
 
     events: {
-      'change [name=show_all]': 'onFilterCampaigns',
+      'change input.filter': 'onFilterCampaigns'
     },
 
     initialize: function(viewData) {
@@ -93,43 +106,49 @@
       _.bindAll(this, 'destroyViews');
 
       this.viewData = viewData;
+      console.log('viewData', viewData);
 
-      this.collection = new CallPower.Collections.AudioRecordingList();
-      this.collection.fetchFilter({
-        filters: { key: this.viewData.key,
-                 /*campaign_id: this.viewData.campaign_id*/
-                },
-        reset: true
-      });
+      this.collection = new CallPower.Collections.AudioRecordingList(this.viewData.key);
+      this.filteredCollection = new FilteredCollection(this.collection);
+      this.collection.fetch({ reset: true });
       this.views = [];
 
-      this.listenTo(this.collection, 'reset add remove', this.render);
+      this.listenTo(this.collection, 'reset add remove', this.renderFilteredCollection);
+      this.listenTo(this.filteredCollection, 'filtered:reset filtered:add filtered:remove', this.renderFilteredCollection);
       this.listenTo(this.collection, 'select', this.selectVersion);
       this.listenTo(this.collection, 'delete', this.deleteVersion);
+      this.listenTo(this.collection, 'undelete', this.unDeleteVersion);
 
       this.$el.on('hidden.bs.modal', this.destroyViews);
     },
 
     render: function() {
-      // clear any existing subviews
-      this.destroyViews();
-
       // render template
       var html = this.template(this.viewData);
       this.$el.html(html);
-      var $list = this.$('table tbody').empty();
 
-      // create subviews for each item in collection
-      this.views = this.collection.map(this.createItemView, this);
-      $list.append( _.map(this.views,
-        function(view) { return view.render().el; },
-        this)
-      );
+      // reset initial filters
+      this.onFilterCampaigns();
 
       // show the modal
       this.$el.modal('show');
 
       return this;
+    },
+
+    renderFilteredCollection: function() {
+      var self = this;
+
+      // clear any existing subviews
+      this.destroyViews();
+      var $list = this.$('table tbody').empty();
+
+      // create subviews for each item in collection
+      this.views = this.filteredCollection.map(this.createItemView, this);
+      $list.append( _.map(this.views,
+        function(view) { return view.render(self.campaign_id).el; },
+        this)
+      );
     },
 
     destroyViews: function() {
@@ -146,9 +165,32 @@
       return new CallPower.Views.RecordingItemView({ model: model });
     },
 
-    selectVersion: function(data) {
+    onFilterCampaigns: function() {
+      var self = this;
+
+      var showAllCampaigns = (this.$('[name=show_all_campaigns]:checked').length > 0);
+      var showHidden = (this.$('[name=show_hidden]:checked').length > 0);
+      
+      if (showAllCampaigns) {
+        this.filteredCollection.removeFilter('campaign_id');
+      } else {
+        this.filteredCollection.filterBy('campaign_id', function(model) {
+          return _.contains(model.get('selected_campaign_ids'), parseInt(self.viewData.campaign_id));
+        });
+      }
+      if (showHidden) {
+        this.filteredCollection.removeFilter('hidden');
+      } else {
+        this.filteredCollection.filterBy('hidden', function(model) {
+          return model.get('hidden') === false; // show only non-hidden
+        });
+      }
+      
+    },
+
+    ajaxPost: function(data, endpoint) {
       // make ajax POST to API
-      var url = '/admin/campaign/'+this.viewData.campaign_id+'/audio/'+data.id+'/select';
+      var url = '/admin/campaign/'+this.viewData.campaign_id+'/audio/'+data.id+'/'+endpoint;
       var self = this;
       $.ajax({
         url: url,
@@ -174,47 +216,21 @@
       });
     },
 
+    selectVersion: function(data) {
+      return this.ajaxPost(data, 'select');
+    },
+
     deleteVersion: function(data) {
       // TODO, confirm with user
+      // this doesn't actually delete objects in database or on file system
+      // just hides from API
 
-      // make ajax DELETE to API
-      var url = '/admin/campaign/'+this.viewData.campaign_id+'/audio/'+data.id+'/delete';
-      var self = this;
-      $.ajax({
-        url: url,
-        method: 'DELETE',
-        success: function(response) {
-          if (response.success) {
-              // build friendly message like "Audio recording deleted: Introduction version 3"
-              var fieldDescription = $('form label[for="'+response.key+'"]').text();
-              var msg = response.message + ': '+ fieldDescription + ' version ' + response.version;
-              // and display to user
-              window.flashMessage(msg, 'success');
-
-              // close the parent modal
-              self.hide();
-            } else {
-              console.error(response);
-              window.flashMessage(response.errors, 'error', true);
-            }
-        }, error: function(xhr, status, error) {
-          console.error(status, error);
-          window.flashMessage(response.errors, 'error');
-        }
-      });
+      return this.ajaxPost(data, 'hide');
     },
 
-    onFilterCampaigns: function() {
-      this.collection.reset(null);
+    unDeleteVersion: function(data) {
+      return this.ajaxPost(data, 'show');
+    }
 
-      var showAll = !!this.$('[name=show_all]:checked').length;
-      if (showAll) {
-        this.collection.fetchFilter({ filters: { key: this.viewData.key } });
-      } else {
-        this.collection.fetchFilter({ filters: { key: this.viewData.key,
-                                /*campaign_id: this.viewData.campaign_id*/ } });
-      }
-    },
   });
-
 })();

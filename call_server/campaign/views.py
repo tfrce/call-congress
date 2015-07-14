@@ -205,18 +205,30 @@ def select_recording(campaign_id, recording_id):
                     'key': recording.key, 'version': recording.version})
 
 
-@campaign.route('/<int:campaign_id>/audio/<int:recording_id>/delete', methods=['DELETE'])
-def delete_recording(campaign_id, recording_id):
+@campaign.route('/<int:campaign_id>/audio/<int:recording_id>/hide', methods=['POST'])
+def hide_recording(campaign_id, recording_id):
     recording = AudioRecording.query.filter_by(id=recording_id).first_or_404()
-    campaignAudio = recording.campaign_audio_recordings.filter(campaign_id == campaign_id).all()
+    campaignAudio = recording.campaign_audio_recordings.filter(campaign_id == campaign_id).first_or_404()
+    recording.hidden = True
 
-    # delete cascade for campaign audio recordings
-    for car in campaignAudio:
-        db.session.delete(car)
-    db.session.delete(recording)
-    db.session.flush()
+    db.session.add(recording)
+    db.session.delete(campaignAudio)
+    db.session.commit()
 
-    message = "Audio recording deleted"
+    message = "Audio recording hidden"
+    return jsonify({'success': True, 'message': message,
+                    'key': recording.key, 'version': recording.version})
+
+
+@campaign.route('/<int:campaign_id>/audio/<int:recording_id>/show', methods=['POST'])
+def show_recording(campaign_id, recording_id):
+    recording = AudioRecording.query.filter_by(id=recording_id).first_or_404()
+    recording.hidden = False
+
+    db.session.add(recording)
+    db.session.commit()
+
+    message = "Audio recording visible"
     return jsonify({'success': True, 'message': message,
                     'key': recording.key, 'version': recording.version})
 

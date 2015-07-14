@@ -18,7 +18,7 @@ window.renderTemplate = function(selector, context) {
 };
 
 window.flashMessage = function(message, status, global) {
-    if (status === 'undefined') { var status = 'info'; }
+    if (status === undefined) { var status = 'info'; }
     var flash = $('<div class="alert alert-'+status+'">'+
                           '<button type="button" class="close" data-dismiss="alert">×</button>'+
                           message+'</div>');
@@ -86,12 +86,11 @@ $(document).ready(function () {
 
     onPlay: function(event) {
       event.preventDefault();
-      console.log('onPlay');
+      console.log('onPlay TBD');
     },
 
     onVersion: function(event) {
       event.preventDefault();
-      console.log('onVersion');
 
       var inputGroup = $(event.target).parents('.input-group');
       var modal = {
@@ -745,14 +744,19 @@ $(document).ready(function () {
           processData: false, // stop jQuery from munging our carefully constructed FormData
           contentType: false, // or faffing with the content-type
           success: function(response) {
-            // build friendly message like "Audio recording uploaded: Introduction version 3"
-            var fieldDescription = $('form label[for="'+response.key+'"]').text();
-            var msg = response.message + ': '+fieldDescription + ' version ' + response.version;
-            // and display to user
-            window.flashMessage(msg, 'success');
+            if (response.success) {
+              // build friendly message like "Audio recording uploaded: Introduction version 3"
+              var fieldDescription = $('form label[for="'+response.key+'"]').text();
+              var msg = response.message + ': '+fieldDescription + ' version ' + response.version;
+              // and display to user
+              window.flashMessage(msg, 'success');
 
-            // close the parent modal
-            self.$el.modal('hide');
+              // close the parent modal
+              self.$el.modal('hide');
+            } else {
+              console.error(response);
+              window.flashMessage(response.errors, 'error', true);
+            }
           },
           error: function(xhr, status, error) {
             console.error(status, error);
@@ -772,9 +776,9 @@ $(document).ready(function () {
   CallPower.Routers.Campaign = Backbone.Router.extend({
     routes: {
       "campaign/create": "campaignForm",
-      "campaign/edit/:id": "campaignForm",
-      "campaign/copy/:id": "campaignForm",
-      "campaign/audio/:id": "audioForm",
+      "campaign/:id/edit": "campaignForm",
+      "campaign/:id/copy": "campaignForm",
+      "campaign/:id/audio": "audioForm",
     },
 
     campaignForm: function(id) {
@@ -1153,34 +1157,92 @@ $(document).ready(function () {
 (function () {
   CallPower.Models.AudioRecording = Backbone.Model.extend({
     defaults: {
+      id: null,
       campaign: null,
       key: null,
       description: null,
-      version: null
+      version: null,
+      hidden: null,
+      selected_campaign_ids: null
     },
 
   });
 
   CallPower.Collections.AudioRecordingList = Backbone.Collection.extend({
     model: CallPower.Models.AudioRecording,
-    url: '/api/recording',
+    url: '/api/audiorecording',
     comparator: 'version',
+
+    initialize: function(key) {
+      this.key = key;
+    },
+
     parse: function(response) {
       return response.objects;
+    },
+
+    fetch: function(options) {
+      // do specific pre-processing for server-side filters
+      // always filter on AudioRecording key
+      var keyFilter = [{name: 'key', op: 'eq', val: this.key}];
+      var flaskQuery = {
+        q: JSON.stringify({ filters: keyFilter })
+      };
+      var fetchOptions = _.extend({ data: flaskQuery }, options);
+
+      return Backbone.Collection.prototype.fetch.call(this, fetchOptions);
     }
   });
 
   CallPower.Views.RecordingItemView = Backbone.View.extend({
     tagName: 'tr',
 
+    events: {
+      'click button.select': 'onSelect',
+      'click button.delete': 'onDelete',
+      'click button.undelete': 'onUnDelete',
+      'mouseenter button.select': 'toggleSuccess',
+      'mouseleave button.select': 'toggleSuccess',
+      'mouseenter button.delete': 'toggleDanger',
+      'mouseleave button.delete': 'toggleDanger',
+      'mouseenter button.undelete': 'toggleWarning',
+      'mouseleave button.undelete': 'toggleWarning',
+    },
+
     initialize: function() {
       this.template = _.template($('#recording-item-tmpl').html(), { 'variable': 'data' });
     },
 
-    render: function() {
-      var html = this.template(this.model.toJSON());
+    render: function(campaign_id) {
+      var data = this.model.toJSON();
+      data.campaign_id = campaign_id;
+      var html = this.template(data);
       this.$el.html(html);
       return this;
+    },
+
+    toggleSuccess: function(event) {
+      $(event.target).toggleClass('btn-success');
+    },
+
+    toggleDanger: function(event) {
+      $(event.target).toggleClass('btn-danger');
+    },
+
+    toggleWarning: function(event) {
+      $(event.target).toggleClass('btn-warning');
+    },
+
+    onSelect: function(event) {
+      this.model.collection.trigger('select', this.model.attributes);
+    },
+
+    onDelete: function(event) {
+      this.model.collection.trigger('delete', this.model.attributes);
+    },
+
+    onUnDelete: function(event) {
+      this.model.collection.trigger('undelete', this.model.attributes);
     },
 
   });
@@ -1190,73 +1252,139 @@ $(document).ready(function () {
     className: 'versions modal fade',
 
     events: {
-      'change [name=show_all]': 'onFilterCampaigns'
+      'change input.filter': 'onFilterCampaigns'
     },
 
-    initialize: function(modalData) {
+    initialize: function(viewData) {
       this.template = _.template($('#recording-modal-tmpl').html(), { 'variable': 'modal' });
-      this.modalData = modalData;
+      _.bindAll(this, 'destroyViews');
 
-      this.collection = new CallPower.Collections.AudioRecordingList();
-      this.filterCollection({ key: this.modalData.key,
-                              campaign_id: this.modalData.campaign_id });
-      this.renderCollection();
+      this.viewData = viewData;
+      console.log('viewData', viewData);
 
-      this.listenTo(this.collection, 'add remove select', this.renderCollection);
+      this.collection = new CallPower.Collections.AudioRecordingList(this.viewData.key);
+      this.filteredCollection = new FilteredCollection(this.collection);
+      this.collection.fetch({ reset: true });
+      this.views = [];
+
+      this.listenTo(this.collection, 'reset add remove', this.renderFilteredCollection);
+      this.listenTo(this.filteredCollection, 'filtered:reset filtered:add filtered:remove', this.renderFilteredCollection);
+      this.listenTo(this.collection, 'select', this.selectVersion);
+      this.listenTo(this.collection, 'delete', this.deleteVersion);
+      this.listenTo(this.collection, 'undelete', this.unDeleteVersion);
+
+      this.$el.on('hidden.bs.modal', this.destroyViews);
     },
 
     render: function() {
-      var html = this.template(this.modalData);
+      // render template
+      var html = this.template(this.viewData);
       this.$el.html(html);
-      
+
+      // reset initial filters
+      this.onFilterCampaigns();
+
+      // show the modal
       this.$el.modal('show');
 
       return this;
     },
 
-    renderCollection: function() {
+    renderFilteredCollection: function() {
+      var self = this;
+
+      // clear any existing subviews
+      this.destroyViews();
       var $list = this.$('table tbody').empty();
 
-      var rendered_items = [];
-      this.collection.each(function(model) {
-        var item = new CallPower.Views.RecordingItemView({
-          model: model,
-        });
-        var $el = item.render().$el;
-
-        rendered_items.push($el);
-      }, this);
-      $list.append(rendered_items);
-
+      // create subviews for each item in collection
+      this.views = this.filteredCollection.map(this.createItemView, this);
+      $list.append( _.map(this.views,
+        function(view) { return view.render(self.campaign_id).el; },
+        this)
+      );
     },
 
-    filterCollection: function(values) {
-      // filter fetch that matches the convoluted syntax used by flask-restless
-      var filters = [];
+    destroyViews: function() {
+      // destroy each subview
+      _.invoke(this.views, 'destroy');
+      this.views.length = 0;
+    },
 
-      _.each(values, function(val, key) {
-        filters.push({ name: key,
-                        op: "eq",
-                        val: val});
-      });
+    hide: function() {
+      this.$el.modal('hide');
+    },
 
-      this.collection.fetch({
-        data: { q: JSON.stringify({ filters: filters }) }
-      });
+    createItemView: function (model) {
+      return new CallPower.Views.RecordingItemView({ model: model });
     },
 
     onFilterCampaigns: function() {
-      this.collection.reset(null);
+      var self = this;
 
-      var showAll = !!this.$('[name=show_all]:checked').length;
-      if (showAll) {
-        this.filterCollection({ key: this.modalData.key });
+      var showAllCampaigns = (this.$('[name=show_all_campaigns]:checked').length > 0);
+      var showHidden = (this.$('[name=show_hidden]:checked').length > 0);
+      
+      if (showAllCampaigns) {
+        this.filteredCollection.removeFilter('campaign_id');
       } else {
-        this.filterCollection({ key: this.modalData.key,
-                                campaign_id: this.modalData.campaign_id });
+        this.filteredCollection.filterBy('campaign_id', function(model) {
+          return _.contains(model.get('selected_campaign_ids'), parseInt(self.viewData.campaign_id));
+        });
       }
+      if (showHidden) {
+        this.filteredCollection.removeFilter('hidden');
+      } else {
+        this.filteredCollection.filterBy('hidden', function(model) {
+          return model.get('hidden') === false; // show only non-hidden
+        });
+      }
+      
     },
 
-  });
+    ajaxPost: function(data, endpoint) {
+      // make ajax POST to API
+      var url = '/admin/campaign/'+this.viewData.campaign_id+'/audio/'+data.id+'/'+endpoint;
+      var self = this;
+      $.ajax({
+        url: url,
+        method: 'POST',
+        success: function(response) {
+          if (response.success) {
+              // build friendly message like "Audio recording selected: Introduction version 3"
+              var fieldDescription = $('form label[for="'+response.key+'"]').text();
+              var msg = response.message + ': '+ fieldDescription + ' version ' + response.version;
+              // and display to user
+              window.flashMessage(msg, 'success');
 
+              // close the modal, and cleanup subviews
+              self.hide();
+            } else {
+              console.error(response);
+              window.flashMessage(response.errors, 'error', true);
+            }
+        }, error: function(xhr, status, error) {
+          console.error(status, error);
+          window.flashMessage(response.errors, 'error');
+        }
+      });
+    },
+
+    selectVersion: function(data) {
+      return this.ajaxPost(data, 'select');
+    },
+
+    deleteVersion: function(data) {
+      // TODO, confirm with user
+      // this doesn't actually delete objects in database or on file system
+      // just hides from API
+
+      return this.ajaxPost(data, 'hide');
+    },
+
+    unDeleteVersion: function(data) {
+      return this.ajaxPost(data, 'show');
+    }
+
+  });
 })();
