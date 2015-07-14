@@ -92,10 +92,15 @@
   CallPower.Views.TargetList = Backbone.View.extend({
     el: '#set-targets',
 
+    events: {
+      'click .add': 'onAdd',
+    },
+
     initialize: function() {
       this.collection = new CallPower.Collections.TargetList();
       // bind to future render events
       this.listenTo(this.collection, 'add remove sort reset', this.render);
+      this.listenTo(this.collection, 'add', this.recalculateOrder);
 
       // make target-list items sortable
       $('.target-list.sortable').sortable({
@@ -196,10 +201,6 @@
         items.push(model);
       });
       self.collection.reset(items);
-    },
-
-    events: {
-      'click .add': 'onAdd',
     },
 
     onAdd: function() {

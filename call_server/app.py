@@ -3,8 +3,7 @@ try:
     from gevent.monkey import patch_all
     patch_all()
 except ImportError:
-    if not DEBUG:
-        print "unable to apply gevent monkey.patch_all"
+    print "unable to apply gevent monkey.patch_all"
 
 import logging
 
