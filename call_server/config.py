@@ -57,10 +57,8 @@ class ProductionConfig(DefaultConfig):
     SERVER_NAME = os.environ.get('SERVER_NAME')
     APPLICATION_ROOT = os.environ.get('APPLICATION_ROOT', None)
 
-    CACHE_TYPE = 'memcached'
-    CACHE_MEMCACHED_SERVERS = os.environ.get('CACHE_MEMCACHED_SERVERS')
-    CACHE_MEMCACHED_USERNAME = os.environ.get('CACHE_MEMCACHED_USERNAME')
-    CACHE_MEMCACHED_PASSWORD = os.environ.get('CACHE_MEMCACHED_PASSWORD')
+    CACHE_TYPE = 'redis'
+    CACHE_REDIS_URL = os.environ.get('REDIS_URL')
     CACHE_KEY_PREFIX = 'call-power'
 
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'localhost')

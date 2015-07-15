@@ -25,9 +25,7 @@ For production, you will also need to set:
 * CALLPOWER_CONFIG='call_server.config:ProductionConfig', so that manager.py knows to use a real database for migrations
 * DATABASE_URI, a sqlalchemy [connection string](https://pythonhosted.org/Flask-SQLAlchemy/config.html#connection-uri-format) for a postgres or mysql database addresses
 * APPLICATION_ROOT to the address where this application will live
-* CACHE_MEMCACHED_SERVERS, a list or tuple of memcached servers
-* CACHE_MEMCACHED_USERNAME
-* CACHE_MEMCACHED_PASSWORD
+* REDIS_URL, a URI for the Redis server
 
 If you are storing assets on Amazon S3, or another [Flask-Store provider](http://flask-store.soon.build)
 
