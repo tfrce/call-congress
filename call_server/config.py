@@ -57,10 +57,8 @@ class ProductionConfig(DefaultConfig):
     SERVER_NAME = os.environ.get('SERVER_NAME')
     APPLICATION_ROOT = os.environ.get('APPLICATION_ROOT', None)
 
-    CACHE_TYPE = 'memcached'
-    CACHE_MEMCACHED_SERVERS = os.environ.get('CACHE_MEMCACHED_SERVERS')
-    CACHE_MEMCACHED_USERNAME = os.environ.get('CACHE_MEMCACHED_USERNAME')
-    CACHE_MEMCACHED_PASSWORD = os.environ.get('CACHE_MEMCACHED_PASSWORD')
+    CACHE_TYPE = 'redis'
+    CACHE_REDIS_URL = os.environ.get('REDIS_URL')
     CACHE_KEY_PREFIX = 'call-power'
 
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'localhost')
@@ -90,13 +88,11 @@ class HerokuConfig(ProductionConfig):
     # db via heroku postgres
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
 
-    # memcache via memcachier
-    CACHE_TYPE = 'memcached'
-    CACHE_MEMCACHED_SERVERS = (os.environ.get('MEMCACHIER_SERVERS'), )
-    #  flask-cache requires this to be a list
-    CACHE_MEMCACHED_USERNAME = os.environ.get('MEMCACHIER_USERNAME')
-    CACHE_MEMCACHED_PASSWORD = os.environ.get('MEMCACHIER_PASSWORD')
-
+    # cache via heroku-redis
+    CACHE_TYPE = 'redis'
+    CACHE_REDIS_URL = os.environ.get('REDIS_URL')
+    CACHE_KEY_PREFIX = 'call-power'
+    
     # smtp via sendgrid
     MAIL_SERVER = 'smtp.sendgrid.net'
     MAIL_PORT = 587

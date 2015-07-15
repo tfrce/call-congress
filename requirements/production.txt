@@ -4,5 +4,5 @@ gevent==1.0
 gevent-psycopg2==0.0.3
 greenlet==0.4.2
 psycopg2==2.6.1
-python-memcached==1.54
+redis==2.10.3
 uWSGI==2.0
