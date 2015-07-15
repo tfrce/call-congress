@@ -1,1 +1,1 @@
-web: run-program uwsgi uwsgi.ini
+web: uwsgi uwsgi.ini

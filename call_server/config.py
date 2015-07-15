@@ -76,8 +76,24 @@ class ProductionConfig(DefaultConfig):
     STORE_DOMAIN = 'https://%s.s3-%s.amazonaws.com/' % (STORE_S3_BUCKET, STORE_S3_REGION)
 
 
+class HerokuConfig(ProductionConfig):
+    # Heroku addons use a few different environment variable names
+
+    # db via heroku postgres
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+
+    # memcache via memcachier
+    CACHE_TYPE = 'memcached'
+    CACHE_MEMCACHED_SERVERS = os.environ.get('MEMCACHIER_SERVERS')
+    CACHE_MEMCACHED_USERNAME = os.environ.get('MEMCACHIER_USERNAME')
+    CACHE_MEMCACHED_PASSWORD = os.environ.get('MEMCACHIER_PASSWORD')
+
+    # smtp via sendgrid
+    MAIL_SERVER = 'smtp.sendgrid.net'
+    MAIL_PORT = 587
+
+
 class DevelopmentConfig(DefaultConfig):
-    SERVER_NAME = 'localhost:5000'
     TESTING = False
     DEBUG = True
     DEBUG_INFO = False
@@ -85,10 +101,14 @@ class DevelopmentConfig(DefaultConfig):
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     SECRET_KEY = os.environ.get('SECRET_KEY', 'NotARealSecretKey,YouShouldSetOneInYour.Env')
 
+    SERVER_NAME = 'localhost:5000'
+    STORE_PATH = '%s/instance/uploads/' % os.path.abspath(os.curdir)
+    STORE_DOMAIN = SERVER_NAME
+
     MAIL_DEBUG = True
     MAIL_PORT = 1025
     MAIL_DEFAULT_SENDER = 'debug'
-    
+
 
 class TestingConfig(DefaultConfig):
     TESTING = True
@@ -96,7 +116,3 @@ class TestingConfig(DefaultConfig):
     SQLALCHEMY_DATABASE_URI = 'sqlite://'  # keep testing db in memory
     CACHE_TYPE = 'null'
     CACHE_NO_NULL_WARNING = True
-
-    STORE_PROVIDER = 'flask_store.providers.local.LocalProvider'
-    STORE_DOMAIN = 'http://localhost:5000'
-    STORE_PATH = '%s/instance/uploads/' % os.path.abspath(os.curdir)
