@@ -3,7 +3,7 @@ import twilio.rest
 
 
 class DefaultConfig(object):
-    DEBUG = True
+    DEBUG = False
     TESTING = False
     APP_NAME = "call_server"
     APPLICATION_ROOT = None  # the path where the application is configured
@@ -94,9 +94,10 @@ class HerokuConfig(ProductionConfig):
 
 
 class DevelopmentConfig(DefaultConfig):
-    TESTING = False
     DEBUG = True
     DEBUG_INFO = False
+    TESTING = False
+
     WTF_CSRF_ENABLED = True
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     SECRET_KEY = os.environ.get('SECRET_KEY', 'NotARealSecretKey,YouShouldSetOneInYour.Env')
