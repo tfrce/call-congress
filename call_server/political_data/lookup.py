@@ -31,7 +31,6 @@ def locate_targets(location, campaign):
         else:
             raise NotImplementedError('campaign has unknown locate_by value: %s' % campaign.locate_by)
 
-
     # elif campaign.campaign_type == TYPE_EXECUTIVE
         # Whitehouse number?
     elif campaign.campaign_type == TYPE_STATE:
