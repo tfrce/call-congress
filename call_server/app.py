@@ -187,6 +187,9 @@ def configure_assets(app):
     assets.register('site_css', site_css)
     app.logger.info('registered assets %s' % assets._named_bundles.keys())
 
+    assets.debug = app.config['DEBUG']
+    assets.auto_build = app.config['DEBUG']
+
 
 def context_processors(app):
     # inject sitename into all templates
