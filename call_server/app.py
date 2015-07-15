@@ -104,6 +104,7 @@ def init_extensions(app):
     # http://docs.sqlalchemy.org/en/rel_0_9/core/constraints.html#configuring-constraint-naming-conventions
 
     assets.init_app(app)
+    assets.app = app
     babel.init_app(app)
     cache.init_app(app)
     csrf.init_app(app)
@@ -186,9 +187,6 @@ def configure_assets(app):
                       filters='cssmin', output='dist/css/site.css')
     assets.register('site_css', site_css)
     app.logger.info('registered assets %s' % assets._named_bundles.keys())
-
-    assets.debug = app.config['DEBUG']
-    assets.auto_build = app.config['DEBUG']
 
 
 def context_processors(app):
