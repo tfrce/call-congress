@@ -86,7 +86,7 @@ def make_calls(params, campaign):
     n_targets = len(params['targetIds'])
 
     play_or_say(resp, campaign.audio('msg_call_block_intro'),
-                n_targets=n_targets, many_reps=n_targets > 1)
+                n_targets=n_targets, many=n_targets > 1)
 
     resp.redirect(url_for('call.make_single', call_index=0, **params))
 
@@ -234,7 +234,7 @@ def make_single():
 
     resp = twilio.twiml.Response()
 
-    play_or_say(resp, campaign.audio('msg_rep_intro'), name=full_name)
+    play_or_say(resp, campaign.audio('msg_target_intro'), name=full_name)
 
     if current_app.debug:
         current_app.logger.debug('Call #{}, {} ({}) from {} in call.make_single()'.format(
@@ -286,7 +286,7 @@ def complete():
         # call the next target
         params['call_index'] = i + 1  # increment the call counter
 
-        play_or_say(resp, campaign.audio('msg_between_thanks'))
+        play_or_say(resp, campaign.audio('msg_between_calls'))
 
         resp.redirect(url_for('call.make_single', **params))
 
