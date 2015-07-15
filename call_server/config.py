@@ -9,7 +9,8 @@ class DefaultConfig(object):
     APP_NAME = "call_server"
     APPLICATION_ROOT = None  # the path where the application is configured
 
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI',
+        'sqlite:////%s/dev.db' % os.path.abspath(os.curdir))
     SQLALCHEMY_ECHO = False
 
     BABEL_DEFAULT_LOCALE = 'en'
@@ -37,7 +38,7 @@ class DefaultConfig(object):
     # limit on the amount of time to ring before giving up
     TWILIO_TIMEOUT = 40  # seconds
 
-    SECRET_KEY = os.environ.get('SECRET_KEY', 'NotARealSecretKey,YouShouldSetOneInYour.Env')
+    SECRET_KEY = os.environ.get('SECRET_KEY')
 
     SUNLIGHT_API_KEY = os.environ.get('SUNLIGHT_API_KEY')
 
