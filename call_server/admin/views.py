@@ -7,6 +7,7 @@ from twilio.rest import TwilioRestClient
 from ..extensions import db
 
 from ..campaign.models import TwilioPhoneNumber, Campaign
+from ..call.models import Call
 from ..campaign.constants import PAUSED
 from ..utils import get_one_or_create
 
@@ -27,7 +28,20 @@ def dashboard():
 
 @admin.route('/statistics')
 def statistics():
-    return render_template('admin/statistics.html')
+    data = {}
+    data['calls_by_campaign'] = (db.session.query(
+        db.func.Count(Call.id))
+        .group_by(Call.campaign_id).all()
+    )[0][0]
+
+    data['campaigns'] = len(Campaign.query.all())
+
+    data['unique_users'] = (db.session.query(Call)
+        .distinct(Call.phone_hash)
+        .group_by(Call.phone_hash)
+    ).count()
+
+    return render_template('admin/statistics.html', data=data)
 
 
 @admin.route('/system')
