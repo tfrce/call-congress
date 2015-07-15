@@ -20,3 +20,24 @@ def locate_targets(zipcode, cache=cache):
         targets.append(rep[0]['bioguide_id'])
 
     return targets
+
+
+def adapt_sunlight(data):
+    mapped = {}
+    mapped['name'] = '{firstname} {lastname}'.format(**data)
+    if data['title'] == "Sen":
+        mapped['title'] = "Senator"
+    if data['title'] == "Rep":
+        mapped['title'] = "Representative"
+    mapped['number'] = data['phone']
+    mapped['uid'] = data['bioguide_id']
+
+    return mapped
+
+
+def adapt_to_target(data, key_prefix):
+    if key_prefix == "us:bioguide":
+        return adapt_sunlight(data)
+    else:
+        return {}
+    # TODO add for other countries
