@@ -5,7 +5,7 @@ from config import ProductionConfig, HerokuConfig
 
 def production_app(*args, **kwargs):
     if os.environ.get('HEROKU'):
-            application = create_app(HerokuConfig)
+        application = create_app(HerokuConfig)
     else:
         application = create_app(ProductionConfig)
 

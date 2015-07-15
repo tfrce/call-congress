@@ -8,20 +8,18 @@ from alembic.config import Config
 from flask.ext.assets import ManageAssets
 
 from call_server.app import create_app
-from call_server.config import DefaultConfig
 from call_server.extensions import assets, db
 
 from call_server.user import User, ADMIN, ACTIVE
 
-app = create_app(config=DefaultConfig)
+app = create_app()
 app.db = db
 manager = Manager(app)
 
 alembic_config = Config(os.path.realpath(os.path.dirname(__name__)) + "/alembic.ini")
-# let the environment override the default db location in production
-if os.environ.get('SQLALCHEMY_DATABASE_URI'):
-    alembic_config.set_section_option('alembic', 'sqlalchemy.url',
-                                      os.environ.get('SQLALCHEMY_DATABASE_URI'))
+# let the config override the default db location in production
+alembic_config.set_section_option('alembic', 'sqlalchemy.url',
+                                  app.config.get('SQLALCHEMY_DATABASE_URI'))
 
 manager.add_command("assets", ManageAssets())
 

@@ -5,6 +5,7 @@ try:
 except ImportError:
     print "unable to apply gevent monkey.patch_all"
 
+import os
 import logging
 
 from flask import Flask, g, request, session
@@ -13,7 +14,7 @@ from flask.ext.assets import Bundle
 from utils import json_markup, OrderedDictYAMLLoader
 import yaml
 
-from .config import DefaultConfig
+import config
 
 from .site import site
 from .admin import admin
@@ -34,17 +35,17 @@ DEFAULT_BLUEPRINTS = (
 )
 
 
-def create_app(config=None, app_name=None, blueprints=None):
+def create_app(configuration=None, app_name=None, blueprints=None):
     """Create the main Flask app."""
 
     if app_name is None:
-        app_name = DefaultConfig.APP_NAME
+        app_name = config.DefaultConfig.APP_NAME
     if blueprints is None:
         blueprints = DEFAULT_BLUEPRINTS
 
     app = Flask(app_name)
     # configure app from object or environment
-    configure_app(app, config)
+    configure_app(app, configuration)
     # init extensions once we have app context
     init_extensions(app)
     # then blueprints, for url/view routing
@@ -67,22 +68,22 @@ def create_app(config=None, app_name=None, blueprints=None):
         data_cache.load_us_data()
 
     app.logger.info('Call Power started')
-    app.logger.info('db at %s' % db.engine.url)
     return app
 
 
-def configure_app(app, config=None):
+def configure_app(app, configuration=None):
     """Configure app by object, instance folders or environment variables"""
 
     # http://flask.pocoo.org/docs/api/#configuration
-    app.config.from_object(DefaultConfig)
+    app.config.from_object(config.DefaultConfig)
     if config:
-        app.config.from_object(config)
+        app.config.from_object(configuration)
+    else:
+        config_name = '%s_CONFIG' % config.DefaultConfig.PROJECT.upper()
+        env_config = os.environ.get(config_name)
+        app.logger.info('Config', env_config)
+        app.config.from_object(env_config)
 
-    # http://flask.pocoo.org/docs/config/#instance-folders
-    # app.config.from_pyfile('instance/app.cfg')
-
-    # app.config.from_envvar('%s_APP_CONFIG' % DefaultConfig.PROJECT.upper(), silent=True)
 
 
 def init_extensions(app):

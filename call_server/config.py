@@ -3,6 +3,7 @@ import twilio.rest
 
 
 class DefaultConfig(object):
+    PROJECT = 'CallPower'
     DEBUG = False
     TESTING = False
     APP_NAME = "call_server"
