@@ -1,7 +1,6 @@
 import os
 import sys
 import subprocess
-from functools import wraps
 
 from flask.ext.script import Manager
 from alembic import command
@@ -9,12 +8,12 @@ from alembic.config import Config
 from flask.ext.assets import ManageAssets
 
 from call_server.app import create_app
-from call_server.config import DevelopmentConfig
+from call_server.config import DefaultConfig
 from call_server.extensions import assets, db
 
 from call_server.user import User, ADMIN, ACTIVE
 
-app = create_app(config=DevelopmentConfig)
+app = create_app(config=DefaultConfig)
 app.db = db
 manager = Manager(app)
 

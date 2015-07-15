@@ -6,9 +6,9 @@ class DefaultConfig(object):
     DEBUG = True
     TESTING = False
     APP_NAME = "call_server"
-    APPLICATION_ROOT = None # the path where the application is configured
+    APPLICATION_ROOT = None  # the path where the application is configured
 
-    SQLALCHEMY_DATABASE_URI = 'sqlite:////%s/dev.db' % os.path.abspath(os.curdir)
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI')
     SQLALCHEMY_ECHO = False
 
     BABEL_DEFAULT_LOCALE = 'en'
@@ -36,7 +36,7 @@ class DefaultConfig(object):
     # limit on the amount of time to ring before giving up
     TWILIO_TIMEOUT = 40  # seconds
 
-    SECRET_KEY = 'NotARealSecretKey'
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'NotARealSecretKey,YouShouldSetOneInYour.Env')
 
     SUNLIGHT_API_KEY = os.environ.get('SUNLIGHT_API_KEY')
 
@@ -100,6 +100,8 @@ class DevelopmentConfig(DefaultConfig):
     WTF_CSRF_ENABLED = True
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     SECRET_KEY = os.environ.get('SECRET_KEY', 'NotARealSecretKey,YouShouldSetOneInYour.Env')
+
+    SQLALCHEMY_DATABASE_URI = 'sqlite:////%s/dev.db' % os.path.abspath(os.curdir)
 
     SERVER_NAME = 'localhost:5000'
     STORE_PATH = '%s/instance/uploads/' % os.path.abspath(os.curdir)
