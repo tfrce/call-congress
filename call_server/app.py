@@ -87,7 +87,7 @@ def configure_app(app, configuration=None):
         if env_config:
             app.logger.info('Config', config_name)
             app.config.from_object(env_config)
-    app.logger.info('Environment:', app.config['ENVIRONMENT'])
+    app.logger.info('Environment: %s' % app.config['ENVIRONMENT'])
 
 
 def init_extensions(app):
