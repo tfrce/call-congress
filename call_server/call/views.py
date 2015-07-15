@@ -23,16 +23,18 @@ def play_or_say(r, audio, **kwds):
     # can use mustache templates to render keyword arguments
 
     if audio:
-        if hasattr(audio,'file_storage'):
+        if hasattr(audio, 'file_storage'):
             r.play(audio.file_url())
-        elif hasattr(audio,'text_to_speech'):
+        elif hasattr(audio, 'text_to_speech'):
             msg = pystache.render(audio.text_to_speech, kwds)
             r.say(msg)
         else:
             msg = pystache.render(audio, kwds)
             r.say(msg)
     else:
-        r.say('Error: no recording defined for '+audio)
+        r.say('Error: no recording defined')
+        current_app.logger.error('Missing audio recording')
+        current_app.logger.error(kwds)
 
 
 def parse_params(r):
@@ -60,7 +62,8 @@ def intro_zip_gather(params, campaign):
     resp = twilio.twiml.Response()
 
     if campaign.audio('msg_intro_location'):
-        play_or_say(resp, campaign.audio('msg_intro_location'))
+        play_or_say(resp, campaign.audio('msg_intro_location'),
+                    organization=current_app.config.get('INSTALLED_ORG', ''))
     else:
         play_or_say(resp, campaign.audio('msg_intro'))
 
