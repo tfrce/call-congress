@@ -279,8 +279,8 @@ def complete():
         # but some installations may not want to log at all
 
     try:
-        current_app.db.session.add(Call(**call_data))
-        current_app.db.session.commit()
+        db.session.add(Call(**call_data))
+        db.session.commit()
     except SQLAlchemyError:
         current_app.logger.error('Failed to log call:', exc_info=True)
 
