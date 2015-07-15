@@ -58,7 +58,6 @@ class ProductionConfig(DefaultConfig):
 
     SERVER_NAME = os.environ.get('SERVER_NAME')
     APPLICATION_ROOT = os.environ.get('APPLICATION_ROOT', None)
-
     ADMIN_API_KEY = os.environ.get('ADMIN_API_KEY', None)
 
     CACHE_TYPE = 'redis'
