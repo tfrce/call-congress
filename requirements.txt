@@ -1,2 +1,3 @@
-# Mirror production requirements
--r requirements/production.txt
+# Mirror heroku requirements
+# because their automatic build process isn't overrideable
+-r requirements/heroku.txt
