@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import current_app
 from sqlalchemy_utils.types import phone_number
 from flask_store.sqla import FlaskStoreType
+from sqlalchemy import UniqueConstraint
 
 from ..extensions import db, cache
 from ..utils import convert_to_dict, choice_values_flat
@@ -146,7 +147,6 @@ class Target(db.Model):
         return t
 
 
-
 class TwilioPhoneNumber(db.Model):
     __tablename__ = 'campaign_phone'
 
@@ -171,10 +171,12 @@ class AudioRecording(db.Model):
 
     file_storage = db.Column(FlaskStoreType(location='audio/'), nullable=True)
     text_to_speech = db.Column(db.Text)
-    version = db.Column(db.Integer, unique=True)
+    version = db.Column(db.Integer)
     description = db.Column(db.String(STRING_LEN))
 
     hidden = db.Column(db.Boolean, default=False)
+
+    __table_args__ = (UniqueConstraint('key', 'version'),)
 
     def file_url(self):
         if self.file_storage:
