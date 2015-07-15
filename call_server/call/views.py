@@ -228,7 +228,12 @@ def make_single():
     params['call_index'] = i
 
     target_bioguide = params['targetIds'][i]
-    current_target = Target.get_uid_or_cache(target_bioguide, 'us:bioguide')
+    current_target, cached = Target.get_uid_or_cache(target_bioguide, 'us:bioguide')
+    if cached:
+        # save Target to database
+        current_app.db.session.add(current_target)
+        current_app.db.session.commit()
+
     target_phone = str(current_target.number)
     full_name = current_target.full_name()
 
@@ -256,9 +261,10 @@ def complete():
     if not params or not campaign:
         abort(404)
 
+    current_target = Target.query.filter(Target.uid == params['targetIds'][i]).first()
     call_data = {
-        'campaign_id': campaign['id'],
-        'target_id': params['targetIds'][i],
+        'campaign_id': campaign.id,
+        'target_id': current_target.id,
         'location': params['zipcode'],
         'call_id': request.values.get('CallSid', None),
         'status': request.values.get('DialCallStatus', 'unknown'),
