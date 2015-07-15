@@ -92,7 +92,8 @@ class HerokuConfig(ProductionConfig):
 
     # memcache via memcachier
     CACHE_TYPE = 'memcached'
-    CACHE_MEMCACHED_SERVERS = os.environ.get('MEMCACHIER_SERVERS')
+    CACHE_MEMCACHED_SERVERS = [os.environ.get('MEMCACHIER_SERVERS'),]
+    #  flask-cache requires this to be a list
     CACHE_MEMCACHED_USERNAME = os.environ.get('MEMCACHIER_USERNAME')
     CACHE_MEMCACHED_PASSWORD = os.environ.get('MEMCACHIER_PASSWORD')
 
