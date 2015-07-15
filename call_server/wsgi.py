@@ -4,10 +4,9 @@ from config import ProductionConfig, HerokuConfig
 
 
 def production_app(*args, **kwargs):
-    application = create_app(ProductionConfig)
-    return application
+    if os.environ.get('HEROKU'):
+            application = create_app(HerokuConfig)
+    else:
+        application = create_app(ProductionConfig)
 
-
-def heroku_app(*args, **kwargs):
-    application = create_app(HerokuConfig)
     return application
