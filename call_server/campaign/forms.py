@@ -76,6 +76,7 @@ class CampaignAudioForm(Form):
     msg_invalid_location = TextField(_('Invalid Location'))
     msg_choose_target = TextField(_('Choose Target'))
     msg_call_block_intro = TextField(_('Call Block Introduction'))
+    msg_target_intro = TextField(_('Target Introduction'))
     msg_between_calls = TextField(_('Between Calls'))
     msg_final_thanks = TextField(_('Final Thanks'), [Required()])
 

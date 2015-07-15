@@ -7,6 +7,7 @@ from sqlalchemy import UniqueConstraint
 
 from ..extensions import db, cache
 from ..utils import convert_to_dict, choice_values_flat
+from ..political_data.lookup import adapt_to_target
 from .constants import (CAMPAIGN_CHOICES, CAMPAIGN_NESTED_CHOICES, STRING_LEN, TWILIO_SID_LENGTH,
                         CAMPAIGN_STATUS, PAUSED)
 
@@ -137,14 +138,22 @@ class Target(db.Model):
         return unicode("{} {}".format(self.title, self.name), 'utf8')
 
     @classmethod
-    def get_uid_or_cache(cls, uid, key_prefix):
+    def get_uid_or_cache(cls, uid, key_prefix="us:bioguide"):
         t = Target.query.filter(Target.uid == uid).first()
+        cached = False
+
         if not t:
             key = '%s:%s' % (key_prefix, uid)
-            l = cache.get(key)
-            if l:
-                t = l[0]
-        return t
+            cache_list = cache.get(key)
+            if cache_list:
+                # TODO, check to ensure it is list-like
+                obj = cache_list[0]
+                data = adapt_to_target(obj, key_prefix)
+
+                # create target object and save for reuse
+                t = Target(**data)
+                cached = True
+        return t, cached
 
 
 class TwilioPhoneNumber(db.Model):
