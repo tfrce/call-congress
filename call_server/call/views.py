@@ -13,6 +13,8 @@ from .models import Call
 from ..campaign.models import Campaign, Target
 from ..political_data.lookup import locate_targets
 
+from .decorators import crossdomain
+
 call = Blueprint('call', __name__, url_prefix='/call')
 call_methods = ['GET', 'POST']
 csrf.exempt(call)
@@ -107,6 +109,7 @@ def _make_calls():
 
 
 @call.route('/create', methods=call_methods)
+@crossdomain(origin='*')
 def create():
     """
     Makes a phone call to a user.
@@ -143,6 +146,7 @@ def create():
 
 
 @call.route('/connection', methods=call_methods)
+@crossdomain(origin='*')
 def connection():
     """
     Call handler to connect a user with the campaign target(s).
