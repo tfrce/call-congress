@@ -6,6 +6,8 @@ class DefaultConfig(object):
     PROJECT = 'CallPower'
     DEBUG = False
     TESTING = False
+    ENVIRONMENT = "Default"
+
     APP_NAME = "call_server"
     APPLICATION_ROOT = None  # the path where the application is configured
 
@@ -50,6 +52,8 @@ class DefaultConfig(object):
 class ProductionConfig(DefaultConfig):
     DEBUG = False
 
+    ENVIRONMENT = "Production"
+
     SERVER_NAME = os.environ.get('SERVER_NAME')
     APPLICATION_ROOT = os.environ.get('APPLICATION_ROOT', None)
 
@@ -81,6 +85,8 @@ class ProductionConfig(DefaultConfig):
 class HerokuConfig(ProductionConfig):
     # Heroku addons use a few different environment variable names
 
+    ENVIRONMENT = "Heroku"
+
     # db via heroku postgres
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
 
@@ -100,6 +106,8 @@ class DevelopmentConfig(DefaultConfig):
     DEBUG_INFO = False
     TESTING = False
 
+    ENVIRONMENT = "Development"
+
     WTF_CSRF_ENABLED = True
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     SECRET_KEY = os.environ.get('SECRET_KEY', 'NotARealSecretKey,YouShouldSetOneInYour.Env')
@@ -116,6 +124,8 @@ class DevelopmentConfig(DefaultConfig):
 
 
 class TestingConfig(DefaultConfig):
+    ENVIRONMENT = "Testing"
+
     TESTING = True
     WTF_CSRF_ENABLED = False
     SQLALCHEMY_DATABASE_URI = 'sqlite://'  # keep testing db in memory

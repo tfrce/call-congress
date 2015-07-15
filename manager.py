@@ -32,8 +32,9 @@ def reset_assets():
 
 
 @manager.command
-def run(server=None):
-    """Run webserver for local development."""
+def runserver(server=None):
+    """Run web server for local development and debugging
+        pass --server for external routing"""
     if server:
         app.config['SERVER_NAME'] = server
         app.config['STORE_DOMAIN'] = server
@@ -42,13 +43,13 @@ def run(server=None):
 
 @manager.command
 def alembic():
-    """Run in local machine."""
+    """Run alembic migration command"""
     subprocess.call([".venv/bin/alembic", "init", "alembic"])
 
 
 @manager.command
 def migrate(direction):
-    """Migrate db revision"""
+    """Migrate db revision up or down"""
     reset_assets()
     print "migrating %s database at %s" % (direction, app.db.engine.url)
     if direction == "up":
@@ -76,6 +77,7 @@ def stamp(revision):
 
 @manager.command
 def createadminuser():
+    """Create a new admin user, get password on command line"""
     from getpass import getpass
     from call_server.user.constants import (USERNAME_LEN_MIN, USERNAME_LEN_MAX,
                                             PASSWORD_LEN_MIN, PASSWORD_LEN_MAX)

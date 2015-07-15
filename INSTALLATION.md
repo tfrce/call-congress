@@ -22,7 +22,7 @@ To test Twilio functionality in development, you will need to set:
 
 For production, you will also need to set:
 
-* CALLPOWER_CONFIG='config:ProductionConfig', so that manager.py knows to use a real database for migrations
+* CALLPOWER_CONFIG='call_server.config:ProductionConfig', so that manager.py knows to use a real database for migrations
 * DATABASE_URI, a sqlalchemy [connection string](https://pythonhosted.org/Flask-SQLAlchemy/config.html#connection-uri-format) for a postgres or mysql database addresses
 * APPLICATION_ROOT to the address where this application will live
 * CACHE_MEMCACHED_SERVERS, a list or tuple of memcached servers
@@ -66,7 +66,7 @@ To install locally and run in debug mode use:
     python manager.py createadminuser
  
     # run local server for debugging
-    python manager.py run
+    python manager.py runserver
     
     # for testing twilio
     # run in another tab
