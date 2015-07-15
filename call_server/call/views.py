@@ -7,7 +7,7 @@ from flask_jsonpify import jsonify
 from twilio import TwilioRestException
 from sqlalchemy.exc import SQLAlchemyError
 
-from ..extensions import csrf
+from ..extensions import csrf, db
 
 from .models import Call
 from ..campaign.models import Campaign, Target
@@ -234,8 +234,8 @@ def make_single():
     current_target, cached = Target.get_uid_or_cache(target_bioguide, 'us:bioguide')
     if cached:
         # save Target to database
-        current_app.db.session.add(current_target)
-        current_app.db.session.commit()
+        db.session.add(current_target)
+        db.session.commit()
 
     target_phone = str(current_target.number)
     full_name = current_target.full_name()
