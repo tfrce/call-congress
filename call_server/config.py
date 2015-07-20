@@ -65,7 +65,7 @@ class ProductionConfig(DefaultConfig):
     MAIL_PORT = os.environ.get('MAIL_PORT', 1025)
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER', 'info@callpower.org')
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
 
     SQLALCHEMY_POOL_RECYCLE = 60 * 60  # 1 hour
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI')
@@ -92,10 +92,13 @@ class HerokuConfig(ProductionConfig):
     CACHE_TYPE = 'redis'
     CACHE_REDIS_URL = os.environ.get('REDIS_URL')
     CACHE_KEY_PREFIX = 'call-power'
-    
+
     # smtp via sendgrid
     MAIL_SERVER = 'smtp.sendgrid.net'
     MAIL_PORT = 587
+    MAIL_USERNAME = os.environ.get('SENDGRID_USERNAME')
+    MAIL_PASSWORD = os.environ.get('SENDGRID_PASSWORD')
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER', 'info@callpower.org')
 
 
 class DevelopmentConfig(DefaultConfig):
