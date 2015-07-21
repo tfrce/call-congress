@@ -24,7 +24,6 @@ from .user import User, user
 from .call import call
 from .campaign import campaign
 from .api import configure_restless, restless_preprocessors
-from .political_data import cache as data_cache
 
 from extensions import cache, db, babel, assets, login_manager, csrf, mail, store, rest
 
@@ -64,10 +63,6 @@ def create_app(configuration=None, app_name=None, blueprints=None):
     # finally instance specific configurations
     context_processors(app)
     instance_defaults(app)
-
-    # pre-warm political data cache
-    with app.app_context():
-        data_cache.load_us_data()
 
     app.logger.info('Call Power started')
     return app
