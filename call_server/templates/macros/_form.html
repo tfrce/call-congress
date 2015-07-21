@@ -11,10 +11,14 @@
     <div class="controls {{class_.get('control', '')}}">
         {{ field(class_ = 'form-control inline '+class_.get('field', '')) }}
         {{ render_label(field, "inline") }}
-        {% if field.description|safe %}
+        {% if field.description %}
         <div class="description">
             <span class="glyphicon glyphicon-info-sign info small"></span>
-            <span class="help-inline">{{ descriptions.get(field.id)|safe }}</span>
+            <span class="help-inline">
+                {% if descriptions and descriptions.get(field.id) %}
+                {{ descriptions.get(field.id)|safe }}
+                {% else %} {{ field.description|safe }} {% endif %}
+            </span>
         </div>
         {%- endif %}
         {% if field.errors -%}
@@ -42,7 +46,11 @@
         {% if field.description %}
         <div class="description">
             <span class="glyphicon glyphicon-info-sign info small"></span>
-            <span class="help-inline">{{ descriptions.get(field.id)|safe }}</span>
+            <span class="help-inline">
+                {% if descriptions and descriptions.get(field.id) %}
+                {{ descriptions.get(field.id)|safe }}
+                {% else %} {{ field.description|safe }} {% endif %}
+            </span>
         </div>
         {%- endif %}
         {% if field.errors -%}
@@ -63,7 +71,11 @@
         {% if field.description %}
         <div class="description">
             <span class="glyphicon glyphicon-info-sign info small"></span>
-            <span class="help-inline">{{ descriptions.get(field.id)|safe }}</span>
+            <span class="help-inline">
+                {% if descriptions and descriptions.get(field.id) %}
+                {{ descriptions.get(field.id)|safe }}
+                {% else %} {{ field.description|safe }} {% endif %}
+            </span>
         </div>
         {%- endif %}
         {% if field.errors -%}
