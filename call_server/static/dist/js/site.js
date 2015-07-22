@@ -135,7 +135,6 @@ $(document).ready(function () {
 
       // campaign targets
       'change select#campaign_type':  'changeCampaignType',
-      'change select#campaign_subtype':  'changeCampaignType',
       'change input[name="segment_by"]': 'changeSegmentBy',
 
       // call limit
@@ -168,7 +167,7 @@ $(document).ready(function () {
 
       var nested_field = $('select#campaign_subtype');
       var nested_choices = nested_field.data('nested-choices');
-      var nested_val = nested_field.val();
+      var nested_val = nested_field.data('nested-selected');
       nested_field.empty();
 
       // fill in new choices from data attr
@@ -178,9 +177,10 @@ $(document).ready(function () {
         var option = $('<option value="'+v[0]+'">'+v[1]+'</option>');
         nested_field.append(option);
       });
+      var contains_nested = _.find(avail, function(v) { return v[0] === nested_val; });
 
       // reset initial choice if still valid
-      if (_.contains(_.flatten(avail), nested_val)) {
+      if (contains_nested) {
         nested_field.val(nested_val);
       } else {
         nested_field.val('');
