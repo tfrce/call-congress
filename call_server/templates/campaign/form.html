@@ -37,7 +37,7 @@
                 <div class="control-group {{control_width}}">
                 {{ field(class_='form-control inline') }}
                 {{ state(class_='form-control inline hide-initial') }}
-                {{ nested_field(class_='form-control inline nested', **{'data-nested-choices': CAMPAIGN_NESTED_CHOICES|json} ) }}
+                {{ nested_field(class_='form-control inline nested', **{'data-nested-choices': CAMPAIGN_NESTED_CHOICES|json, 'data-nested-selected': nested_field.object_data} ) }}
                 <div class="description">
                     <span class="glyphicon glyphicon-info-sign info small"></span>
                     <span class="help-inline">{{ descriptions.get(field.id)|safe }}</span>
