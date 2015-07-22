@@ -36,7 +36,8 @@ def statistics():
 
     data['campaigns'] = len(Campaign.query.all())
 
-    data['unique_users'] = (db.session.query(Call)
+    data['unique_users'] = (db.session.query(
+        db.func.Count(Call.id))
         .distinct(Call.phone_hash)
         .group_by(Call.phone_hash)
     ).count()
