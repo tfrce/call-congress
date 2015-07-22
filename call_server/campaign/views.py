@@ -5,7 +5,7 @@ from flask.ext.login import login_required
 import sqlalchemy
 
 from ..extensions import db
-from ..utils import choice_items, choice_keys, choice_values_flat
+from ..utils import choice_items, choice_keys, choice_values_flat, duplicate_object
 
 from .constants import CAMPAIGN_NESTED_CHOICES, CUSTOM_CAMPAIGN_CHOICES, EMPTY_CHOICES, LIVE
 from .models import Campaign, Target, CampaignTarget, AudioRecording, CampaignAudioRecording
@@ -103,7 +103,8 @@ def form(campaign_id=None):
 @campaign.route('/<int:campaign_id>/copy', methods=['GET', 'POST'])
 def copy(campaign_id):
     orig_campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
-    new_campaign = orig_campaign.duplicate()
+    new_campaign = duplicate_object(orig_campaign)
+    new_campaign.name = orig_campaign.name + " (copy)"
 
     db.session.add(new_campaign)
     db.session.commit()
