@@ -93,14 +93,6 @@ class Campaign(db.Model):
             # if not defined by user, return default
             return current_app.config.CAMPAIGN_MESSAGE_DEFAULTS.get(key)
 
-    @classmethod
-    def duplicate(self):
-        arguments = dict()
-        for name, column in self.__mapper__.columns.items():
-            if not (column.primary_key or column.unique):
-                arguments[name] = getattr(self, name)
-        return self.__class__(**arguments)
-
 
 class CampaignTarget(db.Model):
     __tablename__ = 'campaign_target_sets'

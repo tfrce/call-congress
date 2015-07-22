@@ -7,8 +7,10 @@ import yaml
 import yaml.constructor
 
 from collections import OrderedDict
+from datetime import datetime
 
 from flask import Markup
+import sqlalchemy
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
 
@@ -36,6 +38,18 @@ def get_one_or_create(session,
             flash("Unable to create "+model, 'error')
             session.rollback()
             return session.query(model).filter_by(**kwargs).one(), False
+
+
+def duplicate_object(orig):
+    """ duplicate a sqlalchemy-backed object, skipping pk, unique fields, or sets """
+    mapper = sqlalchemy.inspect(type(orig))
+    arguments = dict()
+    for name, column in mapper.columns.items():
+        if not (column.primary_key or column.unique or name.endswith('set')):
+            arguments[name] = getattr(orig, name)
+        if name == "created_time":
+            arguments[name] = datetime.utcnow()
+    return type(orig)(**arguments)
 
 
 def convert_to_dict(obj):
