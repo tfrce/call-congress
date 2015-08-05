@@ -38,17 +38,23 @@ SEGMENT_BY_CHOICES = (
     ('other', 'Other')
 )
 
+LOCATION_POSTAL = 'postal'
+LOCATION_LATLNG = 'latlng'
 LOCATION_CHOICES = (
     ('', 'None'),
-    ('postal', 'ZIP / Postal Code'),
-    ('latlng', 'Lat / Lon')
+    (LOCATION_POSTAL, 'ZIP / Postal Code'),
+    (LOCATION_LATLNG, 'Lat / Lon')
 )
 
+ORDER_IN_ORDER = 'in-order'
+ORDER_SHUFFLE = 'shuffle'
+ORDER_SENATE_FIRST = 'senate-first'
+ORDER_HOUSE_FIRST = 'house-first'
 ORDERING_CHOICES = (
-    ('in-order', 'In Order'),
-    ('shuffle', 'Shuffle'),
-    ('senate-first', 'Senate First'),
-    ('house-first', 'House First'),
+    (ORDER_IN_ORDER, 'In Order'),
+    (ORDER_SHUFFLE, 'Shuffle'),
+    (ORDER_SENATE_FIRST, 'Senate First'),
+    (ORDER_HOUSE_FIRST, 'House First'),
 )
 
 ARCHIVED = 0

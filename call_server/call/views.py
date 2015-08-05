@@ -11,6 +11,7 @@ import phonenumbers
 from ..extensions import csrf, db
 
 from .models import Call
+from ..campaign.constants import (ORDER_SHUFFLE, ORDER_HOUSE_FIRST, ORDER_SENATE_FIRST)
 from ..campaign.models import Campaign, Target
 from ..political_data.lookup import locate_targets
 
@@ -55,11 +56,19 @@ def parse_params(r):
     if not campaign:
         return None, None
 
-    # if no target_set specified, lookup from zipcode
-    if not campaign.target_set and params['zipcode']:
-        params['targetIds'] = locate_targets(params['zipcode'])
+    # check if campaign target_set specified
+    if not params['targetIds'] and campaign.target_set:
+        params['targetIds'] = [t.uid for t in campaign.target_set]
     else:
-        params['targetIds'] = list(campaign.target_set)
+        # lookup based on campaign.segment_by
+        params['targetIds'] = locate_targets(params['zipcode'], campaign.segment_by)
+        
+    # set campaign target order
+    if campaign.order is ORDER_SHUFFLE:
+        random.shuffle(params['targetIds'])
+    elif campaign.order is ORDER_HOUSE_FIRST:
+        # ?
+        pass
 
     return params, campaign
 
