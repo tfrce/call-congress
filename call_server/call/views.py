@@ -6,6 +6,7 @@ from flask import abort, Blueprint, request, url_for, current_app
 from flask_jsonpify import jsonify
 from twilio import TwilioRestException
 from sqlalchemy.exc import SQLAlchemyError
+import phonenumbers
 
 from ..extensions import csrf, db
 
@@ -41,21 +42,24 @@ def play_or_say(r, audio, **kwds):
 
 def parse_params(r):
     params = {
-        'userPhone': r.values.get('userPhone'),
         'campaignId': r.values.get('campaignId', 0),
+        'userCountry': r.values.get('userCountry', 'US'),
         'zipcode': r.values.get('zipcode', None),
         'targetIds': r.values.getlist('targetIds'),
     }
+    # create and store PhoneNumber object from userPhone and userCountry region, default to US
+    params['userPhone'] = phonenumbers.parse(r.values.get('userPhone'), params['userCountry'])
 
     # lookup campaign by ID
     campaign = Campaign.query.get(params['campaignId'])
-
     if not campaign:
         return None, None
 
-    # get target id by zip code
-    if params['zipcode']:
+    # if no target_set specified, lookup from zipcode
+    if not campaign.target_set and params['zipcode']:
         params['targetIds'] = locate_targets(params['zipcode'])
+    else:
+        params['targetIds'] = list(campaign.target_set)
 
     return params, campaign
 
@@ -126,11 +130,18 @@ def create():
     if not params or not campaign:
         abort(404)
 
+    # find outgoing phone number with same country code as user
+    phone_numbers = campaign.phone_numbers(params['userCountry'])
+
+    if not phone_numbers:
+        current_app.logger.error("no numbers available for campaign %(campaignId)d in %(userCountry)s" % params)
+        abort(500)
+
     # initiate the call
     try:
         call = current_app.config['TWILIO_CLIENT'].calls.create(
-            to=params['userPhone'],
-            from_=random.choice([str(n.number) for n in campaign.phone_number_set]),
+            to=params['userPhone'].number,
+            from_=random.choice(phone_numbers),
             url=url_for('call.connection', _external=True, **params),
             timeLimit=current_app.config['TWILIO_TIME_LIMIT'],
             timeout=current_app.config['TWILIO_TIMEOUT'],
@@ -184,7 +195,7 @@ def incoming():
     Required Params: campaignId
 
     Each Twilio phone number needs to be configured to point to:
-    server.org/incoming_call?campaignId=12345
+    server.org/call/incoming?campaignId=12345
     from twilio.com/user/account/phone-numbers/incoming
     """
     params, campaign = parse_params(request)
@@ -250,9 +261,9 @@ def make_single():
 
     if current_app.debug:
         current_app.logger.debug('Call #{}, {} ({}) from {} in call.make_single()'.format(
-            i, full_name, target_phone, params['userPhone']))
+            i, full_name, target_phone, params['userPhone'].number))
 
-    resp.dial(target_phone, callerId=params['userPhone'],
+    resp.dial(target_phone, callerId=params['userPhone'].number,
               timeLimit=current_app.config['TWILIO_TIME_LIMIT'],
               timeout=current_app.config['TWILIO_TIMEOUT'], hangupOnStar=True,
               action=url_for('call.complete', **params))
@@ -278,7 +289,7 @@ def complete():
         'duration': request.values.get('DialCallDuration', 0)
     }
     if current_app.config['LOG_PHONE_NUMBERS']:
-        call_data['phone_number'] = params['userPhone']
+        call_data['phone_number'] = params['userPhone'].number
         # user phone numbers are hashed by the init method
         # but some installations may not want to log at all
 
