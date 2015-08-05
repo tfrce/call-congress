@@ -1,7 +1,16 @@
 from ..extensions import cache
+from ..campaign.constants import LOCATION_POSTAL, LOCATION_LATLNG
 
 
-def locate_targets(zipcode, cache=cache):
+def locate_targets(parameter, segment_by=LOCATION_POSTAL, cache=cache):
+    if segment_by is LOCATION_POSTAL:
+        return locate_targets_by_zipcode(parameter, cache)
+    # elif segment_by is LOCATION_LATLNG:
+    #    TODO lookup target from latlng
+    #    return locate_targets_by_latlng(parameter, cache)
+
+
+def locate_targets_by_zipcode(zipcode, cache=cache):
     """ Locates all targets for a zipcode, crossing state boundaries if necessary.
     Returns a list of bioguide ids.
     """
@@ -13,7 +22,7 @@ def locate_targets(zipcode, cache=cache):
 
     targets = []
     for state in states:
-        for senator in cache.get('us:senate:'+state):
+        for senator in cache.get('us:senate:' + state):
             targets.append(senator['bioguide_id'])
     for d in local_districts:
         rep = cache.get('us:house:{0[state]}:{0[house_district]}'.format(d))
