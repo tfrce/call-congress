@@ -26,16 +26,16 @@ class Campaign(db.Model):
     segment_by = db.Column(db.String(STRING_LEN))
     target_set = db.relationship('Target', secondary='campaign_target_sets',
                                  order_by='campaign_target_sets.c.order',
-                                 backref=db.backref('campaign'))
+                                 backref=db.backref('campaigns'))
     target_ordering = db.Column(db.String(STRING_LEN))
 
     allow_call_in = db.Column(db.Boolean, default=False)
     phone_number_set = db.relationship('TwilioPhoneNumber', secondary='campaign_phone_numbers',
-                                       backref=db.backref('campaign', uselist=False))
+                                       backref=db.backref('campaigns'))
     call_maximum = db.Column(db.SmallInteger, nullable=True)
 
     audio_recordings = db.relationship('AudioRecording', secondary='campaign_audio_recordings',
-                                       backref=db.backref('campaign'))
+                                       backref=db.backref('campaigns'))
 
     status_code = db.Column(db.SmallInteger, default=PAUSED)
 
@@ -78,8 +78,8 @@ class Campaign(db.Model):
 
     def audio_query(self):
         return CampaignAudioRecording.query.filter(
-                    CampaignAudioRecording.campaign_id == self.id,
-                    CampaignAudioRecording.selected == True)
+            CampaignAudioRecording.campaign_id == self.id,
+            CampaignAudioRecording.selected == True)
 
     def audio_msgs(self):
         table = {}
