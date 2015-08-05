@@ -67,8 +67,14 @@ class Campaign(db.Model):
     def targets_display(self):
         return "<br>".join(["%s %s" % (t) for t in self.targets()])
 
-    def phone_numbers(self):
-        return [str(n.number) for n in self.phone_number_set]
+    def phone_numbers(self, region_code=None):
+        if region_code:
+            # convert region_code to country_code for comparison
+            country_code = phone_number.phonenumbers.country_code_for_region(region_code)
+            return [n.number.national for n in self.phone_number_set if n.number.country_code == country_code]
+        else:
+            # return all numbers in set
+            return [n.number.national for n in self.phone_number_set]
 
     def audio_query(self):
         return CampaignAudioRecording.query.filter(
@@ -161,7 +167,7 @@ class TwilioPhoneNumber(db.Model):
 
     @classmethod
     def available_numbers(cls, limit=None):
-        return TwilioPhoneNumber.query.limit(limit)
+        return TwilioPhoneNumber.query.filter(TwilioPhoneNumber.twilio_app == None).limit(limit)
 
 
 class AudioRecording(db.Model):
