@@ -26,16 +26,16 @@ class Campaign(db.Model):
     segment_by = db.Column(db.String(STRING_LEN))
     target_set = db.relationship('Target', secondary='campaign_target_sets',
                                  order_by='campaign_target_sets.c.order',
-                                 backref=db.backref('campaign'))
+                                 backref=db.backref('campaigns'))
     target_ordering = db.Column(db.String(STRING_LEN))
 
     allow_call_in = db.Column(db.Boolean, default=False)
     phone_number_set = db.relationship('TwilioPhoneNumber', secondary='campaign_phone_numbers',
-                                       backref=db.backref('campaign', uselist=False))
+                                       backref=db.backref('campaigns'))
     call_maximum = db.Column(db.SmallInteger, nullable=True)
 
     audio_recordings = db.relationship('AudioRecording', secondary='campaign_audio_recordings',
-                                       backref=db.backref('campaign'))
+                                       backref=db.backref('campaigns'))
 
     status_code = db.Column(db.SmallInteger, default=PAUSED)
 
@@ -48,17 +48,22 @@ class Campaign(db.Model):
 
     def campaign_type_display(self):
         campaign_choices = convert_to_dict(CAMPAIGN_CHOICES)
-        campaign_subchoices = convert_to_dict(choice_values_flat(CAMPAIGN_NESTED_CHOICES))
         val = ''
         if self.campaign_type:
             val = campaign_choices.get(self.campaign_type, '')
+
+        return val
+
+    def campaign_subtype_display(self):
+        campaign_subchoices = convert_to_dict(choice_values_flat(CAMPAIGN_NESTED_CHOICES))
+        val = ''
         if self.campaign_subtype and self.campaign_subtype != "None":
             sub = campaign_subchoices.get(self.campaign_subtype, '')
-            val = '%s - %s' % (val, sub)
             if self.campaign_type == 'state':
                 # special case, show specific state
                 val = '%s - %s' % (self.campaign_state, sub)
-
+            else:
+                val = sub
         return val
 
     def targets(self):
@@ -67,13 +72,19 @@ class Campaign(db.Model):
     def targets_display(self):
         return "<br>".join(["%s %s" % (t) for t in self.targets()])
 
-    def phone_numbers(self):
-        return [str(n.number) for n in self.phone_number_set]
+    def phone_numbers(self, region_code=None):
+        if region_code:
+            # convert region_code to country_code for comparison
+            country_code = phone_number.phonenumbers.country_code_for_region(region_code)
+            return [n.number.national for n in self.phone_number_set if n.number.country_code == country_code]
+        else:
+            # return all numbers in set
+            return [n.number.national for n in self.phone_number_set]
 
     def audio_query(self):
         return CampaignAudioRecording.query.filter(
-                    CampaignAudioRecording.campaign_id == self.id,
-                    CampaignAudioRecording.selected == True)
+            CampaignAudioRecording.campaign_id == self.id,
+            CampaignAudioRecording.selected == True)
 
     def audio_msgs(self):
         table = {}
@@ -161,7 +172,7 @@ class TwilioPhoneNumber(db.Model):
 
     @classmethod
     def available_numbers(cls, limit=None):
-        return TwilioPhoneNumber.query.limit(limit)
+        return TwilioPhoneNumber.query.filter(TwilioPhoneNumber.twilio_app == None).limit(limit)
 
 
 class AudioRecording(db.Model):

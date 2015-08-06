@@ -41,8 +41,8 @@
         {% for p in twilio_numbers %}
         <tr>
             <td>{{ p.number }} </td>
-            <td>{{ p.campaign }}</td>
-            <td>{{ p.campaign.allow_call_in }}</td>
+            <td>{% for c in p.campaigns %}{{c.name}}{%if not loop.last%}, {%endif%}{%endfor%}</td>
+            <td>{% for c in p.campaigns%}{{c.allow_call_in }}{%endfor%}</td>
         </tr>
         {% endfor %}
     </table>
