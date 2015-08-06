@@ -3,12 +3,14 @@ from flask import (Blueprint, render_template, current_app, request,
 from flask.ext.login import login_required
 
 import sqlalchemy
+from sqlalchemy.sql import func
 
 from ..extensions import db
 from ..utils import choice_items, choice_keys, choice_values_flat, duplicate_object
 
 from .constants import CAMPAIGN_NESTED_CHOICES, CUSTOM_CAMPAIGN_CHOICES, EMPTY_CHOICES, LIVE
 from .models import Campaign, Target, CampaignTarget, AudioRecording, CampaignAudioRecording
+from ..call.models import Call
 from .forms import (CampaignForm, CampaignAudioForm, AudioRecordingForm,
                     CampaignLaunchForm, CampaignStatusForm, TargetForm)
 
@@ -25,7 +27,10 @@ def before_request():
 @campaign.route('/')
 def index():
     campaigns = Campaign.query.all()
-    return render_template('campaign/list.html', campaigns=campaigns)
+    calls = (db.session.query(Campaign.id, func.count(Call.id))
+            .join(Call).group_by(Campaign.id))
+    return render_template('campaign/list.html',
+        campaigns=campaigns, calls=dict(calls.all()))
 
 
 @campaign.route('/create', methods=['GET', 'POST'])
