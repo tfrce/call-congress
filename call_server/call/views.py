@@ -64,11 +64,11 @@ def parse_params(r):
         params['targetIds'] = locate_targets(params['zipcode'], campaign.segment_by)
         
     # set campaign target order
-    if campaign.order is ORDER_SHUFFLE:
-        random.shuffle(params['targetIds'])
-    elif campaign.order is ORDER_HOUSE_FIRST:
-        # ?
-        pass
+    # if campaign.order is ORDER_SHUFFLE:
+    #     random.shuffle(params['targetIds'])
+    # elif campaign.order is ORDER_HOUSE_FIRST:
+    #     # ?
+    #     pass
 
     return params, campaign
 
