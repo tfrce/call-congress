@@ -5,6 +5,7 @@ from flask.ext.babel import gettext as _
 from twilio.rest import TwilioRestClient
 
 from ..extensions import db
+from sqlalchemy.sql import func
 
 from ..campaign.models import TwilioPhoneNumber, Campaign
 from ..call.models import Call
@@ -23,7 +24,13 @@ def before_request():
 @admin.route('/')
 def dashboard():
     campaigns = Campaign.query.filter(Campaign.status_code >= PAUSED)
-    return render_template('admin/dashboard.html', campaigns=campaigns)
+    calls = (db.session.query(Campaign.id, func.count(Call.id))
+            .filter(Campaign.status_code >= PAUSED)
+            .join(Call).group_by(Campaign.id))
+    
+    return render_template('admin/dashboard.html',
+        campaigns=campaigns, calls=dict(calls.all())
+    )
 
 
 @admin.route('/statistics')
