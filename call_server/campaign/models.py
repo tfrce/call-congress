@@ -165,6 +165,7 @@ class TwilioPhoneNumber(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     twilio_sid = db.Column(db.String(TWILIO_SID_LENGTH))
     twilio_app = db.Column(db.String(TWILIO_SID_LENGTH))
+    call_in_allowed = db.Column(db.Boolean, default=False)
     number = db.Column(phone_number.PhoneNumberType())
 
     def __unicode__(self):
@@ -172,7 +173,8 @@ class TwilioPhoneNumber(db.Model):
 
     @classmethod
     def available_numbers(cls, limit=None):
-        return TwilioPhoneNumber.query.filter(TwilioPhoneNumber.twilio_app == None).limit(limit)
+        # returns all numbers which do not have call_in_allowed
+        return TwilioPhoneNumber.query.filter_by(call_in_allowed=False).limit(limit)
 
 
 class AudioRecording(db.Model):
