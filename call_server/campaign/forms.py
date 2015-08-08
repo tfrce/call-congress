@@ -37,7 +37,7 @@ class CampaignForm(Form):
 
     segment_by = RadioField(_('Segment By'), [Optional()], choices=choice_items(SEGMENT_BY_CHOICES),
                             description=True, default=SEGMENT_BY_CHOICES[0][0])
-    segment_location = RadioField(_('Location'), [Optional()], choices=choice_items(LOCATION_CHOICES),
+    segment_location = RadioField(_('Locate By'), [Optional()], choices=choice_items(LOCATION_CHOICES),
                                   description=True, default=LOCATION_CHOICES[0][0])
     target_set = FieldList(FormField(TargetForm, _('Choose Targets')), validators=[Optional()])
     target_ordering = RadioField(_('Order'), choices=choice_items(ORDERING_CHOICES),
@@ -46,7 +46,7 @@ class CampaignForm(Form):
     call_limit = BooleanField(_('Limit Maximum Calls'), [Optional()], default=False)
     call_maximum = IntegerField(_('Call Maximum'), [Optional(), NumberRange(min=0)])
 
-    phone_number_set = QuerySelectMultipleField(_('Allocate Phone Numbers'),
+    phone_number_set = QuerySelectMultipleField(_('Select Phone Numbers'),
                                                 query_factory=TwilioPhoneNumber.available_numbers,
                                                 validators=[Required()])
     allow_call_in = BooleanField(_('Allow Call In'))
