@@ -214,19 +214,21 @@ $(document).ready(function () {
         $('#target-search input[name="target-search"]').attr('placeholder', 'search Sunlight');
       }
 
-      // local or custom: no seegment or search, show custom target_set
+      // local or custom: no segment, location or search, show custom target_set
       if (val === "custom" || val === "local") {
         $('.form-group.segment_by').hide();
-        $('#target-search').addClass('invisible');
+        $('.form-group.segment_location').hide();
+        $('#target-search').hide();
         
         $('#set-targets').show();
       } else {
         $('.form-group.segment_by').show();
-        $('#target-search').removeClass('invisible');
+        $('.form-group.segment_location').show();
+        $('#target-search').show();
 
         var segment_by = $('input[name="segment_by"]:checked');
-        // unless segment_by is other
-        if (segment_by.val() !== 'other') {
+        // unless segment_by is custom
+        if (segment_by.val() !== 'custom') {
           $('#set-targets').hide();
         }
       }
@@ -246,7 +248,7 @@ $(document).ready(function () {
         $('.form-group.segment_location').hide();
       }
 
-      if (selected.val() === "other") {
+      if (selected.val() === "custom") {
         $('#set-targets').show();
       } else {
         $('#set-targets').hide();
@@ -281,11 +283,11 @@ $(document).ready(function () {
     },
 
     validateSegmentBy: function(formGroup) {
-      // if campaignType is custom or local, segmentBy must equal other
+      // if campaignType is custom or local, segmentBy must equal custom
       var campaignType = $('select#campaign_type').val();
       if (campaignType === "custom" || campaignType === "local") {
         var segmentBy = $('input[name="segment_by"]:checked').val();
-        if (segmentBy === "other") { return true; }
+        if (segmentBy === "custom") { return true; }
         else { return false; }
       }
       return true;
