@@ -93,6 +93,14 @@ def form(campaign_id=None):
         db.session.add(campaign)
         db.session.commit()
 
+        # if allow_call_in, set call_in_allowed on phone_number_set
+        if campaign.allow_call_in:
+            for n in campaign.phone_number_set:
+                n.call_in_allowed = True
+                db.session.add(n)
+            db.session.commit()
+        # TODO, allow_call_in on just one number?
+
         if edit:
             flash('Campaign updated.', 'success')
         else:
