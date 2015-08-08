@@ -781,6 +781,7 @@ $(document).ready(function () {
       "campaign/:id/edit": "campaignForm",
       "campaign/:id/copy": "campaignForm",
       "campaign/:id/audio": "audioForm",
+      "system": "systemForm",
     },
 
     campaignForm: function(id) {
@@ -789,6 +790,10 @@ $(document).ready(function () {
 
     audioForm: function(id) {
       CallPower.campaignAudioForm = new CallPower.Views.CampaignAudioForm();
+    },
+
+    systemForm: function() {
+      CallPower.systemForm = new CallPower.Views.SystemForm();
     }
   });
 })();
@@ -923,6 +928,28 @@ $(document).ready(function () {
         this.closeSearch();
       }
     },
+
+  });
+
+})();
+/*global CallPower, Backbone */
+
+(function () {
+  CallPower.Views.SystemForm = Backbone.View.extend({
+    el: $('#system'),
+
+    events: {
+      'click .reveal': 'toggleSecret',
+    },
+
+    toggleSecret: function(event) {
+      var input = $(event.target).parent().siblings('input');
+        if (input.prop('type') === 'password') {
+            input.prop('type','text');
+        } else {
+            input.prop('type','password');
+        }
+    }
 
   });
 
