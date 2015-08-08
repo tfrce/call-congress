@@ -61,14 +61,10 @@ def parse_params(r):
         params['targetIds'] = [t.uid for t in campaign.target_set]
     else:
         # lookup based on campaign.segment_by
-        params['targetIds'] = locate_targets(params['zipcode'], campaign.segment_by)
-        
-    # set campaign target order
-    # if campaign.order is ORDER_SHUFFLE:
-    #     random.shuffle(params['targetIds'])
-    # elif campaign.order is ORDER_HOUSE_FIRST:
-    #     # ?
-    #     pass
+        params['targetIds'] = locate_targets(params['zipcode'], campaign)
+
+    if campaign.target_ordering is ORDER_SHUFFLE:
+        random.shuffle(params['targetIds'])
 
     return params, campaign
 
@@ -149,7 +145,7 @@ def create():
     # initiate the call
     try:
         call = current_app.config['TWILIO_CLIENT'].calls.create(
-            to=params['userPhone'].number,
+            to=params['userPhone'].national_number,
             from_=random.choice(phone_numbers),
             url=url_for('call.connection', _external=True, **params),
             timeLimit=current_app.config['TWILIO_TIME_LIMIT'],
@@ -270,9 +266,9 @@ def make_single():
 
     if current_app.debug:
         current_app.logger.debug('Call #{}, {} ({}) from {} in call.make_single()'.format(
-            i, full_name, target_phone, params['userPhone'].number))
+            i, full_name, target_phone, params['userPhone'].national_number))
 
-    resp.dial(target_phone, callerId=params['userPhone'].number,
+    resp.dial(target_phone, callerId=params['userPhone'].national_number,
               timeLimit=current_app.config['TWILIO_TIME_LIMIT'],
               timeout=current_app.config['TWILIO_TIMEOUT'], hangupOnStar=True,
               action=url_for('call.complete', **params))
@@ -298,7 +294,7 @@ def complete():
         'duration': request.values.get('DialCallDuration', 0)
     }
     if current_app.config['LOG_PHONE_NUMBERS']:
-        call_data['phone_number'] = params['userPhone'].number
+        call_data['phone_number'] = params['userPhone'].national_number
         # user phone numbers are hashed by the init method
         # but some installations may not want to log at all
 
