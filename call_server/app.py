@@ -74,13 +74,13 @@ def configure_app(app, configuration=None):
     # http://flask.pocoo.org/docs/api/#configuration
     app.config.from_object(config.DefaultConfig)
     if configuration:
-        app.logger.info('Config', configuration)
+        app.logger.info('Config: %s' % configuration)
         app.config.from_object(configuration)
     else:
         config_name = '%s_CONFIG' % config.DefaultConfig.PROJECT.upper()
         env_config = os.environ.get(config_name)
         if env_config:
-            app.logger.info('Config', config_name)
+            app.logger.info('Config: %s' % config_name)
             app.config.from_object(env_config)
     app.logger.info('Environment: %s' % app.config['ENVIRONMENT'])
 
