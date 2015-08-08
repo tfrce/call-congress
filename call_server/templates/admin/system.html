@@ -21,15 +21,14 @@
             <div class="input-group">
                 <input type="password" class="form-control" value="{{twilio_auth.1}}" readonly />
                 <span class="input-group-btn">
-                    <button class="btn btn-default js-reveal" type="button"><i class="glyphicon glyphicon-eye-open"></i></button>
+                    <button class="btn btn-default reveal" type="button"><i class="glyphicon glyphicon-eye-open"></i></button>
               </span>
             </div>
         </div>
     </div>
-    </fieldset>
 
-    <fieldset class="border">
-    <legend>{{ _('Phone Numbers') }}</legend>
+    <br>
+    <label>{{ _('Purchased Numbers') }}</label>
     <table class='table table-bordered table-hover'>
         <thead>
             <tr>
@@ -48,7 +47,7 @@
     </table>
     <form class="form-inline pull-right" method="POST" action="{{url_for('admin.twilio_resync')}}">
         <input id="csrf_token" name="csrf_token" type="hidden" value="{{csrf_token()}}">
-        <div class="form-group"><button type="submit" class="btn btn-warning">Resync</button></div>
+        <div class="form-group"><button type="submit" class="btn btn-warning">Refresh</button></div>
         <a class="btn btn-success" href="https://www.twilio.com/user/account/phone-numbers/search" target="_blank">Buy Another</a>
     </form>
     </fieldset>
@@ -72,20 +71,4 @@
     <span class="help-block">Edit these defaults in <samp>APPLICATION_ROOT/instance/campaign_msg_defaults.yaml</samp></span>
     </fieldset>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script type="text/javascript">
-    /* TODO, move this to the main app js */
-    $(function(){
-        $('button.js-reveal').on('click', function(event) {
-            var input = $(event.target).parent().siblings('input');
-            if (input.prop('type') === 'password') {
-                input.prop('type','text');
-            } else {
-                input.prop('type','password');
-            }
-        });
-    });
-</script>
 {% endblock %}
