@@ -1,27 +1,43 @@
 # Campaign types
-EXECUTIVE = 'executive'
-CONGRESS = 'congress'
-STATE = 'state'
-LOCAL = 'local'
-CUSTOM = 'custom'
+TYPE_EXECUTIVE = 'executive'
+TYPE_CONGRESS = 'congress'
+TYPE_STATE = 'state'
+TYPE_LOCAL = 'local'
+TYPE_CUSTOM = 'custom'
+
+TARGET_EXECUTIVE = 'exec'
+TARGET_OFFICE = 'office'
+TARGET_CHAMBER_BOTH = 'both'
+TARGET_CHAMBER_UPPER = 'upper'
+TARGET_CHAMBER_LOWER = 'lower'
 
 CAMPAIGN_CHOICES = (
     ('', ''),
-    (EXECUTIVE, 'Executive'),
-    (CONGRESS, 'Congress'),
-    (STATE, 'State'),
-    (LOCAL, 'Local'),
-    (CUSTOM, 'Custom'),
+    (TYPE_EXECUTIVE, 'Executive'),
+    (TYPE_CONGRESS, 'Congress'),
+    (TYPE_STATE, 'State'),
+    (TYPE_LOCAL, 'Local'),
+    (TYPE_CUSTOM, 'Custom'),
 )
 CAMPAIGN_NESTED_CHOICES = (
     ('', ''),
-    (EXECUTIVE, (('president', 'President'), ('office', 'Office'))),
-    (CONGRESS, (('both', 'Both Bodies'), ('senate', 'Senate Only'), ('house', 'House Only'))),
-    (STATE, (('governor', 'Governor'),
-             ('both', 'Legislature - Both Bodies'), ('upper', 'Legislature - Upper Body'), ('lower', 'Legislature - Lower Body')
-             )),
-    (LOCAL, ()),
-    (CUSTOM, ()),
+    (TYPE_EXECUTIVE, (
+        (TARGET_EXECUTIVE, 'President'),
+        (TARGET_OFFICE, 'Office')
+    )),
+    (TYPE_CONGRESS, (
+        (TARGET_CHAMBER_BOTH, 'Both Bodies'),
+        (TARGET_CHAMBER_UPPER, 'Senate Only'),
+        (TARGET_CHAMBER_LOWER, 'House Only')
+    )),
+    (TYPE_STATE, (
+        (TARGET_EXECUTIVE, 'Governor'),
+        (TARGET_CHAMBER_BOTH, 'Legislature - Both Bodies'),
+        (TARGET_CHAMBER_UPPER, 'Legislature - Upper Body'),
+        (TARGET_CHAMBER_LOWER, 'Legislature - Lower Body')
+    )),
+    (TYPE_LOCAL, ()),
+    (TYPE_CUSTOM, ()),
 )
 
 # these types of campaigns cannot be looked up via api
@@ -46,22 +62,22 @@ LOCATION_CHOICES = (
 
 ORDER_IN_ORDER = 'in-order'
 ORDER_SHUFFLE = 'shuffle'
-ORDER_SENATE_FIRST = 'senate-first'
-ORDER_HOUSE_FIRST = 'house-first'
+ORDER_UPPER_FIRST = 'upper-first'
+ORDER_LOWER_FIRST = 'lower-first'
 ORDERING_CHOICES = (
     (ORDER_IN_ORDER, 'In Order'),
     (ORDER_SHUFFLE, 'Shuffle'),
-    (ORDER_SENATE_FIRST, 'Senate First'),
-    (ORDER_HOUSE_FIRST, 'House First'),
+    (ORDER_UPPER_FIRST, 'Senate First'),
+    (ORDER_LOWER_FIRST, 'House First'),
 )
 
-ARCHIVED = 0
-PAUSED = 1
-LIVE = 2
+STATUS_ARCHIVED = 0
+STATUS_PAUSED = 1
+STATUS_LIVE = 2
 CAMPAIGN_STATUS = {
-    ARCHIVED: 'archived',
-    PAUSED: 'paused',
-    LIVE: 'live',
+    STATUS_ARCHIVED: 'archived',
+    STATUS_PAUSED: 'paused',
+    STATUS_LIVE: 'live',
 }
 
 # empty set of choices, for filling in on client-side

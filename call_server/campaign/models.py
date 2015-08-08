@@ -6,10 +6,10 @@ from flask_store.sqla import FlaskStoreType
 from sqlalchemy import UniqueConstraint
 
 from ..extensions import db, cache
-from ..utils import convert_to_dict, choice_values_flat
-from ..political_data.lookup import adapt_to_target
+from ..utils import convert_to_dict
+from ..political_data.adapters import adapt_to_target
 from .constants import (CAMPAIGN_CHOICES, CAMPAIGN_NESTED_CHOICES, STRING_LEN, TWILIO_SID_LENGTH,
-                        CAMPAIGN_STATUS, PAUSED)
+                        CAMPAIGN_STATUS, STATUS_PAUSED)
 
 
 class Campaign(db.Model):
@@ -37,7 +37,7 @@ class Campaign(db.Model):
     audio_recordings = db.relationship('AudioRecording', secondary='campaign_audio_recordings',
                                        backref=db.backref('campaigns'))
 
-    status_code = db.Column(db.SmallInteger, default=PAUSED)
+    status_code = db.Column(db.SmallInteger, default=STATUS_PAUSED)
 
     @property
     def status(self):
@@ -55,10 +55,11 @@ class Campaign(db.Model):
         return val
 
     def campaign_subtype_display(self):
-        campaign_subchoices = convert_to_dict(choice_values_flat(CAMPAIGN_NESTED_CHOICES))
+        subtype_choices = convert_to_dict(CAMPAIGN_NESTED_CHOICES)
+        campaign_subtypes = dict(subtype_choices[self.campaign_type])
         val = ''
         if self.campaign_subtype and self.campaign_subtype != "None":
-            sub = campaign_subchoices.get(self.campaign_subtype, '')
+            sub = campaign_subtypes.get(self.campaign_subtype, '')
             if self.campaign_type == 'state':
                 # special case, show specific state
                 val = '%s - %s' % (self.campaign_state, sub)

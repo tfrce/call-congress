@@ -8,7 +8,7 @@ from sqlalchemy.sql import func
 from ..extensions import db
 from ..utils import choice_items, choice_keys, choice_values_flat, duplicate_object
 
-from .constants import CAMPAIGN_NESTED_CHOICES, CUSTOM_CAMPAIGN_CHOICES, EMPTY_CHOICES, LIVE
+from .constants import CAMPAIGN_NESTED_CHOICES, CUSTOM_CAMPAIGN_CHOICES, EMPTY_CHOICES, STATUS_LIVE
 from .models import Campaign, Target, CampaignTarget, AudioRecording, CampaignAudioRecording
 from ..call.models import Call
 from .forms import (CampaignForm, CampaignAudioForm, AudioRecordingForm,
@@ -253,7 +253,7 @@ def launch(campaign_id):
     form = CampaignLaunchForm()
 
     if form.validate_on_submit():
-        campaign.status = LIVE
+        campaign.status = STATUS_LIVE
 
         db.session.add(campaign)
         db.session.commit()
