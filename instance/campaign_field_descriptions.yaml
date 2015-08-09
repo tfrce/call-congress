@@ -5,7 +5,6 @@ target_set: Search for target phone numbers, or add them directly.
 target_ordering: |
     Default order is alphabetical by last name, or as listed above.
     Shuffle is re-done for every caller.
-    If House First or Senate First, ordering is by seniority.
 
 msg_intro: Introduce yourself and the campaign briefly. First thing the caller hears when they start the call.
 msg_intro_confirm: If the caller dialed in, ask them to confirm to move forward by pressing the star key. Used to screen out voicemails.

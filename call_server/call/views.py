@@ -11,7 +11,7 @@ import phonenumbers
 from ..extensions import csrf, db
 
 from .models import Call
-from ..campaign.constants import (ORDER_SHUFFLE, ORDER_HOUSE_FIRST, ORDER_SENATE_FIRST)
+from ..campaign.constants import ORDER_SHUFFLE
 from ..campaign.models import Campaign, Target
 from ..political_data.lookup import locate_targets
 
@@ -60,10 +60,15 @@ def parse_params(r):
     if not params['targetIds'] and campaign.target_set:
         params['targetIds'] = [t.uid for t in campaign.target_set]
     else:
-        # lookup based on campaign.segment_by
-        params['targetIds'] = locate_targets(params['zipcode'], campaign)
+        # lookup targets for campaign type by segment, put in desired order
+        params['targetIds'] = locate_targets(params['zipcode'],
+            country=params['userCountry'],
+            campaign_type=campaign.campaign_type,
+            segment_by=campaign.segment_by,
+            order_by=campaign.target_ordering)
 
     if campaign.target_ordering is ORDER_SHUFFLE:
+        # reshuffle for each caller
         random.shuffle(params['targetIds'])
 
     return params, campaign

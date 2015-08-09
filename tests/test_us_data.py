@@ -1,7 +1,7 @@
 from test import BaseTestCase
 from call_server.political_data.countries.us import USData
-from call_server.campaign.constants import (
-    ORDER_IN_ORDER, ORDER_SHUFFLE, ORDER_SENATE_FIRST, ORDER_HOUSE_FIRST)
+from call_server.campaign.constants import (TARGET_CHAMBER_BOTH, TARGET_CHAMBER_UPPER, TARGET_CHAMBER_LOWER,
+        ORDER_IN_ORDER, ORDER_UPPER_FIRST, ORDER_LOWER_FIRST)
 
 
 class TestData(BaseTestCase):
@@ -9,9 +9,10 @@ class TestData(BaseTestCase):
         # mock the flask-cache as a dictionary
         dictCache = {}
         self.us_data = USData(dictCache)
+        self.us_data.load_data()
 
     def test_cache(self):
-        self.assertIsNotNone(self.cache)
+        self.assertIsNotNone(self.us_data)
 
     def test_districts(self):
         district = self.us_data.get_district('94612')[0]
@@ -36,8 +37,8 @@ class TestData(BaseTestCase):
         self.assertEqual(rep['district'], '13')
         self.assertEqual(rep['in_office'], '1')
 
-    def test_get_targets(self):
-        uids = self.us_data.locate_member_ids('05055', ORDER_IN_ORDER)
+    def test_locate_members(self):
+        uids = self.us_data.locate_member_ids('05055', TARGET_CHAMBER_BOTH, ORDER_IN_ORDER)
         # returns a list of bioguide ids
         self.assertEqual(len(uids), 3)
 
@@ -55,3 +56,46 @@ class TestData(BaseTestCase):
         self.assertEqual(house_rep['chamber'], 'house')
         self.assertEqual(house_rep['state'], 'VT')
         self.assertEqual(house_rep['in_office'], '1')
+
+    def test_locate_members_house_only(self):
+        uids = self.us_data.locate_member_ids('05055', TARGET_CHAMBER_LOWER)
+        self.assertEqual(len(uids), 1)
+
+        first = self.us_data.get_uid(uids[0])[0]
+        self.assertEqual(first['chamber'], 'house')
+
+    def test_locate_members_senate_only(self):
+        uids = self.us_data.locate_member_ids('05055', TARGET_CHAMBER_UPPER)
+        self.assertEqual(len(uids), 2)
+
+        first = self.us_data.get_uid(uids[0])[0]
+        self.assertEqual(first['chamber'], 'senate')
+
+        second = self.us_data.get_uid(uids[1])[0]
+        self.assertEqual(second['chamber'], 'senate')
+
+    def test_locate_members_ordered_house_first(self):
+        uids = self.us_data.locate_member_ids('05055', TARGET_CHAMBER_BOTH, ORDER_LOWER_FIRST)
+        self.assertEqual(len(uids), 3)
+
+        first = self.us_data.get_uid(uids[0])[0]
+        self.assertEqual(first['chamber'], 'house')
+
+        second = self.us_data.get_uid(uids[1])[0]
+        self.assertEqual(second['chamber'], 'senate')
+
+        third = self.us_data.get_uid(uids[2])[0]
+        self.assertEqual(third['chamber'], 'senate')
+
+    def test_locate_members_ordered_senate_first(self):
+        uids = self.us_data.locate_member_ids('05055', TARGET_CHAMBER_BOTH, ORDER_UPPER_FIRST)
+        self.assertEqual(len(uids), 3)
+
+        first = self.us_data.get_uid(uids[0])[0]
+        self.assertEqual(first['chamber'], 'senate')
+
+        second = self.us_data.get_uid(uids[1])[0]
+        self.assertEqual(second['chamber'], 'senate')
+
+        third = self.us_data.get_uid(uids[2])[0]
+        self.assertEqual(third['chamber'], 'house')
