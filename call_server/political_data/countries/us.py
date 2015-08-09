@@ -1,6 +1,10 @@
 import csv
 import collections
+import random
 from . import CountryData
+
+from ...campaign.constants import (TARGET_CHAMBER_BOTH, TARGET_CHAMBER_UPPER, TARGET_CHAMBER_LOWER,
+        ORDER_IN_ORDER, ORDER_SHUFFLE, ORDER_UPPER_FIRST, ORDER_LOWER_FIRST)
 
 
 class USData(CountryData):
@@ -91,7 +95,7 @@ class USData(CountryData):
     def get_uid(self, uid):
         return self.cache.get(self.KEY_BIOGUIDE.format(bioguide_id=uid))
 
-    def locate_member_ids(self, zipcode, chambers, order):
+    def locate_member_ids(self, zipcode, chambers, order=ORDER_IN_ORDER):
         """ Find all congressional targets for a zipcode, crossing state boundaries if necessary.
         Returns a list of bioguide ids in specified order.
         """
@@ -101,12 +105,34 @@ class USData(CountryData):
         if not states:
             return None
 
-        targets = []
+        senators = []
+        house_reps = []
         for state in states:
             for senator in self.get_senators(state):
-                targets.append(senator['bioguide_id'])
+                senators.append(senator['bioguide_id'])
         for d in districts:
             rep = self.get_house_member(d['state'], d['house_district'])
-            targets.append(rep[0]['bioguide_id'])
+            house_reps.append(rep[0]['bioguide_id'])
+
+        targets = []
+        if chambers is TARGET_CHAMBER_BOTH:
+            if order is ORDER_UPPER_FIRST:
+                targets.extend(senators)
+                targets.extend(house_reps)
+            elif order is ORDER_LOWER_FIRST:
+                targets.extend(house_reps)
+                targets.extend(senators)
+            else:
+                # default to name
+                targets.extend(senators)
+                targets.extend(house_reps)
+                targets.sort()
+        elif chambers is TARGET_CHAMBER_UPPER:
+            targets = senators
+        elif chambers is TARGET_CHAMBER_LOWER:
+            targets = house_reps
+
+        if order is ORDER_SHUFFLE:
+            targets = random.shuffle(targets)
 
         return targets
