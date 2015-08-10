@@ -31,6 +31,13 @@ Installation Instructions
 Read detailed instrustions at [INSTALLATION.md](INSTALLATION.md)
 
 
+Integration
+-----------
+For most uses, you can just place the `<script>` tag provided in the launch page into your action platform.
+
+For more complex integrations, Call Power provides [INTEGRATION_API.md](json APIs). You will need to authenticate either as a logged in user, or with an ADMIN_API_KEY specified the python environment.
+
+
 Updating political data
 --------------------------------
 
