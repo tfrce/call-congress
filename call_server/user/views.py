@@ -190,8 +190,9 @@ def profile(user_id):
                     next=request.args.get('next'))
 
     if form.validate_on_submit():
-        user = User()
-        form.populate_obj(user)
+        user.email = form.email.data
+        user.name = form.name.data
+        user.phone = form.phone.data
 
         db.session.add(user)
         db.session.commit()
