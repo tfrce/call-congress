@@ -1,3 +1,4 @@
+from flask import current_app, abort, request
 from flask.ext.login import current_user
 from flask.ext.restless import ProcessingException
 
@@ -7,11 +8,14 @@ from ..campaign.models import Campaign, Target, AudioRecording
 
 def restless_api_auth(*args, **kwargs):
     if current_user.is_authenticated():
-        return None  # allow
+        return True  # allow
 
-    # TODO, check for system api key
+    # check for system api key
+    admin_key = current_app.config.get('ADMIN_API_KEY')
+    if admin_key and request.values.get('api_key') == admin_key:
+        return True
 
-    raise ProcessingException(message='Not authenticated!')
+    abort(401, 'Not Authenticated')
 
 restless_preprocessors = {'GET_SINGLE':   [restless_api_auth],
                           'GET_MANY':     [restless_api_auth],
