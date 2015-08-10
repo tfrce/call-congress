@@ -37,7 +37,7 @@ class CampaignForm(Form):
 
     segment_by = RadioField(_('Segment By'), [Optional()], choices=choice_items(SEGMENT_BY_CHOICES),
                             description=True, default=SEGMENT_BY_CHOICES[0][0])
-    segment_location = RadioField(_('Location'), [Optional()], choices=choice_items(LOCATION_CHOICES),
+    locate_by = RadioField(_('Locate By'), [Optional()], choices=choice_items(LOCATION_CHOICES),
                                   description=True, default=LOCATION_CHOICES[0][0])
     target_set = FieldList(FormField(TargetForm, _('Choose Targets')), validators=[Optional()])
     target_ordering = RadioField(_('Order'), choices=choice_items(ORDERING_CHOICES),
@@ -46,7 +46,7 @@ class CampaignForm(Form):
     call_limit = BooleanField(_('Limit Maximum Calls'), [Optional()], default=False)
     call_maximum = IntegerField(_('Call Maximum'), [Optional(), NumberRange(min=0)])
 
-    phone_number_set = QuerySelectMultipleField(_('Allocate Phone Numbers'),
+    phone_number_set = QuerySelectMultipleField(_('Select Phone Numbers'),
                                                 query_factory=TwilioPhoneNumber.available_numbers,
                                                 validators=[Required()])
     allow_call_in = BooleanField(_('Allow Call In'))
@@ -69,16 +69,15 @@ class CampaignForm(Form):
 
 class CampaignAudioForm(Form):
     next = HiddenField()
-    name = TextField(_('Campaign Name'))
-    msg_intro = TextField(_('Introduction'), [Required()])
-    msg_location = TextField(_('Location Prompt'), [Required()])
+    msg_intro = TextField(_('Introduction'))
+    msg_location = TextField(_('Location Prompt'))
     msg_intro_location = TextField(_('Introduction with Location'))
     msg_invalid_location = TextField(_('Invalid Location'))
     msg_choose_target = TextField(_('Choose Target'))
     msg_call_block_intro = TextField(_('Call Block Introduction'))
     msg_target_intro = TextField(_('Target Introduction'))
     msg_between_calls = TextField(_('Between Calls'))
-    msg_final_thanks = TextField(_('Final Thanks'), [Required()])
+    msg_final_thanks = TextField(_('Final Thanks'))
 
     submit = SubmitField(_('Save and Test'))
 

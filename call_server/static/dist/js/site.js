@@ -59,6 +59,8 @@ $(document).ready(function () {
       'submit': 'submitForm'
     },
 
+    requiredFields: ['msg_intro', 'msg_call_block_intro', 'msg_final_thanks'],
+
     initialize: function() {
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
       navigator.getUserMedia = ( navigator.getUserMedia ||
@@ -66,7 +68,11 @@ $(document).ready(function () {
                        navigator.mozGetUserMedia ||
                        navigator.msGetUserMedia);
       window.URL = window.URL || window.webkitURL;
-  
+
+      // add required client-side
+      _.each(this.requiredFields, function(f) {
+        $('label[for='+f+']').addClass('required');
+      });
     },
 
     onRecord: function(event) {
@@ -105,14 +111,24 @@ $(document).ready(function () {
     validateForm: function() {
       var isValid = true;
 
+      // check required fields for valid class
+      _.each(this.requiredFields, function(f) {
+        var formGroup = $('.form-group.'+f);
+        var fieldValid = formGroup.hasClass('valid');
+        if (!fieldValid) {
+          formGroup.find('.input-group .help-block')
+            .text('This field is required.')
+            .addClass('error');
+        }
+        isValid = isValid && fieldValid;
+      });
+
       // call validators
       
       return isValid;
     },
 
     submitForm: function(event) {
-      event.preventDefault();
-
       if (this.validateForm()) {
         $(this.$el).unbind('submit').submit();
         return true;
@@ -177,10 +193,10 @@ $(document).ready(function () {
         var option = $('<option value="'+v[0]+'">'+v[1]+'</option>');
         nested_field.append(option);
       });
-      var contains_nested = _.find(avail, function(v) { return v[0] === nested_val; });
+      var nested_avail = _.find(avail, function(v) { return v[0] === nested_val; });
 
       // reset initial choice if still valid
-      if (contains_nested) {
+      if (nested_avail) {
         nested_field.val(nested_val);
       } else {
         nested_field.val('');
@@ -214,19 +230,21 @@ $(document).ready(function () {
         $('#target-search input[name="target-search"]').attr('placeholder', 'search Sunlight');
       }
 
-      // local or custom: no seegment or search, show custom target_set
+      // local or custom: no segment, location or search, show custom target_set
       if (val === "custom" || val === "local") {
         $('.form-group.segment_by').hide();
-        $('#target-search').addClass('invisible');
+        $('.form-group.segment_location').hide();
+        $('#target-search').hide();
         
         $('#set-targets').show();
       } else {
         $('.form-group.segment_by').show();
-        $('#target-search').removeClass('invisible');
+        $('.form-group.segment_location').show();
+        $('#target-search').show();
 
         var segment_by = $('input[name="segment_by"]:checked');
-        // unless segment_by is other
-        if (segment_by.val() !== 'other') {
+        // unless segment_by is custom
+        if (segment_by.val() !== 'custom') {
           $('#set-targets').hide();
         }
       }
@@ -246,7 +264,7 @@ $(document).ready(function () {
         $('.form-group.segment_location').hide();
       }
 
-      if (selected.val() === "other") {
+      if (selected.val() === "custom") {
         $('#set-targets').show();
       } else {
         $('#set-targets').hide();
@@ -281,11 +299,11 @@ $(document).ready(function () {
     },
 
     validateSegmentBy: function(formGroup) {
-      // if campaignType is custom or local, segmentBy must equal other
+      // if campaignType is custom or local, segmentBy must equal custom
       var campaignType = $('select#campaign_type').val();
       if (campaignType === "custom" || campaignType === "local") {
         var segmentBy = $('input[name="segment_by"]:checked').val();
-        if (segmentBy === "other") { return true; }
+        if (segmentBy === "custom") { return true; }
         else { return false; }
       }
       return true;
@@ -336,14 +354,45 @@ $(document).ready(function () {
     },
 
     submitForm: function(event) {
-      event.preventDefault();
-
       if (this.validateForm()) {
         this.targetListView.serialize();
         $(this.$el).unbind('submit').submit();
         return true;
       }
       return false;
+    }
+
+  });
+
+})();
+/*global CallPower, Backbone */
+
+(function () {
+  CallPower.Views.CampaignLaunchForm = Backbone.View.extend({
+    el: $('#launch'),
+
+    events: {
+      'click .test-call': 'makeTestCall',
+    },
+
+    makeTestCall: function() {
+      var phone = $('#test_call_number').val();
+      phone = phone.replace(/\s/g, '').replace(/\(/g, '').replace(/\)/g, ''); // remove spaces, parens
+      phone = phone.replace("+", "").replace(/\-/g, ''); // remove plus, dash
+
+      var campaignId = $('#campaignId').val();
+
+      $.ajax({
+        url: '/call/create',
+        data: {userPhone: phone, campaignId: campaignId},
+        success: function(data) {
+          console.log(data);
+          alert('calling '+phone+' now');
+        },
+        error: function(err) {
+          console.error(err);
+        }
+      });
     }
 
   });
@@ -751,6 +800,12 @@ $(document).ready(function () {
               // and display to user
               window.flashMessage(msg, 'success');
 
+              // update parent form-group status and description
+              var parentFormGroup = $('.form-group.'+response.key);
+              parentFormGroup.addClass('valid');
+              parentFormGroup.find('.input-group .help-block').text('');
+              parentFormGroup.find('.description .status').addClass('glyphicon-check');
+
               // close the parent modal
               self.$el.modal('hide');
             } else {
@@ -779,6 +834,8 @@ $(document).ready(function () {
       "campaign/:id/edit": "campaignForm",
       "campaign/:id/copy": "campaignForm",
       "campaign/:id/audio": "audioForm",
+      "campaign/:id/launch": "launchForm",
+      "system": "systemForm",
     },
 
     campaignForm: function(id) {
@@ -787,6 +844,14 @@ $(document).ready(function () {
 
     audioForm: function(id) {
       CallPower.campaignAudioForm = new CallPower.Views.CampaignAudioForm();
+    },
+
+    launchForm: function(id) {
+      CallPower.campaignLaunchForm = new CallPower.Views.CampaignLaunchForm();
+    },
+
+    systemForm: function() {
+      CallPower.systemForm = new CallPower.Views.SystemForm();
     }
   });
 })();
@@ -921,6 +986,28 @@ $(document).ready(function () {
         this.closeSearch();
       }
     },
+
+  });
+
+})();
+/*global CallPower, Backbone */
+
+(function () {
+  CallPower.Views.SystemForm = Backbone.View.extend({
+    el: $('#system'),
+
+    events: {
+      'click .reveal': 'toggleSecret',
+    },
+
+    toggleSecret: function(event) {
+      var input = $(event.target).parent().siblings('input');
+        if (input.prop('type') === 'password') {
+            input.prop('type','text');
+        } else {
+            input.prop('type','password');
+        }
+    }
 
   });
 

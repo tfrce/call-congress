@@ -11,7 +11,7 @@ from ..extensions import db, mail, login_manager
 
 from .models import User
 from .forms import UserForm, UserRoleForm, LoginForm, RecoverPasswordForm, ReauthForm, ChangePasswordForm, InviteUserForm, RemoveUserForm
-from .constants import USER_STATUS, NEW, ACTIVE
+from .constants import USER_STATUS, NEW, ACTIVE, ADMIN
 from .decorators import admin_required
 
 user = Blueprint('user', __name__)
@@ -93,7 +93,6 @@ def create_account():
         return render_template('user/invalid_invitation.html')
 
     form = UserForm(obj=user)
-    print form.data
 
     # can't use form.validate_on_submit, because username and email won't be unique
     if form.is_submitted() and form.validate_csrf_token(form):
@@ -185,14 +184,15 @@ def profile(user_id):
     if user_id:
         user = User.query.get(user_id)
     else:
-        user = User.query.filter_by(name=current_user.name).first_or_404()
+        user = User.query.filter_by(email=current_user.email).first_or_404()
 
     form = UserForm(obj=user,
                     next=request.args.get('next'))
 
     if form.validate_on_submit():
-        user = User()
-        form.populate_obj(user)
+        user.email = form.email.data
+        user.name = form.name.data
+        user.phone = form.phone.data
 
         db.session.add(user)
         db.session.commit()
@@ -238,12 +238,17 @@ def role(user_id):
     form = UserRoleForm(obj=user, next=request.args.get('next'))
 
     if form.validate_on_submit():
-        form.populate_obj(user)
+        if ((user == current_user)
+        and (user.role_code is ADMIN)
+        and (int(form.data['role_code']) > 0)):
+            flash("Cannot remove your own admin role.", 'warning')
+            return render_template('user/role.html', user=user, form=form)
+        else:
+            form.populate_obj(user)
+            db.session.add(user)
+            db.session.commit()
 
-        db.session.add(user)
-        db.session.commit()
-
-        flash('User role updated.', 'success')
+            flash('User role updated.', 'success')
         return redirect(url_for('user.index'))
 
     return render_template('user/role.html', user=user, form=form)

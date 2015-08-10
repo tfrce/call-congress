@@ -9,10 +9,11 @@ from sqlalchemy.sql import func
 
 from ..campaign.models import TwilioPhoneNumber, Campaign
 from ..call.models import Call
-from ..campaign.constants import PAUSED
+from ..campaign.constants import STATUS_PAUSED
 from ..utils import get_one_or_create
 
 admin = Blueprint('admin', __name__, url_prefix='/admin')
+
 
 # all admin routes require login
 @admin.before_request
@@ -23,11 +24,11 @@ def before_request():
 
 @admin.route('/')
 def dashboard():
-    campaigns = Campaign.query.filter(Campaign.status_code >= PAUSED)
+    campaigns = Campaign.query.filter(Campaign.status_code >= STATUS_PAUSED)
     calls = (db.session.query(Campaign.id, func.count(Call.id))
-            .filter(Campaign.status_code >= PAUSED)
+            .filter(Campaign.status_code >= STATUS_PAUSED)
             .join(Call).group_by(Campaign.id))
-    
+
     return render_template('admin/dashboard.html',
         campaigns=campaigns, calls=dict(calls.all())
     )
@@ -88,6 +89,8 @@ def twilio_resync():
 
     if new_numbers:
         flash(_("Added Twilio Number: ") + ', '.join(new_numbers), 'success')
+    if deleted_numbers:
+        flash(_("Removed Twilio Number: ") + ', '.join(deleted_numbers), 'warning')
     else:
         flash(_("Twilio Numbers are Up to Date"), 'success')
 

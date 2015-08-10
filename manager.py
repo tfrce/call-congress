@@ -8,8 +8,8 @@ from alembic.config import Config
 from flask.ext.assets import ManageAssets
 
 from call_server.app import create_app
-from call_server.extensions import assets, db
-from call_server.political_data import cache
+from call_server.extensions import assets, db, cache
+from call_server.political_data import countries
 from call_server.user import User, ADMIN, ACTIVE
 
 app = create_app()
@@ -38,7 +38,8 @@ def runserver(server=None):
     if server:
         app.config['SERVER_NAME'] = server
         app.config['STORE_DOMAIN'] = server
-    cache.load_us_data()
+    app.us_data = countries.us.USData(cache)
+    app.us_data.load_data()
     app.run(debug=True, use_reloader=True, host=(os.environ.get('APP_HOST') or '127.0.0.1'))
 
 
@@ -46,7 +47,9 @@ def runserver(server=None):
 def primecache():
     """Load political data into persistent cache"""
     with app.app_context():
-        cache.load_us_data()
+        app.us_data = countries.us.USData(cache)
+        app.us_data.load_data()
+
 
 @manager.command
 def alembic():

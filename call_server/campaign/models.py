@@ -6,10 +6,10 @@ from flask_store.sqla import FlaskStoreType
 from sqlalchemy import UniqueConstraint
 
 from ..extensions import db, cache
-from ..utils import convert_to_dict, choice_values_flat
-from ..political_data.lookup import adapt_to_target
+from ..utils import convert_to_dict
+from ..political_data.adapters import adapt_to_target
 from .constants import (CAMPAIGN_CHOICES, CAMPAIGN_NESTED_CHOICES, STRING_LEN, TWILIO_SID_LENGTH,
-                        CAMPAIGN_STATUS, PAUSED)
+                        CAMPAIGN_STATUS, STATUS_PAUSED, SEGMENT_BY_CHOICES, LOCATION_CHOICES, ORDERING_CHOICES, )
 
 
 class Campaign(db.Model):
@@ -24,6 +24,7 @@ class Campaign(db.Model):
     campaign_subtype = db.Column(db.String(STRING_LEN))
 
     segment_by = db.Column(db.String(STRING_LEN))
+    locate_by = db.Column(db.String(STRING_LEN))
     target_set = db.relationship('Target', secondary='campaign_target_sets',
                                  order_by='campaign_target_sets.c.order',
                                  backref=db.backref('campaigns'))
@@ -37,7 +38,7 @@ class Campaign(db.Model):
     audio_recordings = db.relationship('AudioRecording', secondary='campaign_audio_recordings',
                                        backref=db.backref('campaigns'))
 
-    status_code = db.Column(db.SmallInteger, default=PAUSED)
+    status_code = db.Column(db.SmallInteger, default=STATUS_PAUSED)
 
     @property
     def status(self):
@@ -55,10 +56,11 @@ class Campaign(db.Model):
         return val
 
     def campaign_subtype_display(self):
-        campaign_subchoices = convert_to_dict(choice_values_flat(CAMPAIGN_NESTED_CHOICES))
+        subtype_choices = convert_to_dict(CAMPAIGN_NESTED_CHOICES)
+        campaign_subtypes = dict(subtype_choices[self.campaign_type])
         val = ''
         if self.campaign_subtype and self.campaign_subtype != "None":
-            sub = campaign_subchoices.get(self.campaign_subtype, '')
+            sub = campaign_subtypes.get(self.campaign_subtype, '')
             if self.campaign_type == 'state':
                 # special case, show specific state
                 val = '%s - %s' % (self.campaign_state, sub)
@@ -70,7 +72,16 @@ class Campaign(db.Model):
         return [(s.name, str(s.number)) for s in self.target_set]
 
     def targets_display(self):
-        return "<br>".join(["%s %s" % (t) for t in self.targets()])
+        if self.target_set:
+            return "<br>".join(["%s %s" % (t) for t in self.targets()])
+        else:
+            return self.campaign_subtype_display()
+
+    def segment_display(self):
+        val = dict(SEGMENT_BY_CHOICES)[self.segment_by]
+        if self.segment_by == 'location':
+            val = '%s - %s' % (val, dict(LOCATION_CHOICES)[self.locate_by])
+        return val
 
     def phone_numbers(self, region_code=None):
         if region_code:
@@ -165,6 +176,7 @@ class TwilioPhoneNumber(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     twilio_sid = db.Column(db.String(TWILIO_SID_LENGTH))
     twilio_app = db.Column(db.String(TWILIO_SID_LENGTH))
+    call_in_allowed = db.Column(db.Boolean, default=False)
     number = db.Column(phone_number.PhoneNumberType())
 
     def __unicode__(self):
@@ -172,7 +184,8 @@ class TwilioPhoneNumber(db.Model):
 
     @classmethod
     def available_numbers(cls, limit=None):
-        return TwilioPhoneNumber.query.filter(TwilioPhoneNumber.twilio_app == None).limit(limit)
+        # returns all numbers which do not have call_in_allowed
+        return TwilioPhoneNumber.query.filter_by(call_in_allowed=False).limit(limit)
 
 
 class AudioRecording(db.Model):

@@ -6,12 +6,11 @@ from flask import abort, Blueprint, request, url_for, current_app
 from flask_jsonpify import jsonify
 from twilio import TwilioRestException
 from sqlalchemy.exc import SQLAlchemyError
-import phonenumbers
 
 from ..extensions import csrf, db
 
 from .models import Call
-from ..campaign.constants import (ORDER_SHUFFLE, ORDER_HOUSE_FIRST, ORDER_SENATE_FIRST)
+from ..campaign.constants import ORDER_SHUFFLE
 from ..campaign.models import Campaign, Target
 from ..political_data.lookup import locate_targets
 
@@ -44,12 +43,11 @@ def play_or_say(r, audio, **kwds):
 def parse_params(r):
     params = {
         'campaignId': r.values.get('campaignId', 0),
+        'userPhone': r.values.get('userPhone', ''),
         'userCountry': r.values.get('userCountry', 'US'),
-        'zipcode': r.values.get('zipcode', None),
+        'userLocation': r.values.get('userLocation', None),
         'targetIds': r.values.getlist('targetIds'),
     }
-    # create and store PhoneNumber object from userPhone and userCountry region, default to US
-    params['userPhone'] = phonenumbers.parse(r.values.get('userPhone'), params['userCountry'])
 
     # lookup campaign by ID
     campaign = Campaign.query.get(params['campaignId'])
@@ -60,20 +58,17 @@ def parse_params(r):
     if not params['targetIds'] and campaign.target_set:
         params['targetIds'] = [t.uid for t in campaign.target_set]
     else:
-        # lookup based on campaign.segment_by
-        params['targetIds'] = locate_targets(params['zipcode'], campaign.segment_by)
-        
-    # set campaign target order
-    # if campaign.order is ORDER_SHUFFLE:
-    #     random.shuffle(params['targetIds'])
-    # elif campaign.order is ORDER_HOUSE_FIRST:
-    #     # ?
-    #     pass
+        # lookup targets for campaign type by segment, put in desired order
+        params['targetIds'] = locate_targets(params['userLocation'], campaign=campaign)
+
+    if campaign.target_ordering is ORDER_SHUFFLE:
+        # reshuffle for each caller
+        random.shuffle(params['targetIds'])
 
     return params, campaign
 
 
-def intro_zip_gather(params, campaign):
+def intro_location_gather(params, campaign):
     resp = twilio.twiml.Response()
 
     if campaign.audio('msg_intro_location'):
@@ -82,12 +77,12 @@ def intro_zip_gather(params, campaign):
     else:
         play_or_say(resp, campaign.audio('msg_intro'))
 
-    return zip_gather(resp, params, campaign)
+    return location_gather(resp, params, campaign)
 
 
-def zip_gather(resp, params, campaign):
+def location_gather(resp, params, campaign):
     with resp.gather(numDigits=5, method="POST",
-                     action=url_for("call.zip_parse", **params)) as g:
+                     action=url_for("call.location_parse", **params)) as g:
         play_or_say(g, campaign.audio('msg_location'))
 
     return str(resp)
@@ -97,7 +92,6 @@ def make_calls(params, campaign):
     """
     Connect a user to a sequence of targets.
     Required params: campaignId, targetIds
-    Optional params: zipcode,
     """
     resp = twilio.twiml.Response()
 
@@ -130,7 +124,8 @@ def create():
         userPhone
         campaignId
     Optional Params:
-        zipcode
+        userCountry (defaults to US)
+        userLocation (zipcode)
         targetIds
     """
     # parse the info needed to make the call
@@ -139,7 +134,7 @@ def create():
     if not params or not campaign:
         abort(404)
 
-    # find outgoing phone number with same country code as user
+    # find outgoing phone number in same country as user
     phone_numbers = campaign.phone_numbers(params['userCountry'])
 
     if not phone_numbers:
@@ -149,7 +144,7 @@ def create():
     # initiate the call
     try:
         call = current_app.config['TWILIO_CLIENT'].calls.create(
-            to=params['userPhone'].number,
+            to=params['userPhone'],
             from_=random.choice(phone_numbers),
             url=url_for('call.connection', _external=True, **params),
             timeLimit=current_app.config['TWILIO_TIME_LIMIT'],
@@ -173,8 +168,8 @@ def connection():
     Required Params:
         campaignId
     Optional Params:
-        zipcode
-        targetIds (if not present go to incoming_call flow and asked for zipcode)
+        userLocation (zipcode)
+        targetIds (if not present go to incoming_call flow and prompt for zipcode)
     """
     params, campaign = parse_params(request)
 
@@ -194,7 +189,7 @@ def connection():
 
             return str(resp)
     else:
-        return intro_zip_gather(params, campaign)
+        return intro_location_gather(params, campaign)
 
 
 @call.route('/incoming', methods=call_methods)
@@ -212,13 +207,13 @@ def incoming():
     if not params or not campaign:
         abort(404)
 
-    return intro_zip_gather(params, campaign)
+    return intro_location_gather(params, campaign)
 
 
-@call.route("/zip_parse", methods=call_methods)
-def zip_parse():
+@call.route("/location_parse", methods=call_methods)
+def location_parse():
     """
-    Handle a zip code entered by the user.
+    Handle location (usually zipcode) entered by the user.
     Required Params: campaignId, Digits
     """
     params, campaign = parse_params(request)
@@ -226,19 +221,19 @@ def zip_parse():
     if not params or not campaign:
         abort(404)
 
-    zipcode = request.values.get('Digits', '')
-    target_ids = locate_targets(zipcode)
+    location = request.values.get('Digits', '')
+    target_ids = locate_targets(location, campaign)
 
     if current_app.debug:
-        current_app.logger.debug('zipcode = {}'.format(zipcode))
+        current_app.logger.debug('entered = {}'.format(location))
 
     if not target_ids:
         resp = twilio.twiml.Response()
-        play_or_say(resp, campaign.audio('msg_invalid_zip'))
+        play_or_say(resp, campaign.audio('msg_invalid_location'))
 
-        return zip_gather(resp, params, campaign)
+        return location_gather(resp, params, campaign)
 
-    params['zipcode'] = zipcode
+    params['userLocation'] = location
     params['targetIds'] = target_ids
 
     return make_calls(params, campaign)
@@ -270,9 +265,9 @@ def make_single():
 
     if current_app.debug:
         current_app.logger.debug('Call #{}, {} ({}) from {} in call.make_single()'.format(
-            i, full_name, target_phone, params['userPhone'].number))
+            i, full_name, target_phone, params['userPhone']))
 
-    resp.dial(target_phone, callerId=params['userPhone'].number,
+    resp.dial(target_phone, callerId=params['userPhone'],
               timeLimit=current_app.config['TWILIO_TIME_LIMIT'],
               timeout=current_app.config['TWILIO_TIMEOUT'], hangupOnStar=True,
               action=url_for('call.complete', **params))
@@ -292,13 +287,13 @@ def complete():
     call_data = {
         'campaign_id': campaign.id,
         'target_id': current_target.id,
-        'location': params['zipcode'],
+        'location': params['userLocation'],
         'call_id': request.values.get('CallSid', None),
         'status': request.values.get('DialCallStatus', 'unknown'),
         'duration': request.values.get('DialCallDuration', 0)
     }
     if current_app.config['LOG_PHONE_NUMBERS']:
-        call_data['phone_number'] = params['userPhone'].number
+        call_data['phone_number'] = params['userPhone']
         # user phone numbers are hashed by the init method
         # but some installations may not want to log at all
 
