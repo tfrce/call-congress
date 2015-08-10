@@ -65,8 +65,6 @@
     },
 
     submitForm: function(event) {
-      event.preventDefault();
-
       if (this.validateForm()) {
         $(this.$el).unbind('submit').submit();
         return true;

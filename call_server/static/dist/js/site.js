@@ -111,8 +111,6 @@ $(document).ready(function () {
     },
 
     submitForm: function(event) {
-      event.preventDefault();
-
       if (this.validateForm()) {
         $(this.$el).unbind('submit').submit();
         return true;
@@ -177,10 +175,10 @@ $(document).ready(function () {
         var option = $('<option value="'+v[0]+'">'+v[1]+'</option>');
         nested_field.append(option);
       });
-      var contains_nested = _.find(avail, function(v) { return v[0] === nested_val; });
+      var nested_avail = _.find(avail, function(v) { return v[0] === nested_val; });
 
       // reset initial choice if still valid
-      if (contains_nested) {
+      if (nested_avail) {
         nested_field.val(nested_val);
       } else {
         nested_field.val('');
@@ -338,8 +336,6 @@ $(document).ready(function () {
     },
 
     submitForm: function(event) {
-      event.preventDefault();
-
       if (this.validateForm()) {
         this.targetListView.serialize();
         $(this.$el).unbind('submit').submit();
