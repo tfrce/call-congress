@@ -30,7 +30,7 @@ For production, you will also need to set:
 If you are storing assets on Amazon S3, or another [Flask-Store provider](http://flask-store.soon.build)
 
 * STORE_S3_BUCKET
-* STORE_S3_REGION
+* STORE_S3_REGION (eg: us-east-1, or us-west-2)
 * S3_ACCESS_KEY
 * S3_SECRET_KEY
 
@@ -62,13 +62,12 @@ To install locally and run in debug mode use:
     
     # create an admin user
     python manager.py createadminuser
+
+    # if testing twilio, run in another tab
+    ngrok http 5000
  
-    # run local server for debugging
-    python manager.py runserver
-    
-    # for testing twilio
-    # run in another tab
-    ngrok 5000
+    # run local server for debugging, pass external name from ngrok
+    python manager.py runserver --server=87468fd0.ngrok.io
 
 When the dev server is running, the front-end will be accessible at [http://localhost:5000/](http://localhost:5000/), and proxied to external routes at [http://ngrok.com](http://ngrok.com).
 
@@ -78,7 +77,7 @@ Unit tests can also be run with:
 
 Production server
 ------------------
-To run in production:
+To run in production, with compiled assets:
 
     # create ENV variables
     
@@ -91,8 +90,14 @@ To run in production:
     # create an admin user
     python manager.py createadminuser
 
-    # run server - will charge real $ and connect real calls
+    # prime cache with political data
+    python manager.py load_political_data
+
+    # if you are running a reverse proxy, you can start the application with foreman start
     foreman start
+
+    # or point your WSGI server to `call_server.wsgi:application`
+    # to load the application directly
     
 Make sure your webserver can serve audio files out of `APPLICATION_ROOT/instance/uploads`. Or if you are using Amazon S3, ensure your buckets are configured for public access.
 
