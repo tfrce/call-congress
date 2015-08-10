@@ -3,6 +3,6 @@
 
 {% block body %}
 <div class="profile">
-    {{ render_form(url_for('user.profile', user_id=user.id), form, legend=("Update Profile - "+user.name), skip_fields=['password','password_confirm','name']) }}
+    {{ render_form(url_for('user.profile', user_id=user.id), form, legend=("Update Profile - "+user.name)) }}
 </div>
 {% endblock %}

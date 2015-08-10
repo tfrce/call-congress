@@ -38,11 +38,14 @@ class UserForm(Form):
     next = HiddenField()
     email = EmailField(_('Email'), [Required(), Email()])
     name = TextField(_('Username'), [Required(), Length(USERNAME_LEN_MIN, USERNAME_LEN_MAX)])
-    password = PasswordField(_('Password'), [Required(), Length(PASSWORD_LEN_MIN, PASSWORD_LEN_MAX)],
-                             description=_('%s characters or more' % PASSWORD_LEN_MIN))
-    password_confirm = PasswordField(u'Password Confirm', [EqualTo('password', message="Passwords don't match")])
     phone = PhoneNumberField(_('Phone Number'), description="Optional")
     submit = SubmitField(_('Save'))
+
+
+class InviteUserForm(Form):
+    name = TextField(_('Username'), [Required(), Length(USERNAME_LEN_MIN, USERNAME_LEN_MAX)])
+    email = EmailField(_('Email'), [Email()])
+    submit = SubmitField(_('Send instructions'))
 
     def validate_name(self, field):
         if User.query.filter_by(name=field.data).first() is not None:
@@ -51,12 +54,6 @@ class UserForm(Form):
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first() is not None:
             raise ValidationError(_('This email is already registered'))
-
-
-class InviteUserForm(Form):
-    name = TextField(_('Username'), [Required(), Length(USERNAME_LEN_MIN, USERNAME_LEN_MAX)])
-    email = EmailField(_('Email'), [Email()])
-    submit = SubmitField(_('Send instructions'))
 
 
 class RecoverPasswordForm(Form):
