@@ -200,7 +200,8 @@ class TwilioPhoneNumber(db.Model):
     @classmethod
     def available_numbers(cls, limit=None):
         # returns all numbers which do not have call_in_allowed
-        return TwilioPhoneNumber.query.filter_by(call_in_allowed=False).limit(limit)
+        #return TwilioPhoneNumber.query.filter_by(call_in_allowed=False).limit(limit)
+        return TwilioPhoneNumber.query.limit(limit)
 
 
 class AudioRecording(db.Model):
