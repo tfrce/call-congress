@@ -213,8 +213,6 @@
     },
 
     submitForm: function(event) {
-      event.preventDefault();
-
       if (this.validateForm()) {
         this.targetListView.serialize();
         $(this.$el).unbind('submit').submit();
