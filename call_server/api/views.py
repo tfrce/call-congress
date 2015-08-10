@@ -1,8 +1,9 @@
 import json
-from flask import Blueprint, Response
+from flask import Blueprint, Response, render_template
 from sqlalchemy.sql import func
 
 from decorators import api_key_or_auth_required, restless_api_auth
+from ..call.decorators import crossdomain
 
 from ..extensions import rest, db
 from ..campaign.models import Campaign, Target, AudioRecording
@@ -48,3 +49,17 @@ def campaign_stats(campaign_id):
     total_calls = dict(name='Total Calls', data=total_calls_query.count())
 
     return Response(json.dumps([total_calls, calls_by_day]), mimetype='application/json')
+
+# embed campaign routes, should be public
+# js must be crossdomain
+@api.route('/campaign/<int:campaign_id>/embed.js', methods=['GET'])
+@crossdomain(origin='*')
+def campaign_embed_js(campaign_id):
+    campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
+    return render_template('api/embed.js', campaign=campaign, mimetype='text/javascript')
+
+
+@api.route('/campaign/<int:campaign_id>/embed_iframe.html', methods=['GET'])
+def campaign_embed_iframe(campaign_id):
+    campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
+    return render_template('api/embed_iframe.html', campaign=campaign)

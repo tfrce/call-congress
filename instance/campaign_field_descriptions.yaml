@@ -15,3 +15,5 @@ msg_call_block_intro: Before beginning a block of calls, let the caller know wha
 msg_target_intro: When we are about to connect them, remind the caller who they are going to speak with.
 msg_between_calls: Between calls, encourage the caller to keep going and remind them of any specific instructions.
 msg_final_thanks: When all calls are complete, thank the caller for taking action.
+
+embed_code: Copy and paste this javascript into your action page.
