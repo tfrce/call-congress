@@ -22,11 +22,12 @@ restless_preprocessors = {'GET_SINGLE':   [restless_api_auth],
                           'POST':         [restless_api_auth],
                           'DELETE':       [restless_api_auth]}
 
+
 def configure_restless(app):
     rest.create_api(Campaign, collection_name='campaign', methods=['GET'],
                     include_columns=['id', 'name', 'campaign_type', 'campaign_state', 'campaign_subtype',
                                      'target_ordering', 'allow_call_in', 'call_maximum'],
-                    include_methods=['phone_numbers', 'targets', 'status', 'audio_msgs'])
+                    include_methods=['phone_numbers', 'targets', 'status', 'audio_msgs', 'required_fields'])
     rest.create_api(Target, collection_name='target', methods=['GET'],)
     rest.create_api(AudioRecording, collection_name='audiorecording', methods=['GET'],
                     include_columns=['id', 'key', 'version', 'description',
