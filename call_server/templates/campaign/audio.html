@@ -1,17 +1,8 @@
-{% from "macros/_form.html" import render_field, render_label, render_button %}
+{% from "macros/_form.html" import render_button %}
 {% from "macros/_audio.html" import render_audio with context %}
 
 {% set label_width = 'col-sm-2' %}
 {% set control_width = 'col-sm-6 col-xs-12' %}
-{% macro render_field_default(field, offset='', control_class=control_width, group_class='', field_class='') %}
-    {%if offset%}{% set control_class = control_width+' '+offset %}{%endif%}
-    {{ render_field(field, class_={'label': label_width,
-                                   'control': control_class,
-                                   'group': group_class,
-                                   'field': field_class}
-                    ) }}
-{% endmacro %}
-
 {% macro render_audio_default(field, offset='', control_class=control_width, group_class='', field_class='') %}
     {%if offset%}{% set control_class = control_width+' '+offset %}{%endif%}
     {{ render_audio(field, class_={'label': label_width,
@@ -41,7 +32,7 @@
         {{ render_audio_default(form.msg_location) }}
 
         <div class="input-group col-sm-2">
-            <button type="button" class="btn btn-link btn-sm" data-toggle="collapse" data-target="#location">reveal more</button>
+            <button type="button" class="btn btn-link btn-sm" data-toggle="collapse" data-target="#location">additional</button>
         </div>
         <div class="panel panel-info collapse {% if not campaign.allow_call_in %}out{%endif%}" id="location">
             {# hide these fields by default #}

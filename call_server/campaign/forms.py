@@ -69,16 +69,15 @@ class CampaignForm(Form):
 
 class CampaignAudioForm(Form):
     next = HiddenField()
-    name = TextField(_('Campaign Name'))
-    msg_intro = TextField(_('Introduction'), [Required()])
-    msg_location = TextField(_('Location Prompt'), [Required()])
+    msg_intro = TextField(_('Introduction'))
+    msg_location = TextField(_('Location Prompt'))
     msg_intro_location = TextField(_('Introduction with Location'))
     msg_invalid_location = TextField(_('Invalid Location'))
     msg_choose_target = TextField(_('Choose Target'))
     msg_call_block_intro = TextField(_('Call Block Introduction'))
     msg_target_intro = TextField(_('Target Introduction'))
     msg_between_calls = TextField(_('Between Calls'))
-    msg_final_thanks = TextField(_('Final Thanks'), [Required()])
+    msg_final_thanks = TextField(_('Final Thanks'))
 
     submit = SubmitField(_('Save and Test'))
 

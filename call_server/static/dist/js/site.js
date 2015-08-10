@@ -59,6 +59,8 @@ $(document).ready(function () {
       'submit': 'submitForm'
     },
 
+    requiredFields: ['msg_intro', 'msg_call_block_intro', 'msg_final_thanks'],
+
     initialize: function() {
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
       navigator.getUserMedia = ( navigator.getUserMedia ||
@@ -66,7 +68,11 @@ $(document).ready(function () {
                        navigator.mozGetUserMedia ||
                        navigator.msGetUserMedia);
       window.URL = window.URL || window.webkitURL;
-  
+
+      // add required client-side
+      _.each(this.requiredFields, function(f) {
+        $('label[for='+f+']').addClass('required');
+      });
     },
 
     onRecord: function(event) {
@@ -104,6 +110,18 @@ $(document).ready(function () {
 
     validateForm: function() {
       var isValid = true;
+
+      // check required fields for valid class
+      _.each(this.requiredFields, function(f) {
+        var formGroup = $('.form-group.'+f);
+        var fieldValid = formGroup.hasClass('valid');
+        if (!fieldValid) {
+          formGroup.find('.input-group .help-block')
+            .text('This field is required.')
+            .addClass('error');
+        }
+        isValid = isValid && fieldValid;
+      });
 
       // call validators
       
@@ -342,6 +360,39 @@ $(document).ready(function () {
         return true;
       }
       return false;
+    }
+
+  });
+
+})();
+/*global CallPower, Backbone */
+
+(function () {
+  CallPower.Views.CampaignLaunchForm = Backbone.View.extend({
+    el: $('#launch'),
+
+    events: {
+      'click .test-call': 'makeTestCall',
+    },
+
+    makeTestCall: function() {
+      var phone = $('#test_call_number').val();
+      phone = phone.replace(/\s/g, '').replace(/\(/g, '').replace(/\)/g, ''); // remove spaces, parens
+      phone = phone.replace("+", "").replace(/\-/g, ''); // remove plus, dash
+
+      var campaignId = $('#campaignId').val();
+
+      $.ajax({
+        url: '/call/create',
+        data: {userPhone: phone, campaignId: campaignId},
+        success: function(data) {
+          console.log(data);
+          alert('calling '+phone+' now');
+        },
+        error: function(err) {
+          console.error(err);
+        }
+      });
     }
 
   });
@@ -749,6 +800,12 @@ $(document).ready(function () {
               // and display to user
               window.flashMessage(msg, 'success');
 
+              // update parent form-group status and description
+              var parentFormGroup = $('.form-group.'+response.key);
+              parentFormGroup.addClass('valid');
+              parentFormGroup.find('.input-group .help-block').text('');
+              parentFormGroup.find('.description .status').addClass('glyphicon-check');
+
               // close the parent modal
               self.$el.modal('hide');
             } else {
@@ -777,6 +834,7 @@ $(document).ready(function () {
       "campaign/:id/edit": "campaignForm",
       "campaign/:id/copy": "campaignForm",
       "campaign/:id/audio": "audioForm",
+      "campaign/:id/launch": "launchForm",
       "system": "systemForm",
     },
 
@@ -786,6 +844,10 @@ $(document).ready(function () {
 
     audioForm: function(id) {
       CallPower.campaignAudioForm = new CallPower.Views.CampaignAudioForm();
+    },
+
+    launchForm: function(id) {
+      CallPower.campaignLaunchForm = new CallPower.Views.CampaignLaunchForm();
     },
 
     systemForm: function() {

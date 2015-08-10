@@ -13,6 +13,8 @@
       'submit': 'submitForm'
     },
 
+    requiredFields: ['msg_intro', 'msg_call_block_intro', 'msg_final_thanks'],
+
     initialize: function() {
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
       navigator.getUserMedia = ( navigator.getUserMedia ||
@@ -20,7 +22,11 @@
                        navigator.mozGetUserMedia ||
                        navigator.msGetUserMedia);
       window.URL = window.URL || window.webkitURL;
-  
+
+      // add required client-side
+      _.each(this.requiredFields, function(f) {
+        $('label[for='+f+']').addClass('required');
+      });
     },
 
     onRecord: function(event) {
@@ -58,6 +64,18 @@
 
     validateForm: function() {
       var isValid = true;
+
+      // check required fields for valid class
+      _.each(this.requiredFields, function(f) {
+        var formGroup = $('.form-group.'+f);
+        var fieldValid = formGroup.hasClass('valid');
+        if (!fieldValid) {
+          formGroup.find('.input-group .help-block')
+            .text('This field is required.')
+            .addClass('error');
+        }
+        isValid = isValid && fieldValid;
+      });
 
       // call validators
       
