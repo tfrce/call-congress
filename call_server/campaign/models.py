@@ -71,7 +71,10 @@ class Campaign(db.Model):
         return [(s.name, str(s.number)) for s in self.target_set]
 
     def targets_display(self):
-        return "<br>".join(["%s %s" % (t) for t in self.targets()])
+        if self.target_set:
+            return "<br>".join(["%s %s" % (t) for t in self.targets()])
+        else:
+            return self.campaign_subtype_display()
 
     def phone_numbers(self, region_code=None):
         if region_code:

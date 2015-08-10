@@ -24,7 +24,7 @@
         <tr>
             <td>{{c.name}}</td>
             <td>{{c.campaign_type_display()}}</td>
-            <td>{% if c.target_set %}{{c.targets_display()|safe}}{%else%}{{c.campaign_subtype_display() }}{%endif%}</td>
+            <td>{{c.targets_display()|safe}}</td>
             <td>{{calls[c.id] }}</td>
             <td><span class="glyphicon {% if c.status == 'live' %}glyphicon-play{%elif c.status=='paused'%}glyphicon-pause{%else%}glyphicon-stop{%endif%}"></td>
         </tr>
