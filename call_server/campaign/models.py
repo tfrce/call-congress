@@ -116,7 +116,7 @@ class Campaign(db.Model):
         "Display method for this campaign's segmenting and locating of callers"
         val = dict(SEGMENT_BY_CHOICES)[self.segment_by]
         if self.segment_by == 'location':
-            val = '%s - %s' % (val, dict(LOCATION_CHOICES)[self.locate_by])
+            val = '%s - %s' % (val, dict(LOCATION_CHOICES).get(self.locate_by))
         return val
 
     def targets(self):
