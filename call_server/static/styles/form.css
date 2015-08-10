@@ -21,9 +21,6 @@ label.inline, input.inline {
 span.help-inline {
     display: none;
 }
-span.info {
-    padding-left: 5px;
-}
 span.info:hover + span.help-inline {
     display: inline-block;
     z-index: 10;
@@ -37,6 +34,15 @@ span.info:hover + span.help-inline {
     padding: 7px 10px;
     font-style: italic;
     color: gray;
+}
+span.status {
+    display: block;
+}
+span.status.valid {
+    color: green;
+}
+span.status.error {
+    color: red;
 }
 
 select.block {
