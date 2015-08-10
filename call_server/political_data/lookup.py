@@ -10,17 +10,27 @@ COUNTRY_DATA = {
 }
 
 
-def locate_targets(location, country='US', campaign_type=TYPE_CONGRESS,
-                    segment_by=LOCATION_POSTAL, order_by=ORDER_IN_ORDER):
+def locate_targets(location, campaign):
+    if campaign.target_set:
+        return campaign.target_set
 
-    data = COUNTRY_DATA[country]
-
-    if country is 'US' and campaign_type is TYPE_CONGRESS:
-        if segment_by is LOCATION_POSTAL:
-            return data.get_congress_targets(zipcode=location, order_by=order_by)
-        # elif segment_by is LOCATION_LATLNG:
+    if campaign.campaign_type == TYPE_CONGRESS:
+        data = COUNTRY_DATA['US']
+        if campaign.locate_by == LOCATION_POSTAL:
+            return data.locate_member_ids(zipcode=location,
+                chambers=campaign.campaign_subtype,
+                order=campaign.target_ordering)
+        # elif campaign.locate_by == LOCATION_LATLNG:
         #    TODO lookup target from latlng
-        #    return locate_targets_by_latlng(location, cache)
+        #    return data.locate_member_ids(latlng=location, order=campaign.target_ordering)
+        else:
+            raise NotImplementedError('campaign has unknown locate_by value: %s' % campaign.locate_by)
+
+
+    # elif campaign.type == TYPE_EXECUTIVE
+        # Whitehouse number?
+    # elif campaign.type == TYPE_STATE
+        # state-level data from sunlight?
 
     else:
         # not yet implemented
