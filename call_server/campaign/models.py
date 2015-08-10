@@ -104,6 +104,14 @@ class Campaign(db.Model):
             # return all numbers in set
             return [n.number.national for n in self.phone_number_set]
 
+    def required_fields(self):
+        """API convenience method for rendering campaigns externally
+        Returns dict of parameters and data types required to place call"""
+        fields = {'userPhone': 'US'}  # TODO, update for multiple countries
+        if self.segment_by == 'location':
+            fields.update({'userLocation': self.locate_by})
+        return fields
+
     def segment_display(self):
         "Display method for this campaign's segmenting and locating of callers"
         val = dict(SEGMENT_BY_CHOICES)[self.segment_by]
