@@ -101,6 +101,9 @@ class USData(CountryData):
         """
 
         districts = self.cache.get(self.KEY_ZIPCODE.format(zipcode=zipcode))
+        if not districts:
+            return None
+
         states = set(d['state'] for d in districts)  # yes, there are zipcodes that cross states
         if not states:
             return None
@@ -115,11 +118,11 @@ class USData(CountryData):
             house_reps.append(rep[0]['bioguide_id'])
 
         targets = []
-        if chambers is TARGET_CHAMBER_BOTH:
-            if order is ORDER_UPPER_FIRST:
+        if chambers == TARGET_CHAMBER_BOTH:
+            if order == ORDER_UPPER_FIRST:
                 targets.extend(senators)
                 targets.extend(house_reps)
-            elif order is ORDER_LOWER_FIRST:
+            elif order == ORDER_LOWER_FIRST:
                 targets.extend(house_reps)
                 targets.extend(senators)
             else:
@@ -127,12 +130,12 @@ class USData(CountryData):
                 targets.extend(senators)
                 targets.extend(house_reps)
                 targets.sort()
-        elif chambers is TARGET_CHAMBER_UPPER:
+        elif chambers == TARGET_CHAMBER_UPPER:
             targets = senators
-        elif chambers is TARGET_CHAMBER_LOWER:
+        elif chambers == TARGET_CHAMBER_LOWER:
             targets = house_reps
 
-        if order is ORDER_SHUFFLE:
+        if order == ORDER_SHUFFLE:
             targets = random.shuffle(targets)
 
         return targets

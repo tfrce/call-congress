@@ -11,7 +11,7 @@ def adapt_to_target(data, key_prefix):
 
 
 class SunlightData(object):
-    def adapt(data):
+    def adapt(self, data):
         mapped = {}
         mapped['name'] = '{firstname} {lastname}'.format(**data)
         if data['title'] == "Sen":
