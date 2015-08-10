@@ -9,7 +9,7 @@ from ..extensions import db, cache
 from ..utils import convert_to_dict
 from ..political_data.adapters import adapt_to_target
 from .constants import (CAMPAIGN_CHOICES, CAMPAIGN_NESTED_CHOICES, STRING_LEN, TWILIO_SID_LENGTH,
-                        CAMPAIGN_STATUS, STATUS_PAUSED)
+                        CAMPAIGN_STATUS, STATUS_PAUSED, SEGMENT_BY_CHOICES, LOCATION_CHOICES, ORDERING_CHOICES, )
 
 
 class Campaign(db.Model):
@@ -24,6 +24,7 @@ class Campaign(db.Model):
     campaign_subtype = db.Column(db.String(STRING_LEN))
 
     segment_by = db.Column(db.String(STRING_LEN))
+    locate_by = db.Column(db.String(STRING_LEN))
     target_set = db.relationship('Target', secondary='campaign_target_sets',
                                  order_by='campaign_target_sets.c.order',
                                  backref=db.backref('campaigns'))
@@ -75,6 +76,12 @@ class Campaign(db.Model):
             return "<br>".join(["%s %s" % (t) for t in self.targets()])
         else:
             return self.campaign_subtype_display()
+
+    def segment_display(self):
+        val = dict(SEGMENT_BY_CHOICES)[self.segment_by]
+        if self.segment_by == 'location':
+            val = '%s - %s' % (val, dict(LOCATION_CHOICES)[self.locate_by])
+        return val
 
     def phone_numbers(self, region_code=None):
         if region_code:
