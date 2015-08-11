@@ -95,7 +95,7 @@ class USData(CountryData):
     def get_uid(self, uid):
         return self.cache.get(self.KEY_BIOGUIDE.format(bioguide_id=uid))
 
-    def locate_member_ids(self, zipcode, chambers, order=ORDER_IN_ORDER):
+    def locate_member_ids(self, zipcode, chambers=TARGET_CHAMBER_BOTH, order=ORDER_IN_ORDER):
         """ Find all congressional targets for a zipcode, crossing state boundaries if necessary.
         Returns a list of bioguide ids in specified order.
         """
@@ -118,7 +118,12 @@ class USData(CountryData):
             house_reps.append(rep[0]['bioguide_id'])
 
         targets = []
-        if chambers == TARGET_CHAMBER_BOTH:
+        if chambers == TARGET_CHAMBER_UPPER:
+            targets = senators
+        elif chambers == TARGET_CHAMBER_LOWER:
+            targets = house_reps
+        else:
+            # default to TARGET_CHAMBER_BOTH
             if order == ORDER_UPPER_FIRST:
                 targets.extend(senators)
                 targets.extend(house_reps)
@@ -130,10 +135,6 @@ class USData(CountryData):
                 targets.extend(senators)
                 targets.extend(house_reps)
                 targets.sort()
-        elif chambers == TARGET_CHAMBER_UPPER:
-            targets = senators
-        elif chambers == TARGET_CHAMBER_LOWER:
-            targets = house_reps
 
         if order == ORDER_SHUFFLE:
             targets = random.shuffle(targets)
