@@ -1429,9 +1429,9 @@ $(document).ready(function () {
     onFilterCampaigns: function() {
       var self = this;
 
-      var showAllCampaigns = (this.$('[name=show_all_campaigns]:checked').length > 0);
-      var showHidden = (this.$('[name=show_hidden]:checked').length > 0);
-      
+      var showAllCampaigns = ($('input.filter[name=show_all_campaigns]:checked', this.$el).length > 0);
+      var showHidden = ($('input.filter[name=show_hidden]:checked', this.$el).length > 0);
+
       if (showAllCampaigns) {
         this.filteredCollection.removeFilter('campaign_id');
       } else {
@@ -1443,10 +1443,9 @@ $(document).ready(function () {
         this.filteredCollection.removeFilter('hidden');
       } else {
         this.filteredCollection.filterBy('hidden', function(model) {
-          return model.get('hidden') === false; // show only non-hidden
+          return (model.get('hidden') !== true); // show only those not hidden
         });
       }
-      
     },
 
     ajaxPost: function(data, endpoint, hideOnComplete) {
