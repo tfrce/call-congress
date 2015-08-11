@@ -6,7 +6,7 @@ import sqlalchemy
 from sqlalchemy.sql import func
 
 from ..extensions import db
-from ..utils import choice_items, choice_keys, choice_values_flat, duplicate_object, NullFileStorage
+from ..utils import choice_items, choice_keys, choice_values_flat, duplicate_object
 
 from .constants import CAMPAIGN_NESTED_CHOICES, CUSTOM_CAMPAIGN_CHOICES, EMPTY_CHOICES, STATUS_LIVE
 from .models import Campaign, Target, CampaignTarget, AudioRecording, CampaignAudioRecording
@@ -173,8 +173,8 @@ def upload_recording(campaign_id):
             uploaded_blob.filename = "campaign_{}_{}_{}.mp3".format(campaign.id, message_key, recording.version)
             recording.file_storage = uploaded_blob
         else:
-            # null file storage
-            recording.file_storage = NullFileStorage()
+            # empty file storage
+            recording.file_storage = None
             # save text-to-speech instead
             recording.text_to_speech = form.data.get('text_to_speech')
 
