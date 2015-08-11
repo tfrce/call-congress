@@ -568,9 +568,8 @@ $(document).ready(function () {
         return false;
       }
 
-      console.log('confirmClose');
-      if (!!this.playback.attr('src') && !this.audioBlob) {
-        // there is audio in the player, but not stored as a blob
+      if (!!this.playback.attr('src') && !this.saved) {
+        // there is audio in the player, but not yet saved
         return confirm('You have recorded unsaved audio. Are you sure you want to close?');
       } else {
         return true;
@@ -821,6 +820,7 @@ $(document).ready(function () {
               parentFormGroup.find('.description .status').addClass('glyphicon-check');
 
               // close the parent modal
+              self.saved = true;
               self.$el.modal('hide');
             } else {
               console.error(response);
@@ -1268,7 +1268,9 @@ $(document).ready(function () {
       description: null,
       version: null,
       hidden: null,
-      selected_campaign_ids: null
+      selected_campaign_ids: null,
+      file_url: null,
+      text_to_speech: null
     },
 
   });
