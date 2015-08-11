@@ -67,7 +67,7 @@ To install locally and run in debug mode use:
     ngrok http 5000
  
     # run local server for debugging, pass external name from ngrok
-    python manager.py runserver --server=87468fd0.ngrok.io
+    python manager.py runserver --external=87468fd0.ngrok.io
 
 When the dev server is running, the front-end will be accessible at [http://localhost:5000/](http://localhost:5000/), and proxied to external routes at [http://ngrok.com](http://ngrok.com).
 

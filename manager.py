@@ -32,12 +32,12 @@ def reset_assets():
 
 
 @manager.command
-def runserver(server=None):
+def runserver(external=None):
     """Run web server for local development and debugging
-        pass --server for external routing"""
-    if server:
-        app.config['SERVER_NAME'] = server
-        app.config['STORE_DOMAIN'] = "http://" + server # needs to have scheme, so urlparse is fully absolute
+        pass --external for external routing"""
+    if external:
+        app.config['SERVER_NAME'] = external
+        app.config['STORE_DOMAIN'] = "http://" + external # needs to have scheme, so urlparse is fully absolute
         print "serving from %s" % app.config['SERVER_NAME']
     app.us_data = countries.us.USData(cache)
     app.us_data.load_data()
