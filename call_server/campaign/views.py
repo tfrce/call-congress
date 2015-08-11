@@ -132,7 +132,7 @@ def audio(campaign_id):
     form = CampaignAudioForm()
 
     for field in form:
-        campaign_audio, is_default_message = campaign.audio(field.name)
+        campaign_audio, is_default_message = campaign.audio_or_default(field.name)
         if not is_default_message:
             field.data = campaign_audio
 
