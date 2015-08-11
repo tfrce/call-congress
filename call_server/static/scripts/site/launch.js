@@ -17,6 +17,9 @@
         statusIcon.addClass('error');
         return false;
       }
+
+      statusIcon.addClass('active');
+
       var phone = $('#test_call_number').val();
       phone = phone.replace(/\s/g, '').replace(/\(/g, '').replace(/\)/g, ''); // remove spaces, parens
       phone = phone.replace("+", "").replace(/\-/g, ''); // remove plus, dash
@@ -30,7 +33,7 @@
           console.log(data);
           alert('Calling you at '+$('#test_call_number').val()+' now!');
           if (data.message == 'queued') {
-            statusIcon.addClass('success');
+            statusIcon.removeClass('active').addClass('success');
           } else {
             console.error(data.message);
             statusIcon.addClass('error');
