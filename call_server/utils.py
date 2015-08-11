@@ -13,6 +13,7 @@ from flask import Markup
 import sqlalchemy
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
+from werkzeug import FileStorage
 
 
 # near copy of django's get_or_create, modified from http://stackoverflow.com/a/21146492/264790
@@ -125,3 +126,31 @@ class OrderedDictYAMLLoader(yaml.Loader):
             value = self.construct_object(value_node, deep=deep)
             mapping[key] = value
         return mapping
+
+
+class NullFileStorage(FileStorage):
+    """
+    Empty FileStorage, to fool Flask-Store into saving even when there's no file uploaded.
+    Copied from Flask-Uploads.
+    """
+    def __init__(self, stream=None, filename='', name=None,
+                 content_type='application/octet-stream', content_length=-1,
+                 headers=None):
+        FileStorage.__init__(
+            self, stream, filename, name=name,
+            content_type=content_type, content_length=content_length,
+            headers=None)
+        self.saved = None
+
+    def save(self, dst, buffer_size=16384):
+        """
+        This marks the file as saved by setting the `saved` attribute to the
+        name of the file it was saved to.
+
+        :param dst: The file to save to.
+        :param buffer_size: Ignored.
+        """
+        if isinstance(dst, basestring):
+            self.saved = dst
+        else:
+            self.saved = dst.name
