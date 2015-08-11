@@ -2,26 +2,26 @@
   * domready (c) Dustin Diaz 2014 - License MIT
   */
 !function (name, definition) {
-  if (typeof module != 'undefined') module.exports = definition()
-  else if (typeof define == 'function' && typeof define.amd == 'object') define(definition)
-  else this[name] = definition()
+  if (typeof module != 'undefined') module.exports = definition();
+  else if (typeof define == 'function' && typeof define.amd == 'object') define(definition);
+  else this[name] = definition();
 }('domready', function () {
   var fns = [], listener
     , doc = document
     , hack = doc.documentElement.doScroll
     , domContentLoaded = 'DOMContentLoaded'
-    , loaded = (hack ? /^loaded|^c/ : /^loaded|^i|^c/).test(doc.readyState)
+    , loaded = (hack ? /^loaded|^c/ : /^loaded|^i|^c/).test(doc.readyState);
 
   if (!loaded)
   doc.addEventListener(domContentLoaded, listener = function () {
-    doc.removeEventListener(domContentLoaded, listener)
-    loaded = 1
-    while (listener = fns.shift()) listener()
-  })
+    doc.removeEventListener(domContentLoaded, listener);
+    loaded = 1;
+    while (listener = fns.shift()) listener();
+  });
 
   return function (fn) {
-    loaded ? fn() : fns.push(fn)
-  }
+    loaded ? fn() : fns.push(fn);
+  };
 });
 
 /*!
@@ -30,6 +30,8 @@
   * AGPLv3
   */
 (function() {
+  call_power_embed = window['call_power_embed'] || {};
+
   var iframe_tag = document.createElement('iframe');
   function receiveMessage(event){
     if(event.origin == "{{request.host_url}}"){
@@ -67,12 +69,40 @@
     }
     {% else %}
       {# /* no widget requested, attach callback to existing form */ #}
-    
+      var fields = ['form_id', 'phone_id', 'location_id'];
+      for (var i=0; i<fields.length; i++) {
+        var fn = fields[i];
+        var fv = fn.replace('_id', '');
+        if (call_power_embed.hasOwnProperty(fn)) {
+          call_power_embed[fv] = document.getElementById(call_power_embed[fn]);
+        } else {
+          if (fv = 'form') {
+            call_power_embed[fv] = document.getElementsByTagName(fv)[0];
+          } else {
+            call_power_embed[fv] = document.getElementsByName(fv)[0];
+          }
+        }
+      }
+  
+      // create new event for secondary submit
+      var custom_event = document.createEvent('Event');
+      custom_event.initEvent('secondary_submit', true, true);
+      call_power_embed.form.addEventListener('submit', function (e) {
+        call_power_embed.form.dispatchEvent(custom_event);
+      });
+
+      var ajax = new XMLHttpRequest();
+      ajax.onreadystatechange = function() {
+          if (ajax.readyState != XMLHttpRequest.DONE || ajax.status != 200) return;
+          call_power_embed.form.removeEventListener('secondary_submit') ;
+        };
+
+      call_power_embed.form.addEventListener('secondary_submit', function(event){
+        var url = "{{url_for('call.create', campaignId=campaign.id, _external=True)}}";
+        ajax.open("GET", url+"&userPhone="+call_power_embed.phone.value, false);
+        ajax.send();
+      });
     {% endif %}
-    }
-
-    }
-
 
   });
 })();

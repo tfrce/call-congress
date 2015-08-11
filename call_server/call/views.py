@@ -32,7 +32,12 @@ def play_or_say(r, audio, **kwds):
         elif hasattr(audio, 'file_storage') and (audio.file_storage.name is not None):
             r.play(audio.file_url())
         elif type(audio) == str:
-            r.say(audio)
+            try:
+                msg = pystache.render(audio, kwds)
+                r.say(msg)
+            except Exception:
+                current_app.logger.error('Unable to render pystache template %s' % audio)
+                r.say(audio)
         else:
             current_app.logger.error('Unknown audio type %s' % type(audio))
     else:
