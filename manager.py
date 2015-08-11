@@ -37,10 +37,13 @@ def runserver(server=None):
         pass --server for external routing"""
     if server:
         app.config['SERVER_NAME'] = server
-        app.config['STORE_DOMAIN'] = server
+        app.config['STORE_DOMAIN'] = "http://" + server # needs to have scheme, so urlparse is fully absolute
+        print "serving from %s" % app.config['SERVER_NAME']
     app.us_data = countries.us.USData(cache)
     app.us_data.load_data()
-    app.run(debug=True, use_reloader=True, host=(os.environ.get('APP_HOST') or '127.0.0.1'))
+    
+    host = (os.environ.get('APP_HOST') or '127.0.0.1')
+    app.run(debug=True, use_reloader=True, host=host)
 
 
 @manager.command
