@@ -45,7 +45,8 @@ class Call(db.Model):
         self.target_id = target_id
         self.call_id = call_id
         self.location = location
-        self.phone_hash = self.hash_phone(phone_number)
+        if phone_number:
+            self.phone_hash = self.hash_phone(phone_number)
 
     def __repr__(self):
         return '<Call to {}>'.format(self.target.name)
