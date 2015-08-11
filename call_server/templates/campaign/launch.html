@@ -25,7 +25,7 @@
             <tr><td>Type</td><td>{{campaign.campaign_type_display()}}</td></tr>
             <tr><td>Targets</td><td>{{campaign.targets_display()|safe}}</td></tr>
             <tr><td>Segment By</td><td>{{campaign.segment_display()|safe}}</td></tr>
-            <tr><td>Order</td><td>{{campaign.target_ordering}}</td></tr>
+            <tr><td>Order</td><td>{{campaign.order_display()}}</td></tr>
             {% if campaign.call_maximum %}
             <tr><td>Call Maximum</td><td></td></tr>
             {% endif %}
