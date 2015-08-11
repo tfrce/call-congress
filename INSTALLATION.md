@@ -91,7 +91,7 @@ To run in production, with compiled assets:
     python manager.py createadminuser
 
     # prime cache with political data
-    python manager.py load_political_data
+    python manager.py loadpoliticaldata
 
     # if you are running a reverse proxy, you can start the application with foreman start
     foreman start
