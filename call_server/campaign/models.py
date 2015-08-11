@@ -94,6 +94,10 @@ class Campaign(db.Model):
                 val = sub
         return val
 
+    def order_display(self):
+        "Display method for this campaign's ordering"
+        return dict(ORDERING_CHOICES).get(self.target_ordering)
+
     def phone_numbers(self, region_code=None):
         "Phone numbers for this campaign, can be limited to a specified region code (ISO-2)"
         if region_code:

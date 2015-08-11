@@ -85,9 +85,13 @@
     <td><%= data.version %></td>
     <td><%= data.description %></td>
     <td>
+        <% if (data.text_to_speech) { %>
+        <code><%= data.text_to_speech %></code>
+        <% } else { %>
         <audio controls>
             <source type="audio/mpeg" src="<%= data.file_url %>"></source>
         </audio>
+        <% } %>
     </td>
     <td><% if (_.contains(data.selected_campaign_ids, data.campaign_id)) { %>
             <span class="glyphicon glyphicon-ok-sign"></span>

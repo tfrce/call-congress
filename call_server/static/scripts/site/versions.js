@@ -9,7 +9,9 @@
       description: null,
       version: null,
       hidden: null,
-      selected_campaign_ids: null
+      selected_campaign_ids: null,
+      file_url: null,
+      text_to_speech: null
     },
 
   });

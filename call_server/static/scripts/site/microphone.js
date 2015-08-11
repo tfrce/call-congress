@@ -77,9 +77,8 @@
         return false;
       }
 
-      console.log('confirmClose');
-      if (!!this.playback.attr('src') && !this.audioBlob) {
-        // there is audio in the player, but not stored as a blob
+      if (!!this.playback.attr('src') && !this.saved) {
+        // there is audio in the player, but not yet saved
         return confirm('You have recorded unsaved audio. Are you sure you want to close?');
       } else {
         return true;
@@ -330,6 +329,7 @@
               parentFormGroup.find('.description .status').addClass('glyphicon-check');
 
               // close the parent modal
+              self.saved = true;
               self.$el.modal('hide');
             } else {
               console.error(response);
