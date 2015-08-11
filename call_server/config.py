@@ -22,7 +22,7 @@ class DefaultConfig(object):
 
     CACHE_TYPE = 'simple'
     CACHE_THRESHOLD = 100000  # because we're caching political data
-    CACHE_DEFAULT_TIMEOUT = 60*60*24*365  # there's no infinite timeout, so default to a year
+    CACHE_DEFAULT_TIMEOUT = 4*60*60*24*365  # there's no infinite timeout, so default to one election cycle (4 years)
 
     CSRF_ENABLED = False
 
@@ -57,9 +57,13 @@ class ProductionConfig(DefaultConfig):
     SERVER_NAME = os.environ.get('SERVER_NAME')
     APPLICATION_ROOT = os.environ.get('APPLICATION_ROOT', None)
 
+    ADMIN_API_KEY = os.environ.get('ADMIN_API_KEY', None)
+
     CACHE_TYPE = 'redis'
     CACHE_REDIS_URL = os.environ.get('REDIS_URL')
     CACHE_KEY_PREFIX = 'call-power'
+
+    LOG_PHONE_NUMBERS = os.environ.get('LOG_PHONE_NUMBERS', False)
 
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'localhost')
     MAIL_PORT = os.environ.get('MAIL_PORT', 1025)
@@ -107,6 +111,8 @@ class DevelopmentConfig(DefaultConfig):
     TESTING = False
 
     ENVIRONMENT = "Development"
+
+    ADMIN_API_KEY = os.environ.get('ADMIN_API_KEY', 'ThisIsATestAdminAPIKey!')
 
     WTF_CSRF_ENABLED = True
     DEBUG_TB_INTERCEPT_REDIRECTS = False

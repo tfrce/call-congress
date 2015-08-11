@@ -1,0 +1,16 @@
+{% if campaign.custom_embed %}
+{# custom embed config object #}
+<script type="text/javascript">
+    var call_power_embed = {};
+        call_power_embed.formSelector = "{{campaign.form_selector|default('.form.call-tool')}}";
+        {% if campaign.embed_css%}call_power_embed.css = "https://example.org/custom.css";{%endif%}
+</script>
+<script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True, _scheme=https)}}"></script>
+
+{% else %}
+
+{# render widget instead #}
+<script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True, _scheme=https, widget=1)}}"></script>
+{# link to be fetched and rendered as an iframe #}
+<a id="call-power-widget" href="{{url_for('api.campaign_embed_iframe', campaign_id=campaign.id, _external=True, _scheme=https)}}"></a>
+{% endif %}

@@ -70,5 +70,21 @@
     </table>
     <span class="help-block">Edit these defaults in <samp>APPLICATION_ROOT/instance/campaign_msg_defaults.yaml</samp></span>
     </fieldset>
+
+    <fieldset class="border">
+    <legend>Integration API</legend>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="control-label">API Key:</label>
+            <div class="input-group">
+                <input type="password" class="form-control" value="{{admin_api_key}}" readonly />
+                <span class="input-group-btn">
+                    <button class="btn btn-default reveal" type="button"><i class="glyphicon glyphicon-eye-open"></i></button>
+              </span>
+            </div>
+        </div>
+    </div>
+    </fieldset>
+
 </div>
 {% endblock %}

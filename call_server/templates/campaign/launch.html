@@ -1,4 +1,4 @@
-{% from "macros/_form.html" import render_field, render_label, render_button %}
+{% from "macros/_form.html" import render_field, render_label, render_button with context %}
 {% set label_width = 'col-sm-2' %}
 {% set control_width = 'col-sm-6 col-xs-12' %}
 {% macro render_field_default(field, offset='', control_class=control_width, group_class='', field_class='') %}
@@ -46,6 +46,7 @@
 
             <div class="col-sm-3">
                 <button type="button" class="btn btn-primary test-call">Test Call</button>
+                <span class="glyphicon status inline"></span>
             </div>
         </div>
     </fieldset>
@@ -53,8 +54,8 @@
     <fieldset class="border">
         <legend>Embed</legend>
 
-        {{ render_field_default(form.display_script) }}
-        {{ render_field_default(form.embed_code, field_class='readonly') }}
+        {{ render_field_default(form.display_script, control_class='col-sm-8 col-xs-12') }}
+        {{ render_field_default(form.embed_code, control_class='col-sm-8 col-xs-12', field_class='readonly') }}
 
         <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#embed-advanced">Advanced Options</button>
 
@@ -66,8 +67,8 @@
 
             <div class="panel-body">
                 {{ render_field_default(form.success_endpoint) }}
-                {{ render_field_default(form.form_id) }}
-                {{ render_field_default(form.display_script_id) }}
+                {{ render_field_default(form.form_selector) }}
+                {{ render_field_default(form.display_script_selector) }}
             </div>
         </div>
 

@@ -1,1 +1,1 @@
-from .views import configure_restless, restless_preprocessors
+from .views import api, configure_restless, restless_preprocessors

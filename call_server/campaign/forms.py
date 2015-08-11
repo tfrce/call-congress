@@ -95,11 +95,11 @@ class CampaignLaunchForm(Form):
     test_call_number = TextField(_('Call Me'))
 
     display_script = TextField(_('Display Script'), widget=TextArea())
-    embed_code = TextField(_('Embed Code'), widget=TextArea())
+    embed_code = TextField(_('Embed Code'), widget=TextArea(), description=True)
 
+    form_selector = TextField(_('Form Selector'))
+    display_script_selector = TextField(_('Display Script Selector'))
     success_endpoint = TextField(_('Success Endpoint'))
-    form_id = TextField(_('Form ID'))
-    display_script_id = TextField(_('Display Script ID'))
 
     submit = SubmitField(_('Launch'))
 

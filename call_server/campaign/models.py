@@ -47,7 +47,32 @@ class Campaign(db.Model):
     def __unicode__(self):
         return self.name
 
+    def audio(self, key):
+        "Convenience method for getting selected audio recordings for this campaign by key "
+        campaignAudio = self._audio_query().filter(
+            CampaignAudioRecording.recording.has(key=key)
+        ).first()
+
+        if campaignAudio:
+            return campaignAudio.recording
+        else:
+            # if not defined by user, return default
+            return current_app.config.CAMPAIGN_MESSAGE_DEFAULTS.get(key)
+
+    def audio_msgs(self):
+        "Convenience method for getting all selected audio recordings for this campaign"
+        table = {}
+        for r in self._audio_query().all():
+            table[r.recording.key] = r.recording.file_url()
+        return table
+
+    def _audio_query(self):
+        return CampaignAudioRecording.query.filter(
+            CampaignAudioRecording.campaign_id == self.id,
+            CampaignAudioRecording.selected == True)
+
     def campaign_type_display(self):
+        "Display method for this campaign's type"
         campaign_choices = convert_to_dict(CAMPAIGN_CHOICES)
         val = ''
         if self.campaign_type:
@@ -56,6 +81,7 @@ class Campaign(db.Model):
         return val
 
     def campaign_subtype_display(self):
+        "Display method for this campaign's subtype"
         subtype_choices = convert_to_dict(CAMPAIGN_NESTED_CHOICES)
         campaign_subtypes = dict(subtype_choices[self.campaign_type])
         val = ''
@@ -68,22 +94,8 @@ class Campaign(db.Model):
                 val = sub
         return val
 
-    def targets(self):
-        return [(s.name, str(s.number)) for s in self.target_set]
-
-    def targets_display(self):
-        if self.target_set:
-            return "<br>".join(["%s %s" % (t) for t in self.targets()])
-        else:
-            return self.campaign_subtype_display()
-
-    def segment_display(self):
-        val = dict(SEGMENT_BY_CHOICES)[self.segment_by]
-        if self.segment_by == 'location':
-            val = '%s - %s' % (val, dict(LOCATION_CHOICES)[self.locate_by])
-        return val
-
     def phone_numbers(self, region_code=None):
+        "Phone numbers for this campaign, can be limited to a specified region code (ISO-2)"
         if region_code:
             # convert region_code to country_code for comparison
             country_code = phone_number.phonenumbers.country_code_for_region(region_code)
@@ -92,28 +104,31 @@ class Campaign(db.Model):
             # return all numbers in set
             return [n.number.national for n in self.phone_number_set]
 
-    def audio_query(self):
-        return CampaignAudioRecording.query.filter(
-            CampaignAudioRecording.campaign_id == self.id,
-            CampaignAudioRecording.selected == True)
+    def required_fields(self):
+        """API convenience method for rendering campaigns externally
+        Returns dict of parameters and data types required to place call"""
+        fields = {'userPhone': 'US'}  # TODO, update for multiple countries
+        if self.segment_by == 'location':
+            fields.update({'userLocation': self.locate_by})
+        return fields
 
-    def audio_msgs(self):
-        table = {}
-        for r in self.audio_query().all():
-            table[r.recording.key] = r.recording.file_url()
-        return table
+    def segment_display(self):
+        "Display method for this campaign's segmenting and locating of callers"
+        val = dict(SEGMENT_BY_CHOICES)[self.segment_by]
+        if self.segment_by == 'location':
+            val = '%s - %s' % (val, dict(LOCATION_CHOICES).get(self.locate_by))
+        return val
 
-    def audio(self, key):
-        # convenience method for getting this campaign's selected audio recording by key
-        campaignAudio = self.audio_query().filter(
-            CampaignAudioRecording.recording.has(key=key)
-        ).first()
+    def targets(self):
+        "Convenience method for getting list of target names and phone numbers"
+        return [(s.name, str(s.number)) for s in self.target_set]
 
-        if campaignAudio:
-            return campaignAudio.recording
+    def targets_display(self):
+        "Display method for this campaign's target list if specified, or subtype (like Congress - Senate)"
+        if self.target_set:
+            return "<br>".join(["%s %s" % (t) for t in self.targets()])
         else:
-            # if not defined by user, return default
-            return current_app.config.CAMPAIGN_MESSAGE_DEFAULTS.get(key)
+            return self.campaign_subtype_display()
 
 
 class CampaignTarget(db.Model):
@@ -185,7 +200,8 @@ class TwilioPhoneNumber(db.Model):
     @classmethod
     def available_numbers(cls, limit=None):
         # returns all numbers which do not have call_in_allowed
-        return TwilioPhoneNumber.query.filter_by(call_in_allowed=False).limit(limit)
+        #return TwilioPhoneNumber.query.filter_by(call_in_allowed=False).limit(limit)
+        return TwilioPhoneNumber.query.limit(limit)
 
 
 class AudioRecording(db.Model):

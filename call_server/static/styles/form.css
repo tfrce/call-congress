@@ -38,7 +38,10 @@ span.info:hover + span.help-inline {
 span.status {
     display: block;
 }
-span.status.valid {
+span.status.inline {
+    display: inline-block;
+}
+span.status.valid, span.status.success {
     color: green;
 }
 span.status.error {

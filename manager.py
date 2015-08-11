@@ -44,9 +44,10 @@ def runserver(server=None):
 
 
 @manager.command
-def primecache():
+def loadpoliticaldata():
     """Load political data into persistent cache"""
     with app.app_context():
+        cache.clear()
         app.us_data = countries.us.USData(cache)
         app.us_data.load_data()
 

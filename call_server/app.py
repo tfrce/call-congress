@@ -23,7 +23,7 @@ from .admin import admin
 from .user import User, user
 from .call import call
 from .campaign import campaign
-from .api import configure_restless, restless_preprocessors
+from .api import api, configure_restless, restless_preprocessors
 
 from extensions import cache, db, babel, assets, login_manager, csrf, mail, store, rest
 
@@ -33,6 +33,7 @@ DEFAULT_BLUEPRINTS = (
     user,
     call,
     campaign,
+    api,
 )
 
 

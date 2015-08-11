@@ -252,8 +252,17 @@ def launch(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     form = CampaignLaunchForm()
 
+    # TEMP, this will always be true for EFF campaigns
+    # but maybe not for others
+    campaign.custom_embed = True
+
+    # render javascript embed_code, stripping whitespace
+    form.embed_code.data = (render_template('api/embed_code.html', campaign=campaign)
+        .replace('\n', '').replace('\t', ' ').replace('    ', ' '))
+
     if form.validate_on_submit():
         campaign.status = STATUS_LIVE
+        # TODO update campaign embed settings
 
         db.session.add(campaign)
         db.session.commit()
@@ -261,7 +270,8 @@ def launch(campaign_id):
         flash('Campaign launched!', 'success')
         return redirect(url_for('campaign.index'))
 
-    return render_template('campaign/launch.html', campaign=campaign, form=form)
+    return render_template('campaign/launch.html', campaign=campaign, form=form,
+        descriptions=current_app.config.CAMPAIGN_FIELD_DESCRIPTIONS)
 
 
 @campaign.route('/<int:campaign_id>/status', methods=['GET', 'POST'])

@@ -56,10 +56,12 @@ def statistics():
 @admin.route('/system')
 def system():
     twilio_numbers = TwilioPhoneNumber.query.all()
+    admin_api_key = current_app.config.get('ADMIN_API_KEY')
     return render_template('admin/system.html',
                            message_defaults=current_app.config.CAMPAIGN_MESSAGE_DEFAULTS,
                            twilio_numbers=twilio_numbers,
-                           twilio_auth=current_app.config.get('TWILIO_CLIENT').auth)
+                           twilio_auth=current_app.config.get('TWILIO_CLIENT').auth,
+                           admin_api_key=admin_api_key)
 
 
 @admin.route('/twilio/resync', methods=['POST'])

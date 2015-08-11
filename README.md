@@ -15,25 +15,52 @@ The server lets callers:
 
 * Dial in directly to the campaign number
 * Fill out a web form and get a call back on their phone
-    * specifying a target in the api call
+    * specifying a target directly
     * or entering their zip code to look up their location
-* Sign up for a call-back if the target is busy
+* Reference a script during the call
 
 
 Campaign Configuration
 ----------------------
 
-### TODO update for new web interface
+1) Create a campaign with one of several types, to determine how callers are matched to targets.
+
+* _Executive_ connects callers to the Whitehouse Switchboard, or to a specific office if known
+* _Congress_ connects callers to their Senators, Representative, or both. Uses data from the Sunlight Foundation.
+* _State_ connects callers to their Governor or State Legislators. Uses the OpenStates API.
+* _Local_ connects callers to a local official. Campaigners must enter these numbers in advance.
+* _Custom_ can connect callers to corporate offices, local officals, or any other phone number entered in advance.
+
+2) Choose targets by segmenting on user location (determined by zipcode or lat/lon), and order by legislative chamber or random shuffle. For local and custom campaigns, campaigners can set a specific order by drag-and-drop.
+
+3) Record audio prompts in the browser (Firefox/Chrome only), or edit with another program and upload as MP3 files. For dynamic prompts, you can also text-to-speech templates. Reuse versions between campaigns, or adjust your prompts as the campaign evolves.
+
+4) Review the campaign setup, place a test call to yourself, and get the script to embed in your action platform. 
+
+
+Action Integration
+------------------
+For most uses, you can just place the `<script>` tag provided in the launch page into your action platform. This will add a post-submit callback to your action form to connect the caller, and optionally display the script in a lightbox.
+
+For more complex integrations, Call Power provides [INTEGRATION_API.md](json APIs). You will need to authenticate either as a logged in user, or with an ADMIN_API_KEY specified the python environment.
 
 
 Installation Instructions
 -------------------
+This application should be easy to host on Heroku, with Docker, or directly on any WSGI-compatible server. Requires Python, flask, a SQL database (we recommend Postgres, but Mysql should work), Redis or Memcache, and an SMTP server.
+
 Read detailed instrustions at [INSTALLATION.md](INSTALLATION.md)
 
 
-Updating political data
---------------------------------
+Political Data
+--------------
 
 Political data is downloaded from Sunlight as CSV files stored in this repository. These are read on startup and saved in a memory cache for fast local lookup.
 
-To update these files with new data after elections, run `cd call_server/political_data/data && make clean && make`
+To update these files with new data after elections, run `cd call_server/political_data/data && make clean && make`, and `python manager.py load_political_data`
+
+
+Code License
+------------
+
+See the [LICENSE](license) file for licensing information under the GNU AGPL. This license is applicable to the entire project, sans any 3rd party libraries that may be included.
