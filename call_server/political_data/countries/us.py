@@ -137,6 +137,6 @@ class USData(CountryData):
                 targets.sort()
 
         if order == ORDER_SHUFFLE:
-            targets = random.shuffle(targets)
+            random.shuffle(targets)
 
         return targets
