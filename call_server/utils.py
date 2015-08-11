@@ -134,7 +134,7 @@ class NullFileStorage(FileStorage):
     Copied from Flask-Uploads.
     """
     def __init__(self, stream=None, filename='', name=None,
-                 content_type='application/octet-stream', content_length=-1,
+                 content_type='application/octet-stream', content_length=0,
                  headers=None):
         FileStorage.__init__(
             self, stream, filename, name=name,
