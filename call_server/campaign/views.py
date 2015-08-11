@@ -131,6 +131,11 @@ def audio(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     form = CampaignAudioForm()
 
+    for field in form:
+        campaign_audio, is_default_message = campaign.audio(field.name)
+        if not is_default_message:
+            field.data = campaign_audio
+
     if form.validate_on_submit():
         form.populate_obj(campaign)
 
