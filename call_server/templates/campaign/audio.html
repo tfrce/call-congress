@@ -57,6 +57,12 @@
     <div class="form-group container">
         <div class="form-actions">
             
+            <div class="pull-left">
+                <a href="{{url_for('campaign.form', campaign_id=campaign.id)}}" class="btn btn-primary btn-warning">
+                <span class="glyphicon glyphicon-arrow-left"></span> Back
+                </a>
+            </div>
+
             <div class="pull-right">
                 {{render_button(form.submit, {'field':'btn-success', 'icon':'arrow-right'}) }}
             </div>
