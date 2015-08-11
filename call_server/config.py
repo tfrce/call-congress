@@ -30,6 +30,7 @@ class DefaultConfig(object):
     SITENAME = os.environ.get('SITENAME')
 
     STORE_PROVIDER = 'flask_store.providers.local.LocalProvider'
+    STORE_DOMAIN = 'http://localhost:5000' # requires url scheme for Flask-store.absolute_url to work
 
     TWILIO_CLIENT = twilio.rest.TwilioRestClient(
         os.environ.get('TWILIO_ACCOUNT_SID'),
@@ -122,7 +123,7 @@ class DevelopmentConfig(DefaultConfig):
 
     SERVER_NAME = 'localhost:5000'
     STORE_PATH = '%s/instance/uploads/' % os.path.abspath(os.curdir)
-    STORE_DOMAIN = SERVER_NAME
+    STORE_DOMAIN = 'http://localhost:5000'
 
     MAIL_DEBUG = True
     MAIL_PORT = 1025
