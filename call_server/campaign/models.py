@@ -48,6 +48,9 @@ class Campaign(db.Model):
         return self.name
 
     def audio(self, key):
+        return self.audio_or_default(key)[0]
+
+    def audio_or_default(self, key):
         """Convenience method for getting selected audio recordings for this campaign by key.
         Returns tuple (audio recording or default message, is default message) """
         campaignAudio = self._audio_query().filter(
