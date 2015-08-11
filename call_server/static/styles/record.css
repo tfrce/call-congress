@@ -53,7 +53,7 @@ button .text.inline { display: inline; }
     100% {color: red;}
 }
 
-.glyphicon-record.active {
+.status.active {
 	-webkit-animation: recording 0.75s ease-in-out alternate infinite;
 }
 

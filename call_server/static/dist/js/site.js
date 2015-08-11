@@ -384,6 +384,9 @@ $(document).ready(function () {
         statusIcon.addClass('error');
         return false;
       }
+
+      statusIcon.addClass('active');
+
       var phone = $('#test_call_number').val();
       phone = phone.replace(/\s/g, '').replace(/\(/g, '').replace(/\)/g, ''); // remove spaces, parens
       phone = phone.replace("+", "").replace(/\-/g, ''); // remove plus, dash
@@ -397,7 +400,7 @@ $(document).ready(function () {
           console.log(data);
           alert('Calling you at '+$('#test_call_number').val()+' now!');
           if (data.message == 'queued') {
-            statusIcon.addClass('success');
+            statusIcon.removeClass('active').addClass('success');
           } else {
             console.error(data.message);
             statusIcon.addClass('error');
@@ -676,7 +679,7 @@ $(document).ready(function () {
 
         // show audio row and recording indicator
         $('.playback').show();
-        $('.playback .glyphicon-record').addClass('active').show();
+        $('.playback .status').addClass('active').show();
 
         // button to stop
         $('button.btn-record .glyphicon', this.$el).removeClass('glyphicon-record').addClass('glyphicon-stop');
@@ -688,7 +691,7 @@ $(document).ready(function () {
         this.recorder.state = 'stopped';
         this.recorder.exportMP3(this.dataAvailable);
 
-        $('.playback .glyphicon-record').removeClass('active').hide();
+        $('.playback .status').removeClass('active').hide();
 
         // button to reset
         $('button.btn-record .glyphicon', this.$el).removeClass('glyphicon-stop').addClass('glyphicon-step-backward');
