@@ -17,6 +17,7 @@ label.inline, input.inline {
 
 .description {
     display: inline-block;
+    margin-left: 5px;
 }
 span.help-inline {
     display: none;
