@@ -167,12 +167,10 @@
     },
 
     validateSegmentBy: function(formGroup) {
-      // if campaignType is custom or local, segmentBy must equal custom
+      // if campaignType is custom or local, set segmentBy to custom
       var campaignType = $('select#campaign_type').val();
       if (campaignType === "custom" || campaignType === "local") {
-        var segmentBy = $('input[name="segment_by"]:checked').val();
-        if (segmentBy === "custom") { return true; }
-        else { return false; }
+        $('input[name="segment_by"][value="custom"]').click();
       }
       return true;
     },
