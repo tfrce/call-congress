@@ -255,14 +255,20 @@ def make_single():
     i = int(request.values.get('call_index', 0))
     params['call_index'] = i
 
-    target_bioguide = params['targetIds'][i]
-    current_target, cached = Target.get_uid_or_cache(target_bioguide, 'us:bioguide')
+    target_lookup = params['targetIds'][i]  # this should be formatted CACHE_KEY-UID
+    try:
+        (uid, prefix) = target_lookup.split('-')
+    except ValueError:
+        uid = target_lookup
+        prefix = None
+
+    current_target, cached = Target.get_uid_or_cache(uid, prefix)
     if cached:
         # save Target to database
         db.session.add(current_target)
         db.session.commit()
 
-    target_phone = str(current_target.number)
+    target_phone = current_target.number.international  # use full E164 syntax here
     full_name = current_target.full_name()
 
     resp = twilio.twiml.Response()

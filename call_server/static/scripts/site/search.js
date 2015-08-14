@@ -24,7 +24,7 @@
 
     searchTab: function(event) {
       // TODO, if there's only one result add it
-      // otherwise, let iterate through the results and let user select one
+      // otherwise, let user select one
     },
 
     doTargetSearch: function(event) {
@@ -94,7 +94,7 @@
         if (person.title === 'Sen')  { person.title = 'Senator'; }
         if (person.title === 'Rep')  { person.title = 'Representative'; }
 
-        person.uid = person.bioguide_id;
+        person.uid = 'us:bioguide-'+person.bioguide_id;
 
         // render display
         var li = renderTemplate("#search-results-item-tmpl", person);

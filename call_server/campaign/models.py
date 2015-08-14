@@ -129,7 +129,7 @@ class Campaign(db.Model):
 
     def targets(self):
         "Convenience method for getting list of target names and phone numbers"
-        return [(s.name, str(s.number)) for s in self.target_set]
+        return [(s.name, s.number.national) for s in self.target_set]
 
     def targets_display(self):
         "Display method for this campaign's target list if specified, or subtype (like Congress - Senate)"
@@ -169,7 +169,7 @@ class Target(db.Model):
     number = db.Column(phone_number.PhoneNumberType())
 
     def __unicode__(self):
-        return self.name
+        return self.uid
 
     def full_name(self):
         return unicode("{} {}".format(self.title, self.name), 'utf8')
