@@ -905,7 +905,7 @@ $(document).ready(function () {
 
     searchTab: function(event) {
       // TODO, if there's only one result add it
-      // otherwise, let iterate through the results and let user select one
+      // otherwise, let user select one
     },
 
     doTargetSearch: function(event) {
@@ -975,7 +975,7 @@ $(document).ready(function () {
         if (person.title === 'Sen')  { person.title = 'Senator'; }
         if (person.title === 'Rep')  { person.title = 'Representative'; }
 
-        person.uid = person.bioguide_id;
+        person.uid = 'us:bioguide-'+person.bioguide_id;
 
         // render display
         var li = renderTemplate("#search-results-item-tmpl", person);
@@ -1241,9 +1241,20 @@ $(document).ready(function () {
       self.collection.reset(items);
     },
 
+    shortRandomString: function(prefix, length) {
+      // generate a random string, with optional prefix
+      // should be good enough for use as uid
+      if (length === undefined) { length = 6; }
+      var randstr = ((Math.random()*Math.pow(36,length) << 0).toString(36)).slice(-1*length);
+      if (prefix !== undefined) { return prefix+randstr; }
+      return randstr;
+    },
+
     onAdd: function() {
       // create new empty item
-      var item = this.collection.add({});
+      var item = this.collection.add({
+        uid: this.shortRandomString('custom-', 6)
+      });
       this.recalculateOrder(this);
     },
 
