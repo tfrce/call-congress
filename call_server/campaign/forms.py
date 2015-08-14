@@ -61,7 +61,8 @@ class CampaignForm(Form):
         # check nested forms
         for t in self.target_set:
             if not t.form.validate():
-                self.target_set.errors.append({'target': t.name, 'message': 'Invalid Target'})
+                error_fields = ','.join(t.form.errors.keys())
+                self.target_set.errors.append({'target': t.name, 'message': 'Invalid target ' + error_fields})
                 return False
 
         return True

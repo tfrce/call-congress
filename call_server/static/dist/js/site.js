@@ -151,6 +151,7 @@ $(document).ready(function () {
 
       // campaign targets
       'change select#campaign_type':  'changeCampaignType',
+      'change select#campaign_subtype':  'changeCampaignSubtype',
       'change input[name="segment_by"]': 'changeSegmentBy',
 
       // call limit
@@ -211,16 +212,6 @@ $(document).ready(function () {
 
       // special cases
 
-      // congress: show/hide target_ordering values senate_first and house_first
-      if ((val === 'congress' && nested_val === 'both') ||
-          (val === 'state' && nested_val === 'both')) {
-        $('input[name="target_ordering"][value="senate-first"]').parent('label').show();
-        $('input[name="target_ordering"][value="house-first"]').parent('label').show();
-      } else {
-        $('input[name="target_ordering"][value="senate-first"]').parent('label').hide();
-        $('input[name="target_ordering"][value="house-first"]').parent('label').hide();
-      }
-
       // state: show/hide campaign_state select
       if (val === 'state') {
         $('select[name="campaign_state"]').show();
@@ -233,13 +224,13 @@ $(document).ready(function () {
       // local or custom: no segment, location or search, show custom target_set
       if (val === "custom" || val === "local") {
         $('.form-group.segment_by').hide();
-        $('.form-group.segment_location').hide();
+        $('.form-group.locate_by').hide();
         $('#target-search').hide();
         
         $('#set-targets').show();
       } else {
         $('.form-group.segment_by').show();
-        $('.form-group.segment_location').show();
+        $('.form-group.locate_by').show();
         $('#target-search').show();
 
         var segment_by = $('input[name="segment_by"]:checked');
@@ -248,6 +239,24 @@ $(document).ready(function () {
           $('#set-targets').hide();
         }
       }
+
+      this.changeCampaignSubtype();
+    },
+
+    changeCampaignSubtype: function(event) {
+      var type = $('select#campaign_type').val();
+      var subtype = $('select#campaign_subtype').val();
+
+      // congress: show/hide target_ordering values upper_first and lower_first
+      if ((type === 'congress' && subtype === 'both') ||
+          (type === 'state' && subtype === 'both')) {
+        $('input[name="target_ordering"][value="upper-first"]').parent('label').show();
+        $('input[name="target_ordering"][value="lower-first"]').parent('label').show();
+      } else {
+        $('input[name="target_ordering"][value="upper-first"]').parent('label').hide();
+        $('input[name="target_ordering"][value="lower-first"]').parent('label').hide();
+      }
+
     },
 
     clearRadioChoices: function(event) {
@@ -259,9 +268,9 @@ $(document).ready(function () {
       var selected = $('input[name="segment_by"]:checked');
 
       if (selected.val() === 'location') {
-        $('.form-group.segment_location').show();
+        $('.form-group.locate_by').show();
       } else {
-        $('.form-group.segment_location').hide();
+        $('.form-group.locate_by').hide();
       }
 
       if (selected.val() === "custom") {
@@ -299,12 +308,10 @@ $(document).ready(function () {
     },
 
     validateSegmentBy: function(formGroup) {
-      // if campaignType is custom or local, segmentBy must equal custom
+      // if campaignType is custom or local, set segmentBy to custom
       var campaignType = $('select#campaign_type').val();
       if (campaignType === "custom" || campaignType === "local") {
-        var segmentBy = $('input[name="segment_by"]:checked').val();
-        if (segmentBy === "custom") { return true; }
-        else { return false; }
+        $('input[name="segment_by"][value="custom"]').click();
       }
       return true;
     },
@@ -898,7 +905,7 @@ $(document).ready(function () {
 
     searchTab: function(event) {
       // TODO, if there's only one result add it
-      // otherwise, let iterate through the results and let user select one
+      // otherwise, let user select one
     },
 
     doTargetSearch: function(event) {
@@ -968,7 +975,7 @@ $(document).ready(function () {
         if (person.title === 'Sen')  { person.title = 'Senator'; }
         if (person.title === 'Rep')  { person.title = 'Representative'; }
 
-        person.uid = person.bioguide_id;
+        person.uid = 'us:bioguide-'+person.bioguide_id;
 
         // render display
         var li = renderTemplate("#search-results-item-tmpl", person);
@@ -1234,9 +1241,20 @@ $(document).ready(function () {
       self.collection.reset(items);
     },
 
+    shortRandomString: function(prefix, length) {
+      // generate a random string, with optional prefix
+      // should be good enough for use as uid
+      if (length === undefined) { length = 6; }
+      var randstr = ((Math.random()*Math.pow(36,length) << 0).toString(36)).slice(-1*length);
+      if (prefix !== undefined) { return prefix+randstr; }
+      return randstr;
+    },
+
     onAdd: function() {
       // create new empty item
-      var item = this.collection.add({});
+      var item = this.collection.add({
+        uid: this.shortRandomString('custom-', 6)
+      });
       this.recalculateOrder(this);
     },
 

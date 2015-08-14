@@ -11,8 +11,10 @@ COUNTRY_DATA = {
 
 
 def locate_targets(location, campaign):
+    """ Locate targets for location for a given campaign.
+    Returns list of target uids """
     if campaign.target_set:
-        return campaign.target_set
+        return [t.uid for t in campaign.target_set]
 
     if campaign.campaign_type == TYPE_CONGRESS:
         data = COUNTRY_DATA['US']
