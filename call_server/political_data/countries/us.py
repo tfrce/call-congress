@@ -112,10 +112,10 @@ class USData(CountryData):
         house_reps = []
         for state in states:
             for senator in self.get_senators(state):
-                senators.append(senator['bioguide_id'])
+                senators.append(self.KEY_BIOGUIDE.format(**senator))
         for d in districts:
-            rep = self.get_house_member(d['state'], d['house_district'])
-            house_reps.append(rep[0]['bioguide_id'])
+            rep = self.get_house_member(d['state'], d['house_district'])[0]
+            house_reps.append(self.KEY_BIOGUIDE.format(**rep))
 
         targets = []
         if chambers == TARGET_CHAMBER_UPPER:
