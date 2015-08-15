@@ -94,7 +94,7 @@
         if (person.title === 'Sen')  { person.title = 'Senator'; }
         if (person.title === 'Rep')  { person.title = 'Representative'; }
 
-        person.uid = 'us:bioguide-'+person.bioguide_id;
+        person.uid = 'us:bioguide:'+person.bioguide_id;
 
         // render display
         var li = renderTemplate("#search-results-item-tmpl", person);
