@@ -25,32 +25,27 @@ def before_request():
 @admin.route('/')
 def dashboard():
     campaigns = Campaign.query.filter(Campaign.status_code >= STATUS_PAUSED)
-    calls = (db.session.query(Campaign.id, func.count(Call.id))
+    calls_by_campaign = (db.session.query(Campaign.id, func.count(Call.id))
             .filter(Campaign.status_code >= STATUS_PAUSED)
             .join(Call).group_by(Campaign.id))
 
+    calls_by_day = (db.session.query(func.date(Call.timestamp), func.count(Call.id))
+            .group_by(func.date(Call.timestamp)))
+
+    active_phone_numbers = TwilioPhoneNumber.query.all()
+
     return render_template('admin/dashboard.html',
-        campaigns=campaigns, calls=dict(calls.all())
+        campaigns=campaigns,
+        calls_by_campaign=dict(calls_by_campaign.all()),
+        calls_by_day=calls_by_day.all(),
+        active_phone_numbers=active_phone_numbers
     )
 
 
 @admin.route('/statistics')
 def statistics():
-    data = {}
-    data['calls_by_campaign'] = (db.session.query(
-        db.func.Count(Call.id))
-        .group_by(Call.campaign_id).all()
-    )[0][0]
-
-    data['campaigns'] = len(Campaign.query.all())
-
-    data['unique_users'] = (db.session.query(
-        db.func.Count(Call.id))
-        .distinct(Call.phone_hash)
-        .group_by(Call.phone_hash)
-    ).count()
-
-    return render_template('admin/statistics.html', data=data)
+    campaigns = Campaign.query.all()
+    return render_template('admin/statistics.html', campaigns=campaigns)
 
 
 @admin.route('/system')

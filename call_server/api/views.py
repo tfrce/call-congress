@@ -1,4 +1,6 @@
 import json
+from collections import OrderedDict
+
 from flask import Blueprint, Response, render_template
 from sqlalchemy.sql import func
 
@@ -40,15 +42,40 @@ def configure_restless(app):
 @api_key_or_auth_required
 def campaign_stats(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
-    calls_by_day_query = (db.session.query(func.date(Call.timestamp), func.count(Call.id))
+    calls_query = (db.session.query(func.date(Call.timestamp), func.count(Call.id))
             .filter(Call.campaign == campaign)
-            .group_by(func.date(Call.timestamp)))
-    calls_by_day = dict(name='Calls by Day', data=dict(calls_by_day_query.all()))
+            .group_by(func.date(Call.timestamp))
+            .order_by(func.date(Call.timestamp)))
+    calls = dict(name='All Calls', data=dict(calls_query.all()))
 
-    total_calls_query = Call.query.filter(Call.campaign == campaign)
-    total_calls = dict(name='Total Calls', data=total_calls_query.count())
+    series = [calls]
 
-    return Response(json.dumps([total_calls, calls_by_day]), mimetype='application/json')
+    calls_by_status_query = (
+        db.session.query(
+            func.date(Call.timestamp),
+            Call.status,
+            func.count(Call.id)
+        )
+        .filter(Call.campaign == campaign)
+        .group_by(func.date(Call.timestamp))
+        .group_by(Call.status)
+        .order_by(func.date(Call.timestamp))
+    )
+
+    # create a separate series for each status value
+    STATUS_LIST = ('completed', 'canceled', 'failed')
+    for status in STATUS_LIST:
+        data = {}
+        # combine status values by date
+        for (date, call_status, count) in calls_by_status_query.all():
+            # entry like ('2015-08-10', u'canceled', 8)
+            if call_status == status:
+                data[date] = count
+        new_series = {'name': status.capitalize(),
+                      'data': OrderedDict(sorted(data.items()))}
+        series.append(new_series)
+
+    return Response(json.dumps(series), mimetype='application/json')
 
 # embed campaign routes, should be public
 # js must be crossdomain

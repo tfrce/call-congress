@@ -5,8 +5,22 @@
 {% extends "layouts/base_admin.html" %}
 
 {% block body %}
+<div class="container" id="statistics">
 <h1>Statistics</h1>
 
-{{data.calls_by_campaign}} Calls Made in {{data.campaigns}} Campaigns by {{data.unique_users}} Unique Users
+<label>Campaign</label>
+<select name="campaigns">
+{% for c in campaigns%}
+	<option value="{{c.id}}">{{c.name}}</option>
+{% endfor %}
+</select>
+<div id="calls_for_campaign" style="height: 250px;"></div>
 
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {% assets "graph_js" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
 {% endblock %}
