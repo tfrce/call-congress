@@ -25,7 +25,7 @@
             <td>{{c.name}}</td>
             <td>{{c.campaign_type_display()}}</td>
             <td>{{c.targets_display()|safe}}</td>
-            <td>{{calls[c.id] }}</td>
+            <td>{{calls_by_campaign[c.id] }}</td>
             <td><span class="glyphicon {% if c.status == 'live' %}glyphicon-play{%elif c.status=='paused'%}glyphicon-pause{%else%}glyphicon-stop{%endif%}"></td>
         </tr>
         {%endfor%}
@@ -40,8 +40,31 @@
     <div class="panel panel-default">
     <div class="panel-heading"><h3 class="panel-title">Usage Statistics</h3></div>
     <div class="panel-body">
-
+        <div id="calls_by_day"></div>
+        <label>Active Phone Numbers: </label>
+            <select>
+                {% for n in active_phone_numbers %}
+                <option>{{n}}</option>
+                {%endfor%}
+            </select>
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+  {% assets "graph_js" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+
+<script type="text/javascript">
+new Chartkick.LineChart(
+    'calls_by_day',
+    [{'name': 'Calls per Day',
+     'data':{ {% for entry in calls_by_day %}
+            '{{entry[0]}}': {{entry[1]}}, {%endfor%} }
+    }],
+    {"library":{"canvasDimensions":{"height":250}}}
+);
+</script>
 {% endblock %}

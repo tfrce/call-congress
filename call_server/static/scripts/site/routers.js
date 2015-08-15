@@ -7,6 +7,7 @@
       "campaign/:id/audio": "audioForm",
       "campaign/:id/launch": "launchForm",
       "system": "systemForm",
+      "statistics": "statisticsView",
     },
 
     campaignForm: function(id) {
@@ -23,6 +24,10 @@
 
     systemForm: function() {
       CallPower.systemForm = new CallPower.Views.SystemForm();
+    },
+
+    statisticsView: function() {
+      CallPower.statisticsView = new CallPower.Views.StatisticsView();
     }
   });
 })();

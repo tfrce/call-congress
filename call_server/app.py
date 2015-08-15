@@ -165,15 +165,20 @@ def configure_assets(app):
                        filters='rjsmin', output='dist/js/vendor.js')
     assets.register('vendor_js', vendor_js)
 
+    vendor_css = Bundle('bower_components/bootstrap/dist/css/bootstrap.css',
+                        'bower_components/bootstrap/dist/css/bootstrap-theme.css',
+                        filters='cssmin', output='dist/css/vendor.css')
+    assets.register('vendor_css', vendor_css)
+
     audio_js = Bundle('bower_components/volume-meter/volume-meter.js',
                       'bower_components/audioRecord/src/audioRecord.js',
                       filters='rjsmin', output='dist/js/vendor_audio.js')
     assets.register('audio_js', audio_js)
 
-    vendor_css = Bundle('bower_components/bootstrap/dist/css/bootstrap.css',
-                        'bower_components/bootstrap/dist/css/bootstrap-theme.css',
-                        filters='cssmin', output='dist/css/vendor.css')
-    assets.register('vendor_css', vendor_css)
+    graph_js = Bundle('bower_components/highcharts/highcharts.js',
+                      'bower_components/chartkick/chartkick.js',
+                      filters='rjsmin', output='dist/js/graph.js')
+    assets.register('graph_js', graph_js)
 
     site_js = Bundle('scripts/site/*.js',
                      output='dist/js/site.js')
