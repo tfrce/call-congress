@@ -74,6 +74,18 @@ def parse_params(r):
     return params, campaign
 
 
+def parse_target(key):
+    try:
+        pieces = key.split(':')
+        uid = pieces[-1]
+        prefix = ':'.join(pieces[0:-1])
+    except ValueError:
+        current_app.logger.error('got malformed target key: "%s"' % key )
+        uid = key
+        prefix = None
+    return (uid, prefix)
+
+
 def intro_location_gather(params, campaign):
     resp = twilio.twiml.Response()
 
@@ -255,14 +267,8 @@ def make_single():
     i = int(request.values.get('call_index', 0))
     params['call_index'] = i
 
-    target_lookup = params['targetIds'][i]  # this should be formatted CACHE_KEY-UID
-    try:
-        (uid, prefix) = target_lookup.split('-')
-    except ValueError:
-        uid = target_lookup
-        prefix = None
-
-    current_target, cached = Target.get_uid_or_cache(uid, prefix)
+    (uid, prefix) = parse_target(params['targetIds'][i])
+    (current_target, cached) = Target.get_uid_or_cache(uid, prefix)
     if cached:
         # save Target to database
         db.session.add(current_target)
@@ -295,7 +301,8 @@ def complete():
     if not params or not campaign:
         abort(404)
 
-    current_target = Target.query.filter(Target.uid == params['targetIds'][i]).first()
+    (uid, prefix) = parse_target(params['targetIds'][i])
+    (current_target, cached) = Target.get_uid_or_cache(uid, prefix)
     call_data = {
         'campaign_id': campaign.id,
         'target_id': current_target.id,

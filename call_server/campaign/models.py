@@ -175,17 +175,20 @@ class Target(db.Model):
         return unicode("{} {}".format(self.title, self.name), 'utf8')
 
     @classmethod
-    def get_uid_or_cache(cls, uid, key_prefix="us:bioguide"):
-        t = Target.query.filter(Target.uid == uid).first()
+    def get_uid_or_cache(cls, uid, prefix=None):
+        if prefix:
+            key = '%s:%s' % (prefix, uid)
+        else:
+            key = uid
+        t = Target.query.filter(Target.uid == key).first()
         cached = False
 
         if not t:
-            key = '%s:%s' % (key_prefix, uid)
             cache_list = cache.get(key)
             if cache_list:
                 # TODO, check to ensure it is list-like
                 obj = cache_list[0]
-                data = adapt_to_target(obj, key_prefix)
+                data = adapt_to_target(obj, prefix)
 
                 # create target object and save for reuse
                 t = Target(**data)
