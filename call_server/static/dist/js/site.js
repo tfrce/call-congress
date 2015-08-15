@@ -860,6 +860,7 @@ $(document).ready(function () {
       "campaign/:id/audio": "audioForm",
       "campaign/:id/launch": "launchForm",
       "system": "systemForm",
+      "statistics": "statisticsView",
     },
 
     campaignForm: function(id) {
@@ -876,6 +877,10 @@ $(document).ready(function () {
 
     systemForm: function() {
       CallPower.systemForm = new CallPower.Views.SystemForm();
+    },
+
+    statisticsView: function() {
+      CallPower.statisticsView = new CallPower.Views.StatisticsView();
     }
   });
 })();
@@ -1010,6 +1015,40 @@ $(document).ready(function () {
         this.closeSearch();
       }
     },
+
+  });
+
+})();
+/*global CallPower, Backbone */
+
+(function () {
+  CallPower.Views.StatisticsView = Backbone.View.extend({
+    el: $('#statistics'),
+
+    events: {
+      'change select[name="campaigns"]': 'renderCampaign',
+    },
+
+    initialize: function() {
+      this.renderCampaign();
+
+      this.chartOpts = {
+        "library":{"canvasDimensions":{"height":250}}
+      };
+    },
+
+    renderCampaign: function(event) {
+      var campaign = $('select[name="campaigns"]').val();
+      if (campaign === "") {
+        campaign = 1;
+      }
+
+      this.chart = new Chartkick.ColumnChart(
+          'calls_for_campaign',
+          '/api/campaign/'+campaign+'/stats.json',
+          this.chartOpts
+      );
+    }
 
   });
 
