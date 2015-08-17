@@ -980,7 +980,7 @@ $(document).ready(function () {
         if (person.title === 'Sen')  { person.title = 'Senator'; }
         if (person.title === 'Rep')  { person.title = 'Representative'; }
 
-        person.uid = 'us:bioguide-'+person.bioguide_id;
+        person.uid = 'us:bioguide:'+person.bioguide_id;
 
         // render display
         var li = renderTemplate("#search-results-item-tmpl", person);
@@ -1043,7 +1043,7 @@ $(document).ready(function () {
         campaign = 1;
       }
 
-      this.chart = new Chartkick.ColumnChart(
+      this.chart = new Chartkick.LineChart(
           'calls_for_campaign',
           '/api/campaign/'+campaign+'/stats.json',
           this.chartOpts
@@ -1292,7 +1292,7 @@ $(document).ready(function () {
     onAdd: function() {
       // create new empty item
       var item = this.collection.add({
-        uid: this.shortRandomString('custom-', 6)
+        uid: this.shortRandomString('custom:', 6)
       });
       this.recalculateOrder(this);
     },
