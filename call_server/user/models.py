@@ -7,7 +7,7 @@ from flask.ext.login import UserMixin
 from ..extensions import db
 from .constants import (USER_ROLE, USER_ADMIN, USER_STAFF,
                         USER_STATUS, USER_ACTIVE,
-                        STRING_LEN)
+                        STRING_LEN, PASSWORD_LEN_MAX)
 
 
 class User(db.Model, UserMixin):
@@ -23,7 +23,7 @@ class User(db.Model, UserMixin):
 
     phone = db.Column(phone_number.PhoneNumberType())
 
-    _password = db.Column('password', db.String(STRING_LEN*3), nullable=False)
+    _password = db.Column('password', db.String(PASSWORD_LEN_MAX), nullable=False)
 
     def __unicode__(self):
         return self.name
