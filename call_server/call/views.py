@@ -80,7 +80,7 @@ def parse_target(key):
         uid = pieces[-1]
         prefix = ':'.join(pieces[0:-1])
     except ValueError:
-        current_app.logger.error('got malformed target key: "%s"' % key )
+        current_app.logger.error('got malformed target key: "%s"' % key)
         uid = key
         prefix = None
     return (uid, prefix)
@@ -279,7 +279,8 @@ def make_single():
 
     resp = twilio.twiml.Response()
 
-    play_or_say(resp, campaign.audio('msg_target_intro'), name=full_name)
+    play_or_say(resp, campaign.audio('msg_target_intro'),
+        title=current_target.title, name=full_name)
 
     if current_app.debug:
         current_app.logger.debug('Call #{}, {} ({}) from {} in call.make_single()'.format(
