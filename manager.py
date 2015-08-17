@@ -90,14 +90,11 @@ def stamp(revision):
 
 
 @manager.command
-def createadminuser():
+def createadminuser(username=None, password=None, email=None):
     """Create a new admin user, get password on command line"""
     from getpass import getpass
     from call_server.user.constants import (USERNAME_LEN_MIN, USERNAME_LEN_MAX,
                                             PASSWORD_LEN_MIN, PASSWORD_LEN_MAX)
-
-    username = None
-    password = None
 
     while username is None:
         username = raw_input('Username: ')
@@ -114,6 +111,7 @@ def createadminuser():
             username = None
             continue
 
+    while email is None:
         email = raw_input('Email: ')
         # email validation necessary?
 
