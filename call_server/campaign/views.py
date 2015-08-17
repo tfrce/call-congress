@@ -165,13 +165,14 @@ def upload_recording(campaign_id):
 
         recording = AudioRecording()
         form.populate_obj(recording)
+        recording.hidden = False
         recording.version = int(last_version or 0) + 1
 
-        # save uploaded blob to file storage
-        uploaded_blob = request.files.get('file_storage')
-        if uploaded_blob:
-            uploaded_blob.filename = "campaign_{}_{}_{}.mp3".format(campaign.id, message_key, recording.version)
-            recording.file_storage = uploaded_blob
+        # save uploaded file to storage
+        file_storage = request.files.get('file_storage')
+        if file_storage:
+            file_storage.filename = "campaign_{}_{}_{}.mp3".format(campaign.id, message_key, recording.version)
+            recording.file_storage = file_storage
         else:
             # empty file storage
             recording.file_storage = None
