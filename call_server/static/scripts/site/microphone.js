@@ -236,6 +236,7 @@
 
     chooseFile: function() {
       this.filename = $('input[type="file"]').val().split(/(\\|\/)/g).pop();
+      $('span.filename').text(this.filename);
     },
 
     validateTextToSpeech: function() {
@@ -304,6 +305,8 @@
       // create file from blob
       if (this.audioBlob) {
         formData.append('file_storage', this.audioBlob);
+      } else if (this.filename) {
+        formData.append('file_storage', $('input[type="file"]')[0].files[0]);
       }
 
       var self = this;
