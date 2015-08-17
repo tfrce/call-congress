@@ -18,13 +18,13 @@ At a minimum, you will need to set:
 
 To test Twilio functionality in development, you will need to set:
 
-* APPLICATION_ROOT to point to a web-routable address. Twilio provides [ngrok](https://ngrok.com) to do this for free.
+* SERVER_NAME to point to a web-routable address. Twilio provides [ngrok](https://ngrok.com) to do this for free. When using the debug server you can use --external=SERVERID.ngrok.com
 
 For production, you will also need to set:
 
 * CALLPOWER_CONFIG='call_server.config:ProductionConfig', so that manager.py knows to use a real database for migrations
 * DATABASE_URI, a sqlalchemy [connection string](https://pythonhosted.org/Flask-SQLAlchemy/config.html#connection-uri-format) for a postgres or mysql database addresses
-* APPLICATION_ROOT to the address where this application will live
+* APPLICATION_ROOT to the path where the application will live (if you are using a whole domain or subdomain, this should be None)
 * REDIS_URL, a URI for the Redis server
 
 If you are storing assets on Amazon S3, or another [Flask-Store provider](http://flask-store.soon.build)
@@ -37,11 +37,12 @@ If you are storing assets on Amazon S3, or another [Flask-Store provider](http:/
 If you would like to let users reset their passwords over email:
 
 * MAIL_SERVER, defaults to `localhost`
-* MAIL_PORT, defaults to 1025
+* MAIL_PORT, defaults to 25
 * MAIL_USERNAME
 * MAIL_PASSWORD
 * MAIL_DEFAULT_SENDER, defaults to `info@callpower.org`
 
+For more information on these configuration values, check the [Flask Documentation](http://flask.pocoo.org/docs/0.10/config/#builtin-configuration-values)
 
 Development mode
 -------------------
@@ -67,7 +68,7 @@ To install locally and run in debug mode use:
     ngrok http 5000
  
     # run local server for debugging, pass external name from ngrok
-    python manager.py runserver --external=87468fd0.ngrok.io
+    python manager.py runserver --external=SERVERID.ngrok.io
 
 When the dev server is running, the front-end will be accessible at [http://localhost:5000/](http://localhost:5000/), and proxied to external routes at [http://ngrok.com](http://ngrok.com).
 
