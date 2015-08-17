@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
 
 # User roles
-ADMIN = 0    # edit users
-STAFF = 1    # edit all campaigns
-PARTNER = 2  # edit own campaigns
-VIEWER = 3   # view stats only
+USER_ADMIN = 0    # edit users
+USER_STAFF = 1    # edit all campaigns
+USER_PARTNER = 2  # edit own campaigns
+USER_VIEWER = 3   # view stats only
 USER_ROLE = {
-    ADMIN: 'admin',
-    STAFF: 'staff',
-    PARTNER: 'partner',
-    VIEWER: 'viewer'
+    USER_ADMIN: 'admin',
+    USER_STAFF: 'staff',
+    USER_PARTNER: 'partner',
+    USER_VIEWER: 'viewer'
 }
 
 # User status
-INACTIVE = 0
-NEW = 1
-ACTIVE = 2
+USER_INACTIVE = 0
+USER_NEW = 1
+USER_ACTIVE = 2
 USER_STATUS = {
-    INACTIVE: 'inactive',
-    NEW: 'new',
-    ACTIVE: 'active',
+    USER_INACTIVE: 'inactive',
+    USER_NEW: 'new',
+    USER_ACTIVE: 'active',
 }
 
 STRING_LEN = 100

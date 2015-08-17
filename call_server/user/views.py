@@ -10,8 +10,9 @@ from flask.ext.login import login_required, login_user, current_user, logout_use
 from ..extensions import db, mail, login_manager
 
 from .models import User
-from .forms import UserForm, UserRoleForm, LoginForm, RecoverPasswordForm, ReauthForm, ChangePasswordForm, InviteUserForm, RemoveUserForm
-from .constants import USER_STATUS, NEW, ACTIVE, ADMIN
+from .forms import (CreateUserForm, UserForm, UserRoleForm, LoginForm, ReauthForm,
+    RecoverPasswordForm, ChangePasswordForm, InviteUserForm, RemoveUserForm)
+from .constants import USER_NEW, USER_ACTIVE, USER_ADMIN
 from .decorators import admin_required
 
 user = Blueprint('user', __name__)
@@ -92,20 +93,20 @@ def create_account():
     if user is None:
         return render_template('user/invalid_invitation.html')
 
-    form = UserForm(obj=user)
+    form = CreateUserForm(obj=user)
 
     # can't use form.validate_on_submit, because username and email won't be unique
     if form.is_submitted() and form.validate_csrf_token(form):
         if form.password.validate(form) \
             and form.password_confirm.validate(form) \
                 and form.phone.validate(form):
-            
+
             # don't use populate_obj, which creates a new user, overwrite invidual fields instead
             user.email = form.email.data
             user.name = form.name.data
             user.password = form.password.data
             user.phone = form.phone.data
-            user.status_code = ACTIVE
+            user.status_code = USER_ACTIVE
             user.activation_key = None
 
             db.session.add(user)
@@ -165,9 +166,17 @@ def reset_password():
             db.session.add(user)
             db.session.commit()
 
-            url = url_for('user.change_password', email=user.email, activation_key=user.activation_key, _external=True)
-            html = render_template('user/email/reset_password.txt', sitename=current_app.config['SITENAME'], username=user.name, url=url)
-            message = Message(subject='Reset your password for ' + current_app.config['SITENAME'], html=html, recipients=[user.email])
+            url = url_for('user.change_password',
+                email=user.email,
+                activation_key=user.activation_key,
+                _external=True)
+            html = render_template('user/email/reset_password.txt',
+                sitename=current_app.config['SITENAME'],
+                username=user.name,
+                url=url)
+            message = Message(subject='Reset your password for ' + current_app.config['SITENAME'],
+                html=html,
+                recipients=[user.email])
             mail.send(message)
 
             return render_template('user/reset_password.html', form=form)
@@ -213,18 +222,25 @@ def invite():
         form.populate_obj(user)
 
         user.activation_key = str(uuid4())
-        user.status_code = NEW
+        user.status_code = USER_NEW
         user.password = user.activation_key  # reuse key until first login
 
         db.session.add(user)
         db.session.commit()
 
-        url = url_for('user.create_account', email=user.email, activation_key=user.activation_key, _external=True)
-        html = render_template('user/email/invite_user.txt', sitename=current_app.config['SITENAME'], username=user.name, url=url)
-        message = Message(subject='Create account on ' + current_app.config['SITENAME'], html=html, recipients=[user.email])
+        url = url_for('user.create_account',
+            email=user.email,
+            activation_key=user.activation_key,
+            _external=True)
+        html = render_template('user/email/invite_user.txt', sitename=current_app.config['SITENAME'],
+            username=user.name,
+            url=url)
+        message = Message(subject='Create account on ' + current_app.config['SITENAME'],
+            html=html,
+            recipients=[user.email])
         mail.send(message)
 
-        flash(_('Invited '+user.email), 'success')
+        flash(_('Invited ' + user.email), 'success')
         return redirect(url_for('user.index'))
 
     return render_template('user/invite.html', form=form)
@@ -239,7 +255,7 @@ def role(user_id):
 
     if form.validate_on_submit():
         if ((user == current_user)
-        and (user.role_code is ADMIN)
+        and (user.role_code is USER_ADMIN)
         and (int(form.data['role_code']) > 0)):
             flash("Cannot remove your own admin role.", 'warning')
             return render_template('user/role.html', user=user, form=form)
@@ -280,5 +296,5 @@ def remove(user_id):
 def lang():
     session['language'] = request.form['language']
     new_language = current_app.config['ACCEPT_LANGUAGES'][request.form['language']]
-    flash(_('Language changed to ')+new_language, 'success')
+    flash(_('Language changed to ') + new_language, 'success')
     return redirect(url_for('admin.dashboard'))

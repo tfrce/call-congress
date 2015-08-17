@@ -34,6 +34,16 @@ class UserRoleForm(Form):
     submit = SubmitField(_('Save'))
 
 
+class CreateUserForm(Form):
+    next = HiddenField()
+    email = EmailField(_('Email'), [Required(), Email()])
+    name = TextField(_('Username'), [Required(), Length(USERNAME_LEN_MIN, USERNAME_LEN_MAX)])
+    phone = PhoneNumberField(_('Phone Number'), description="Optional")
+    password = PasswordField(_('Password'), [Required(), Length(PASSWORD_LEN_MIN, PASSWORD_LEN_MAX)])
+    password_confirm = PasswordField(u'Password Confirm', [EqualTo('password', message="Passwords don't match")])
+    submit = SubmitField(_('Save'))
+
+
 class UserForm(Form):
     next = HiddenField()
     email = EmailField(_('Email'), [Required(), Email()])

@@ -5,8 +5,8 @@ from werkzeug import generate_password_hash, check_password_hash
 from flask.ext.login import UserMixin
 
 from ..extensions import db
-from .constants import (USER_ROLE, ADMIN, STAFF,
-                        USER_STATUS, ACTIVE,
+from .constants import (USER_ROLE, USER_ADMIN, USER_STAFF,
+                        USER_STATUS, USER_ACTIVE,
                         STRING_LEN)
 
 
@@ -44,17 +44,17 @@ class User(db.Model, UserMixin):
         return check_password_hash(self.password, password)
 
     # One-to-many relationship between users and roles.
-    role_code = db.Column(db.SmallInteger, default=STAFF)
+    role_code = db.Column(db.SmallInteger, default=USER_STAFF)
 
     @property
     def role(self):
         return USER_ROLE[self.role_code]
 
     def is_admin(self):
-        return self.role_code == ADMIN
+        return self.role_code == USER_ADMIN
 
     # One-to-many relationship between users and user_statuses.
-    status_code = db.Column(db.SmallInteger, default=ACTIVE)
+    status_code = db.Column(db.SmallInteger, default=USER_ACTIVE)
 
     @property
     def status(self):
