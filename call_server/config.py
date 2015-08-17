@@ -27,7 +27,7 @@ class DefaultConfig(object):
     CSRF_ENABLED = False
 
     INSTALLED_ORG = os.environ.get('INSTALLED_ORG')
-    SITENAME = os.environ.get('SITENAME')
+    SITENAME = os.environ.get('SITENAME', PROJECT)
 
     STORE_PROVIDER = 'flask_store.providers.local.LocalProvider'
     STORE_DOMAIN = 'http://localhost:5000' # requires url scheme for Flask-store.absolute_url to work
