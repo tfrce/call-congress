@@ -67,7 +67,7 @@ class ProductionConfig(DefaultConfig):
     LOG_PHONE_NUMBERS = os.environ.get('LOG_PHONE_NUMBERS', False)
 
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'localhost')
-    MAIL_PORT = os.environ.get('MAIL_PORT', 1025)
+    MAIL_PORT = os.environ.get('MAIL_PORT', 25)
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')

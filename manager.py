@@ -10,7 +10,7 @@ from flask.ext.assets import ManageAssets
 from call_server.app import create_app
 from call_server.extensions import assets, db, cache
 from call_server.political_data import countries
-from call_server.user import User, ADMIN, ACTIVE
+from call_server.user import User, USER_ADMIN, USER_ACTIVE
 
 app = create_app()
 app.db = db
@@ -136,8 +136,8 @@ def createadminuser():
     admin = User(name=username,
                  email=email,
                  password=password,
-                 role_code=ADMIN,
-                 status_code=ACTIVE)
+                 role_code=USER_ADMIN,
+                 status_code=USER_ACTIVE)
     db.session.add(admin)
     db.session.commit()
 
