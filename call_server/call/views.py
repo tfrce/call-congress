@@ -132,6 +132,9 @@ def location_gather(resp, params, campaign):
 def make_calls(params, campaign):
     """
     Connect a user to a sequence of targets.
+    Performs target lookup, shuffling, and limiting to maximum.
+    Plays msg_call_block_intro.
+
     Required params: campaignId, targetIds
     """
     resp = twilio.twiml.Response()
@@ -161,6 +164,7 @@ def _make_calls():
 def create():
     """
     Makes a phone call to a user.
+
     Required Params:
         userPhone
         campaignId
@@ -205,12 +209,14 @@ def create():
 @crossdomain(origin='*')
 def connection():
     """
-    Call handler to connect a user with the campaign target(s).
+    Call handler to connect a user with the targets for a given campaign.
+    Plays msg_intro audio, then redirects to make_calls.
+
     Required Params:
         campaignId
     Optional Params:
         userLocation (zipcode)
-        targetIds (if not present go to incoming_call flow and prompt for zipcode)
+        targetIds (if not present goes to incoming_call flow and prompt for zipcode)
     """
     params, campaign = parse_params(request)
 
