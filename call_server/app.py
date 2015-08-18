@@ -90,11 +90,11 @@ def init_extensions(app):
     db.init_app(app)
     db.app = app
     db.metadata.naming_convention = {
-      "ix": 'ix_%(column_0_label)s',
-      "uq": "uq_%(table_name)s_%(column_0_name)s",
-      "ck": "ck_%(table_name)s_%(column_0_name)s",
-      "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-      "pk": "pk_%(table_name)s"
+        "ix": 'ix_%(column_0_label)s',
+        "uq": "uq_%(table_name)s_%(column_0_name)s",
+        "ck": "ck_%(table_name)s_%(column_0_name)s",
+        "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+        "pk": "pk_%(table_name)s"
     }
     # set constraint naming convention to sensible default, per
     # http://docs.sqlalchemy.org/en/rel_0_9/core/constraints.html#configuring-constraint-naming-conventions
@@ -194,7 +194,7 @@ def context_processors(app):
     # inject sitename into all templates
     @app.context_processor
     def inject_sitename():
-        return dict(SITENAME=app.config.get('SITENAME', 'Call Power'))
+        return dict(SITENAME=app.config.get('SITENAME', 'CallPower'))
 
     @app.context_processor
     def inject_sunlight_key():
