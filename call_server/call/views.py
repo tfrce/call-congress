@@ -304,16 +304,14 @@ def make_single():
         db.session.commit()
 
     target_phone = current_target.number.international  # use full E164 syntax here
-    full_name = current_target.full_name()
-
     resp = twilio.twiml.Response()
 
     play_or_say(resp, campaign.audio('msg_target_intro'),
-        title=current_target.title, name=full_name)
+        title=current_target.title, name=current_target.name)
 
     if current_app.debug:
         current_app.logger.debug('Call #{}, {} ({}) from {} in call.make_single()'.format(
-            i, full_name, target_phone, params['userPhone']))
+            i, current_target.name, target_phone, params['userPhone']))
 
     resp.dial(target_phone, callerId=params['userPhone'],
               timeLimit=current_app.config['TWILIO_TIME_LIMIT'],
