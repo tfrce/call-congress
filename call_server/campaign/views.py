@@ -1,6 +1,7 @@
 from flask import (Blueprint, render_template, current_app, request,
                    flash, url_for, redirect, session, abort, jsonify)
 from flask.ext.login import login_required
+from flask_store.providers.temp import TemporaryStore
 
 import sqlalchemy
 from sqlalchemy.sql import func
@@ -175,7 +176,7 @@ def upload_recording(campaign_id):
             recording.file_storage = file_storage
         else:
             # empty file storage
-            recording.file_storage = None
+            recording.file_storage = TemporaryStore('')
             # save text-to-speech instead
             recording.text_to_speech = form.data.get('text_to_speech')
 
@@ -186,6 +187,12 @@ def upload_recording(campaign_id):
             CampaignAudioRecording.campaign_id == campaign_id,
             CampaignAudioRecording.recording.has(key=message_key)).all()
         for v in other_versions:
+            # reset empty storages
+            if ((not hasattr(v, 'file_storage')) or
+                 (v.file_storage is None) or
+                 (type(v.file_storage) is TemporaryStore)):
+                # create empty temporary store
+                v.file_storage = TemporaryStore('')
             v.selected = False
             db.session.add(v)
         db.session.commit()
