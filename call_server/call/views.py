@@ -71,6 +71,10 @@ def parse_params(r):
         # reshuffle for each caller
         random.shuffle(params['targetIds'])
 
+    if campaign.call_maximum:
+        # limit to maximum number of calls
+        params['targetIds'] = params['targetIds'][:campaign.call_maximum]
+
     return params, campaign
 
 
