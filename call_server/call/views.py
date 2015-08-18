@@ -22,8 +22,10 @@ csrf.exempt(call)
 
 
 def play_or_say(r, audio, **kwds):
-    # take twilio response and play or say message from an AudioRecording
-    # can use mustache templates to render keyword arguments
+    """
+    Take twilio response and play or say message from an AudioRecording
+    Can use mustache templates to render keyword arguments
+    """
 
     if audio:
         if (hasattr(audio, 'text_to_speech') and not (audio.text_to_speech == '')):
@@ -47,6 +49,11 @@ def play_or_say(r, audio, **kwds):
 
 
 def parse_params(r):
+    """
+    Rehydrate objects from the parameter list.
+    Gets invoked before each Twilio call.
+    Should not edit param values.
+    """
     params = {
         'campaignId': r.values.get('campaignId', 0),
         'userPhone': r.values.get('userPhone', ''),
@@ -71,10 +78,20 @@ def parse_params(r):
         # reshuffle for each caller
         random.shuffle(params['targetIds'])
 
+    if campaign.call_maximum:
+        # limit to maximum number of calls
+        params['targetIds'] = params['targetIds'][:campaign.call_maximum]
+
     return params, campaign
 
 
 def parse_target(key):
+    """
+    Split target key into (uid, prefix)
+
+    >>> parse_target("us:bioguide_id:ASDF")
+    ("ASDF", "us:bioguide_id")
+    """
     try:
         pieces = key.split(':')
         uid = pieces[-1]
@@ -87,6 +104,9 @@ def parse_target(key):
 
 
 def intro_location_gather(params, campaign):
+    """
+    If required, play msg_intro_location audio. Otherwise, standard msg_intro.
+    """
     resp = twilio.twiml.Response()
 
     if campaign.audio('msg_intro_location'):
@@ -99,6 +119,9 @@ def intro_location_gather(params, campaign):
 
 
 def location_gather(resp, params, campaign):
+    """
+    Play msg_location, and wait for 5 digits from user
+    """
     with resp.gather(numDigits=5, method="POST",
                      action=url_for("call.location_parse", **params)) as g:
         play_or_say(g, campaign.audio('msg_location'))
@@ -109,6 +132,9 @@ def location_gather(resp, params, campaign):
 def make_calls(params, campaign):
     """
     Connect a user to a sequence of targets.
+    Performs target lookup, shuffling, and limiting to maximum.
+    Plays msg_call_block_intro.
+
     Required params: campaignId, targetIds
     """
     resp = twilio.twiml.Response()
@@ -138,6 +164,7 @@ def _make_calls():
 def create():
     """
     Makes a phone call to a user.
+
     Required Params:
         userPhone
         campaignId
@@ -182,12 +209,14 @@ def create():
 @crossdomain(origin='*')
 def connection():
     """
-    Call handler to connect a user with the campaign target(s).
+    Call handler to connect a user with the targets for a given campaign.
+    Plays msg_intro audio, then redirects to make_calls.
+
     Required Params:
         campaignId
     Optional Params:
         userLocation (zipcode)
-        targetIds (if not present go to incoming_call flow and prompt for zipcode)
+        targetIds (if not present goes to incoming_call flow and prompt for zipcode)
     """
     params, campaign = parse_params(request)
 
@@ -275,16 +304,14 @@ def make_single():
         db.session.commit()
 
     target_phone = current_target.number.international  # use full E164 syntax here
-    full_name = current_target.full_name()
-
     resp = twilio.twiml.Response()
 
     play_or_say(resp, campaign.audio('msg_target_intro'),
-        title=current_target.title, name=full_name)
+        title=current_target.title, name=current_target.name)
 
     if current_app.debug:
         current_app.logger.debug('Call #{}, {} ({}) from {} in call.make_single()'.format(
-            i, full_name, target_phone, params['userPhone']))
+            i, current_target.name, target_phone, params['userPhone']))
 
     resp.dial(target_phone, callerId=params['userPhone'],
               timeLimit=current_app.config['TWILIO_TIME_LIMIT'],
