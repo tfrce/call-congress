@@ -67,21 +67,6 @@ def parse_params(r):
     if not campaign:
         return None, None
 
-    # check if campaign target_set specified
-    if not params['targetIds'] and campaign.target_set:
-        params['targetIds'] = [t.uid for t in campaign.target_set]
-    else:
-        # lookup targets for campaign type by segment, put in desired order
-        params['targetIds'] = locate_targets(params['userLocation'], campaign=campaign)
-
-    if campaign.target_ordering is ORDER_SHUFFLE:
-        # reshuffle for each caller
-        random.shuffle(params['targetIds'])
-
-    if campaign.call_maximum:
-        # limit to maximum number of calls
-        params['targetIds'] = params['targetIds'][:campaign.call_maximum]
-
     return params, campaign
 
 
@@ -138,6 +123,21 @@ def make_calls(params, campaign):
     Required params: campaignId, targetIds
     """
     resp = twilio.twiml.Response()
+
+    # check if campaign target_set specified
+    if not params['targetIds'] and campaign.target_set:
+        params['targetIds'] = [t.uid for t in campaign.target_set]
+    else:
+        # lookup targets for campaign type by segment, put in desired order
+        params['targetIds'] = locate_targets(params['userLocation'], campaign=campaign)
+
+    if campaign.target_ordering == ORDER_SHUFFLE:
+        # reshuffle for each caller
+        random.shuffle(params['targetIds'])
+
+    # limit calls to maximum number
+    if campaign.call_maximum:
+        params['targetIds'] = params['targetIds'][:campaign.call_maximum]
 
     n_targets = len(params['targetIds'])
 
