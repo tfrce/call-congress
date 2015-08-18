@@ -32,6 +32,10 @@
       this.changeCampaignType();
       this.changeSegmentBy();
 
+      if ($('input[name="call_maximum"]').val()) {
+        $('input[name="call_limit"]').attr('checked', 'checked');
+      }
+
       // load existing items from hidden inputs
       this.targetListView.loadExistingItems();
     },

@@ -27,7 +27,7 @@
             <tr><td>Segment By</td><td>{{campaign.segment_display()|safe}}</td></tr>
             <tr><td>Order</td><td>{{campaign.order_display()}}</td></tr>
             {% if campaign.call_maximum %}
-            <tr><td>Call Maximum</td><td></td></tr>
+            <tr><td>Call Maximum</td><td>{{campaign.call_maximum}}</td></tr>
             {% endif %}
             <tr><td>Allow Call In</td><td>{{campaign.allow_call_in}}</td></tr>
             <tr><td>Phone Numbers</td><td>{% for num in campaign.phone_number_set %}{{num}}{%if not loop.last%},{%endif%}{%endfor%}</td></tr>
