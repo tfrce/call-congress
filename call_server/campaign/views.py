@@ -175,7 +175,7 @@ def upload_recording(campaign_id):
             file_storage.filename = "campaign_{}_{}_{}.mp3".format(campaign.id, message_key, recording.version)
             recording.file_storage = file_storage
         else:
-            # empty file storage
+            # dummy file storage
             recording.file_storage = TemporaryStore('')
             # save text-to-speech instead
             recording.text_to_speech = form.data.get('text_to_speech')
@@ -183,15 +183,17 @@ def upload_recording(campaign_id):
         db.session.add(recording)
 
         # unset selected for all other versions
-        other_versions = CampaignAudioRecording.query.filter(
-            CampaignAudioRecording.campaign_id == campaign_id,
-            CampaignAudioRecording.recording.has(key=message_key)).all()
+        # disable autoflush to avoid errors with empty recording file_storage
+        with db.session.no_autoflush:
+            other_versions = CampaignAudioRecording.query.filter(
+                CampaignAudioRecording.campaign_id == campaign_id,
+                CampaignAudioRecording.recording.has(key=message_key)).all()
         for v in other_versions:
             # reset empty storages
             if ((not hasattr(v, 'file_storage')) or
                  (v.file_storage is None) or
                  (type(v.file_storage) is TemporaryStore)):
-                # create empty temporary store
+                # create new dummy store
                 v.file_storage = TemporaryStore('')
             v.selected = False
             db.session.add(v)
