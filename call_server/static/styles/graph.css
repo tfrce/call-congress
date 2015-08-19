@@ -1,0 +1,25 @@
+/* override bootstrap-2 styles from bootstrap-datepicker/dist/css/bootstrap-datepicker.css */
+
+#statistics .input-daterange input {
+	-webkit-border-radius: 0 0 0 0;
+	-moz-border-radius: 0 0 0 0;
+	border-radius: 0 0 0 0;
+}
+
+#statistics .input-daterange .add-on {
+	display: inline-block;
+	width: auto;
+	min-width: 16px;
+	height: auto;
+	line-height: inherit;
+	margin-top: -3px;
+	padding: 2px 5px;
+	font-weight: normal;
+	text-align: center;
+	text-shadow: 0 1px 0 #fff;
+	vertical-align: middle;
+	background-color: #eee;
+	border: 1px solid #ccc;
+	margin-left: 0px;
+	margin-right: 0px;
+}

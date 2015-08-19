@@ -66,6 +66,10 @@ select.block {
     float: right;
 }
 
+.input-group.inline {
+    display: inline-table;
+}
+
 .form-control.inline {
     width: auto;
     display: inline-block;

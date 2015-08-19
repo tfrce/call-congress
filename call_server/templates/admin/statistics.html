@@ -6,21 +6,55 @@
 
 {% block body %}
 <div class="container" id="statistics">
-<h1>Statistics</h1>
+<fieldset class="border">
+    <legend>Statistics</legend>
 
-<label>Campaign</label>
-<select name="campaigns">
-{% for c in campaigns%}
-	<option value="{{c.id}}">{{c.name}}</option>
-{% endfor %}
-</select>
-<div id="calls_for_campaign" style="height: 250px;"></div>
 
+    <div class="row form-group">
+        <div class="col-sm-2">
+            <label>Campaign</label>
+        </div>
+
+        <div class="col-sm-3">
+			<select name="campaigns">
+			{% for c in campaigns%}
+				<option value="{{c.id}}">{{c.name}}</option>
+			{% endfor %}
+			</select>
+        </div>
+
+        <div class="col-sm-4">
+	        <label class="inline">by</label>
+			<select name="timespan">
+			{% for t in timespans %}
+				<option value="{{t}}" {% if t == 'day' %}selected{%endif%} data-format="{{t[1]}}">{{t}}</option>
+			{% endfor %}
+			</select>
+        </div>
+    </div>
+
+    <div class="row form-group">
+    	<div class="col-sm-2">
+    		<label class="inline">From</label>
+    	</div>
+    	<div class="input-group input-daterange col-sm-8">
+		    <input type="text" name="start" placeholder="start" />
+		    <span class="add-on">to</span>
+		    <input type="text" name="end" placeholder="end"/>
+		</div>
+	</div>
+
+	<div id="calls_for_campaign" style="height: 250px;"></div>
+</fieldset>
 </div>
 {% endblock %}
 
 {% block scripts %}
   {% assets "graph_js" %}
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+
+  {% assets "graph_css" %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}">
   {% endassets %}
 {% endblock %}
