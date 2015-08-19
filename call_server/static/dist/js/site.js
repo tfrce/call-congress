@@ -226,7 +226,7 @@ $(document).ready(function () {
       }
 
       // local or custom: no segment, location or search, show custom target_set
-      if (val === "custom" || val === "local") {
+      if (val === "custom" || val === "local" || val === "executive") {
         $('.form-group.segment_by').hide();
         $('.form-group.locate_by').hide();
         $('#target-search').hide();
@@ -264,7 +264,6 @@ $(document).ready(function () {
     },
 
     clearRadioChoices: function(event) {
-      console.log('clearRadioChoices');
       var buttons = $(event.target).parent().find('input[type="radio"]');
       buttons.attr('checked',false).trigger('change'); //TODO, debounce this?
     },
@@ -278,7 +277,7 @@ $(document).ready(function () {
         $('.form-group.locate_by').hide();
       }
 
-      if (selected.val() === "custom") {
+      if (selected.val() === 'custom') {
         $('#set-targets').show();
       } else {
         $('#set-targets').hide();
@@ -313,10 +312,11 @@ $(document).ready(function () {
     },
 
     validateSegmentBy: function(formGroup) {
-      // if campaignType is custom or local, set segmentBy to custom
+      // if campaignType is custom or local, set segmentBy to custom and uncheck locate_by
       var campaignType = $('select#campaign_type').val();
       if (campaignType === "custom" || campaignType === "local") {
         $('input[name="segment_by"][value="custom"]').click();
+        $('input[name="locate_by"]').attr('checked', false);
       }
       return true;
     },
