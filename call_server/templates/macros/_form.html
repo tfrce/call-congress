@@ -41,7 +41,9 @@
         </label>
         {%- endfor %}
         {% if class_.get('clear', False)%}
-            <a class="btn btn-default btn-xs radio-inline clear">Clear</a>
+            <a class="btn btn-link btn-xs clear" title="clear choices">
+                <span class="glyphicon glyphicon-remove-circle"></span>
+            </a>
         {%endif%}
         {% if field.description %}
         <div class="description">

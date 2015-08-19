@@ -6,7 +6,7 @@
 
     events: {
       // generic
-      'click a.radio-inline.clear': 'clearRadioChoices',
+      'click a.clear': 'clearRadioChoices',
 
       // campaign targets
       'change select#campaign_type':  'changeCampaignType',
@@ -171,10 +171,11 @@
     },
 
     validateSegmentBy: function(formGroup) {
-      // if campaignType is custom or local, set segmentBy to custom
+      // if campaignType is custom or local, set segmentBy to custom and uncheck locate_by
       var campaignType = $('select#campaign_type').val();
       if (campaignType === "custom" || campaignType === "local") {
         $('input[name="segment_by"][value="custom"]').click();
+        $('input[name="locate_by"]').attr('checked', false);
       }
       return true;
     },

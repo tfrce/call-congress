@@ -147,7 +147,7 @@ $(document).ready(function () {
 
     events: {
       // generic
-      'click a.radio-inline.clear': 'clearRadioChoices',
+      'click a.clear': 'clearRadioChoices',
 
       // campaign targets
       'change select#campaign_type':  'changeCampaignType',
@@ -264,6 +264,7 @@ $(document).ready(function () {
     },
 
     clearRadioChoices: function(event) {
+      console.log('clearRadioChoices');
       var buttons = $(event.target).parent().find('input[type="radio"]');
       buttons.attr('checked',false).trigger('change'); //TODO, debounce this?
     },
@@ -1061,7 +1062,6 @@ $(document).ready(function () {
       var timespan = $('select[name="timespan"]').val();
       var start = new Date($('input[name="start"]').datepicker('getDate')).toISOString();
       var end = new Date($('input[name="end"]').datepicker('getDate')).toISOString();
-      console.log(start, end);
 
       var dataUrl = '/api/campaign/'+campaign+'/stats.json?timespan='+timespan;
       if (start) {
@@ -1071,9 +1071,7 @@ $(document).ready(function () {
         dataUrl += ('&end='+end);
       }
 
-      this.chart = new Chartkick.LineChart(
-          'calls_for_campaign', dataUrl, this.chartOpts
-      );
+      this.chart = new Chartkick.LineChart('calls_for_campaign', dataUrl, this.chartOpts);
     }
 
   });
