@@ -33,7 +33,6 @@
       var timespan = $('select[name="timespan"]').val();
       var start = new Date($('input[name="start"]').datepicker('getDate')).toISOString();
       var end = new Date($('input[name="end"]').datepicker('getDate')).toISOString();
-      console.log(start, end);
 
       var dataUrl = '/api/campaign/'+campaign+'/stats.json?timespan='+timespan;
       if (start) {
@@ -43,9 +42,7 @@
         dataUrl += ('&end='+end);
       }
 
-      this.chart = new Chartkick.LineChart(
-          'calls_for_campaign', dataUrl, this.chartOpts
-      );
+      this.chart = new Chartkick.LineChart('calls_for_campaign', dataUrl, this.chartOpts);
     }
 
   });
