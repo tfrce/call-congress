@@ -1,6 +1,7 @@
 import random
 import pystache
 import twilio.twiml
+import phonenumbers
 
 from flask import abort, Blueprint, request, url_for, current_app
 from flask_jsonpify import jsonify
@@ -186,10 +187,24 @@ def create():
         current_app.logger.error("no numbers available for campaign %(campaignId)d in %(userCountry)s" % params)
         abort(500)
 
+    # validate phonenumber for country
+    try:
+        parsed = phonenumbers.parse(params['userPhone'], params['userCountry'])
+        if parsed.country_code > 1:
+            # twilio requires +country code for intl dialing
+            userPhone = '+%s%s' % (parsed.country_code, parsed.national_number)
+        else:
+            # but doesn't like +1 for US
+            userPhone = parsed.national_number
+    except phonenumbers.NumberParseException:
+        current_app.logger.error('Unable to parse %(userPhone)s for %(userCountry)s' % params)
+        # press onward, but we may not be able to actually dial
+        userPhone = params['userPhone']
+
     # initiate the call
     try:
         call = current_app.config['TWILIO_CLIENT'].calls.create(
-            to=params['userPhone'],
+            to=userPhone,
             from_=random.choice(phone_numbers),
             url=url_for('call.connection', _external=True, **params),
             timeLimit=current_app.config['TWILIO_TIME_LIMIT'],
