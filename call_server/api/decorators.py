@@ -27,7 +27,6 @@ def api_key_or_auth_required(f):
             return f(*args, **kwargs)  # allow
 
         admin_key = current_app.config.get('ADMIN_API_KEY')
-        admin_key = request.args.get('api_key')
         if admin_key and request.args.get('api_key') == admin_key:
                 return f(*args, **kwargs)
 
