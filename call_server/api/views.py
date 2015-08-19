@@ -3,7 +3,7 @@ from collections import OrderedDict
 from datetime import datetime, timedelta
 import dateutil
 
-from flask import Blueprint, Response, render_template, abort, request
+from flask import Blueprint, Response, render_template, abort, request, jsonify
 
 from sqlalchemy.sql import func, extract
 
@@ -31,6 +31,9 @@ restless_preprocessors = {'GET_SINGLE':   [restless_api_auth],
 
 
 def configure_restless(app):
+    rest.create_api(Call, collection_name='call', methods=['GET'],
+                    include_columns=['id', 'timestamp', 'campaign_id', 'target_id',
+                                    'call_id', 'status', 'duration'])
     rest.create_api(Campaign, collection_name='campaign', methods=['GET'],
                     include_columns=['id', 'name', 'campaign_type', 'campaign_state', 'campaign_subtype',
                                      'target_ordering', 'allow_call_in', 'call_maximum'],
@@ -40,6 +43,7 @@ def configure_restless(app):
                     include_columns=['id', 'key', 'version', 'description',
                                      'text_to_speech', 'selected', 'hidden'],
                     include_methods=['file_url', 'selected_campaigns', 'selected_campaign_ids'])
+
 
 # non CRUD-routes
 # protect with decorator
@@ -105,6 +109,7 @@ def campaign_stats(campaign_id):
                       'data': OrderedDict(sorted(data.items()))}
         series.append(new_series)
     return Response(json.dumps(series), mimetype='application/json')
+
 
 # embed campaign routes, should be public
 # js must be crossdomain

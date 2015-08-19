@@ -1,3 +1,5 @@
+import datetime
+
 from flask import (Blueprint, render_template, current_app, request,
                    flash, url_for, redirect, session, abort, jsonify)
 from flask.ext.login import login_required
@@ -311,3 +313,14 @@ def status(campaign_id):
         return redirect(url_for('campaign.index'))
 
     return render_template('campaign/status.html', campaign=campaign, form=form)
+
+
+@campaign.route('/<int:campaign_id>/calls', methods=['GET'])
+def calls(campaign_id):
+    campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
+    # call lookup handled via api ajax
+
+    start = datetime.date.today()
+    end = start + datetime.timedelta(days=1)
+
+    return render_template('campaign/calls.html', campaign=campaign, start=start, end=end)

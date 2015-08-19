@@ -27,7 +27,8 @@
             <td><span class="glyphicon {% if c.status == 'live' %}glyphicon-play{%elif c.status=='paused'%}glyphicon-pause{%else%}glyphicon-stop{%endif%}"></td>
             <td><a href="{{url_for('campaign.form', campaign_id=c.id)}}">edit</a> /
                 <a href="{{url_for('campaign.copy', campaign_id=c.id)}}">copy</a> / 
-                <a href="{{url_for('campaign.launch', campaign_id=c.id)}}">test</a>
+                <a href="{{url_for('campaign.launch', campaign_id=c.id)}}">test</a> /
+                <a href="{{url_for('campaign.calls', campaign_id=c.id)}}">log</a>
             </td>
         </tr>
         {%endfor%}
