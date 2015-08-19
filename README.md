@@ -42,7 +42,7 @@ Action Integration
 ------------------
 For most uses, you can just place the `<script>` tag provided in the launch page into your action platform. This will add a post-submit callback to your action form to connect the caller, and optionally display the script in a lightbox.
 
-For more complex integrations, Call Power provides [INTEGRATION_API.md](json APIs). You will need to authenticate either as a logged in user, or with an ADMIN_API_KEY specified the python environment.
+For more complex integrations, Call Power provides [json APIs](INTEGRATION_API.md). You will need to authenticate either as a logged in user, or with an ADMIN_API_KEY specified the python environment.
 
 
 Installation Instructions
@@ -63,4 +63,4 @@ To update these files with new data after elections, run `cd call_server/politic
 Code License
 ------------
 
-See the [LICENSE](license) file for licensing information under the GNU AGPL. This license is applicable to the entire project, sans any 3rd party libraries that may be included.
+See the [license](LICENSE) file for licensing information under the GNU AGPL. This license is applicable to the entire project, sans any 3rd party libraries that may be included.
