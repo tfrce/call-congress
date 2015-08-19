@@ -162,11 +162,13 @@ def configure_assets(app):
                        'bower_components/backbone/backbone.js',
                        'bower_components/backbone-filtered-collection/backbone-filtered-collection.js',
                        'bower_components/html.sortable/dist/html.sortable.min.js',
+                       'bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.js',
                        filters='rjsmin', output='dist/js/vendor.js')
     assets.register('vendor_js', vendor_js)
 
     vendor_css = Bundle('bower_components/bootstrap/dist/css/bootstrap.css',
                         'bower_components/bootstrap/dist/css/bootstrap-theme.css',
+                        'bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.css',
                         filters='cssmin', output='dist/css/vendor.css')
     assets.register('vendor_css', vendor_css)
 
@@ -177,13 +179,9 @@ def configure_assets(app):
 
     graph_js = Bundle('bower_components/highcharts/highcharts.js',
                       'bower_components/chartkick/chartkick.js',
-                      'bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.js',
                       filters='rjsmin', output='dist/js/graph.js')
     assets.register('graph_js', graph_js)
 
-    graph_css = Bundle('bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.css',
-                      filters='cssmin', output='dist/css/graph.css')
-    assets.register('graph_css', graph_css)
 
     site_js = Bundle('scripts/site/*.js',
                      output='dist/js/site.js')
