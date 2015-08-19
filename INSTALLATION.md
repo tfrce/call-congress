@@ -24,8 +24,9 @@ For production, you will also need to set:
 
 * CALLPOWER_CONFIG='call_server.config:ProductionConfig', so that manager.py knows to use a real database for migrations
 * DATABASE_URI, a sqlalchemy [connection string](https://pythonhosted.org/Flask-SQLAlchemy/config.html#connection-uri-format) for a postgres or mysql database addresses
-* APPLICATION_ROOT to the path where the application will live (if you are using a whole domain or subdomain, this should be None)
 * REDIS_URL, a URI for the Redis server
+* APPLICATION_ROOT to the path where the application will live. If you are using a whole domain or subdomain, this should be None.
+* SERVER_NAME to the external name (and port number, if not 80) of the server
 
 If you are storing assets on Amazon S3, or another [Flask-Store provider](http://flask-store.soon.build)
 
@@ -42,7 +43,7 @@ If you would like to let users reset their passwords over email:
 * MAIL_PASSWORD
 * MAIL_DEFAULT_SENDER, defaults to `info@callpower.org`
 
-For more information on these configuration values, check the [Flask Documentation](http://flask.pocoo.org/docs/0.10/config/#builtin-configuration-values)
+For more information on default configuration values, check the [Flask Documentation](http://flask.pocoo.org/docs/0.10/config/#builtin-configuration-values)
 
 Development mode
 -------------------
