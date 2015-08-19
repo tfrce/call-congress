@@ -5,27 +5,44 @@
     el: $('#statistics'),
 
     events: {
-      'change select[name="campaigns"]': 'renderCampaign',
+      'change select[name="campaigns"]': 'renderChart',
+      'change select[name="timespan"]': 'renderChart',
     },
 
     initialize: function() {
-      this.renderCampaign();
+      this.$el.find('.input-daterange input').each(function (){
+        $(this).datepicker("clearDates");
+      });
 
+      this.renderChart();
       this.chartOpts = {
-        "library":{"canvasDimensions":{"height":250}}
+        "library":{"canvasDimensions":{"height":250}},
       };
+
+      this.$el.on('changeDate', this.renderChart);
+      this.$el.on('changeDate', this.renderChart);
     },
 
-    renderCampaign: function(event) {
+    renderChart: function(event) {
       var campaign = $('select[name="campaigns"]').val();
       if (campaign === "") {
         campaign = 1;
       }
+      var timespan = $('select[name="timespan"]').val();
+      var start = new Date($('input[name="start"]').datepicker('getDate')).toISOString();
+      var end = new Date($('input[name="end"]').datepicker('getDate')).toISOString();
+      console.log(start, end);
+
+      var dataUrl = '/api/campaign/'+campaign+'/stats.json?timespan='+timespan;
+      if (start) {
+        dataUrl += ('&start='+start);
+      }
+      if (end) {
+        dataUrl += ('&end='+end);
+      }
 
       this.chart = new Chartkick.LineChart(
-          'calls_for_campaign',
-          '/api/campaign/'+campaign+'/stats.json',
-          this.chartOpts
+          'calls_for_campaign', dataUrl, this.chartOpts
       );
     }
 

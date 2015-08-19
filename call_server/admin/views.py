@@ -10,6 +10,7 @@ from sqlalchemy.sql import func
 from ..campaign.models import TwilioPhoneNumber, Campaign
 from ..call.models import Call
 from ..campaign.constants import STATUS_PAUSED
+from ..api.constants import API_TIMESPANS
 from ..utils import get_one_or_create
 
 admin = Blueprint('admin', __name__, url_prefix='/admin')
@@ -45,7 +46,8 @@ def dashboard():
 @admin.route('/statistics')
 def statistics():
     campaigns = Campaign.query.all()
-    return render_template('admin/statistics.html', campaigns=campaigns)
+    return render_template('admin/statistics.html',
+        campaigns=campaigns, timespans=API_TIMESPANS)
 
 
 @admin.route('/system')

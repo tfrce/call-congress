@@ -1,11 +1,16 @@
 import json
 from collections import OrderedDict
+from datetime import datetime, timedelta
+import dateutil
 
-from flask import Blueprint, Response, render_template
-from sqlalchemy.sql import func
+from flask import Blueprint, Response, render_template, abort, request
+
+from sqlalchemy.sql import func, extract
 
 from decorators import api_key_or_auth_required, restless_api_auth
 from ..call.decorators import crossdomain
+
+from constants import API_TIMESPANS
 
 from ..extensions import rest, db
 from ..campaign.models import Campaign, Target, AudioRecording
@@ -41,40 +46,64 @@ def configure_restless(app):
 @api.route('/campaign/<int:campaign_id>/stats.json', methods=['GET'])
 @api_key_or_auth_required
 def campaign_stats(campaign_id):
+    start = request.values.get('start')
+    end = request.values.get('end')
+    timespan = request.values.get('timespan', 'day')
+
+    if timespan not in API_TIMESPANS.keys():
+        abort(400, 'timespan should be one of %s' % ','.join(API_TIMESPANS))
+    else:
+        timespan_strf = API_TIMESPANS[timespan]
+
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
-    calls_query = (db.session.query(func.date(Call.timestamp), func.count(Call.id))
-            .filter(Call.campaign == campaign)
-            .group_by(func.date(Call.timestamp))
-            .order_by(func.date(Call.timestamp)))
-    calls = dict(name='All Calls', data=dict(calls_query.all()))
+    timespan_extract = extract(timespan, Call.timestamp).label(timespan)
 
-    series = [calls]
-
-    calls_by_status_query = (
+    query = (
         db.session.query(
-            func.date(Call.timestamp),
+            func.min(Call.timestamp.label('date')),
+            timespan_extract,
             Call.status,
-            func.count(Call.id)
+            func.count(Call.id).label('calls_count')
         )
-        .filter(Call.campaign == campaign)
-        .group_by(func.date(Call.timestamp))
+        .filter(Call.campaign_id == int(campaign.id))
+        .group_by(timespan_extract)
+        .order_by(timespan)
         .group_by(Call.status)
-        .order_by(func.date(Call.timestamp))
     )
 
+    if start:
+        try:
+            startDate = dateutil.parser.parse(start)
+        except ValueError:
+            abort(400, 'start should be in isostring format')
+        query = query.filter(Call.timestamp >= startDate)
+
+    if end:
+        try:
+            endDate = dateutil.parser.parse(end)
+            if endDate < startDate:
+                abort(400, 'end should be after start')
+            if endDate == startDate:
+                endDate = startDate + timedelta(days=1)
+        except ValueError:
+            abort(400, 'end should be in isostring format')
+        query = query.filter(Call.timestamp <= endDate)
+
     # create a separate series for each status value
+    series = []
+
     STATUS_LIST = ('completed', 'canceled', 'failed')
     for status in STATUS_LIST:
         data = {}
         # combine status values by date
-        for (date, call_status, count) in calls_by_status_query.all():
+        for (date, timespan, call_status, count) in query.all():
             # entry like ('2015-08-10', u'canceled', 8)
             if call_status == status:
-                data[date] = count
+                date_string = date.strftime(timespan_strf)
+                data[date_string] = count
         new_series = {'name': status.capitalize(),
                       'data': OrderedDict(sorted(data.items()))}
         series.append(new_series)
-
     return Response(json.dumps(series), mimetype='application/json')
 
 # embed campaign routes, should be public
