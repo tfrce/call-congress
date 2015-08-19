@@ -11,7 +11,9 @@
 
     initialize: function() {
       this.$el.find('.input-daterange input').each(function (){
-        $(this).datepicker("clearDates");
+        $(this).datepicker({
+          'format': "yyyy/mm/dd"
+        });
       });
 
       this.renderChart();
