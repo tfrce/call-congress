@@ -177,8 +177,13 @@ def configure_assets(app):
 
     graph_js = Bundle('bower_components/highcharts/highcharts.js',
                       'bower_components/chartkick/chartkick.js',
+                      'bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.js',
                       filters='rjsmin', output='dist/js/graph.js')
     assets.register('graph_js', graph_js)
+
+    graph_css = Bundle('bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.css',
+                      filters='cssmin', output='dist/css/graph.css')
+    assets.register('graph_css', graph_css)
 
     site_js = Bundle('scripts/site/*.js',
                      output='dist/js/site.js')
