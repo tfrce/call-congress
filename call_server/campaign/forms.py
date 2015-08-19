@@ -35,8 +35,8 @@ class CampaignForm(Form):
     campaign_subtype = SelectField('', [AnyOf(choice_keys(choice_values_flat(CAMPAIGN_NESTED_CHOICES))), Optional()], )
     # nested_type passed to data-field in template, but starts empty
 
-    segment_by = RadioField(_('Segment By'), [Optional()], choices=choice_items(SEGMENT_BY_CHOICES),
-                            description=True, default=None)
+    segment_by = RadioField(_('Segment By'), [Required()], choices=choice_items(SEGMENT_BY_CHOICES),
+                            description=True, default=SEGMENT_BY_CHOICES[0][0])
     locate_by = RadioField(_('Locate By'), [Optional()], choices=choice_items(LOCATION_CHOICES),
                                   description=True, default=None)
     target_set = FieldList(FormField(TargetForm, _('Choose Targets')), validators=[Optional()])
