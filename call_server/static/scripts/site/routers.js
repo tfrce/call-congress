@@ -6,6 +6,7 @@
       "campaign/:id/copy": "campaignForm",
       "campaign/:id/audio": "audioForm",
       "campaign/:id/launch": "launchForm",
+      "campaign/:id/calls": "callLog",
       "system": "systemForm",
       "statistics": "statisticsView",
     },
@@ -20,6 +21,10 @@
 
     launchForm: function(id) {
       CallPower.campaignLaunchForm = new CallPower.Views.CampaignLaunchForm();
+    },
+
+    callLog: function(id) {
+      CallPower.callLog = new CallPower.Views.CallLog(id);
     },
 
     systemForm: function() {
