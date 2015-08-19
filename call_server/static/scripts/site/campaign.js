@@ -180,6 +180,17 @@
       return true;
     },
 
+    validateLocateBy: function(formGroup) {
+      // if segmentBy is location, locateBy must have value
+      var segmentBy = $('input[name="segment_by"]').val();
+      if (segmentBy === "location") {
+        return !!$('input[name="locate_by"]:checked').val();
+      } else {
+        return true;
+      }
+    },
+
+
     validateTargetList: function(formGroup) {
       // if type == custom, ensure we have targets
       if ($('select#campaign_type').val() === "custom") {
@@ -214,8 +225,11 @@
       isValid = this.validateField($('.form-group.campaign_type'), this.validateState, 'Select a state') && isValid;
       isValid = this.validateField($('.form-group.campaign_type'), this.validateNestedSelect, 'Select a sub-type') && isValid;
 
-      // campaign targets
+      // campaign segmentation
       isValid = this.validateField($('.form-group.segment_by'), this.validateSegmentBy, 'Campaign type requires custom targeting') && isValid;
+      isValid = this.validateField($('.form-group.locate_by'), this.validateLocateBy, 'Please pick a location attribute') && isValid;
+      
+      // campaign targets
       isValid = this.validateField($('.form-group#set-targets'), this.validateTargetList, 'Add a custom target') && isValid;
 
       // phone numbers
