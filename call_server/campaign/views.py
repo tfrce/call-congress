@@ -100,6 +100,7 @@ def form(campaign_id=None):
                 n.call_in_allowed = True
                 db.session.add(n)
             db.session.commit()
+        # TODO, set app on twilio number 
         # TODO, allow_call_in on just one number?
 
         if edit:
@@ -282,7 +283,7 @@ def launch(campaign_id):
         .replace('\n', '').replace('\t', ' ').replace('    ', ' '))
 
     if form.validate_on_submit():
-        campaign.status = STATUS_LIVE
+        campaign.status_code = STATUS_LIVE
         # TODO update campaign embed settings
 
         db.session.add(campaign)
