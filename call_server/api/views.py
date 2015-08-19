@@ -41,7 +41,7 @@ def configure_restless(app):
     rest.create_api(Target, collection_name='target', methods=['GET'],)
     rest.create_api(AudioRecording, collection_name='audiorecording', methods=['GET'],
                     include_columns=['id', 'key', 'version', 'description',
-                                     'text_to_speech', 'selected', 'hidden'],
+                                     'text_to_speech', 'hidden'],
                     include_methods=['file_url', 'selected_campaigns', 'selected_campaign_ids'])
 
 
