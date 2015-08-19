@@ -1,0 +1,65 @@
+{% set page_title = "Call Log" %}
+{% extends "layouts/base_admin.html" %}
+
+{% block body %}
+<div class="container" id="call_log">
+    <h2>{{ _('Call Log') }}</h2>
+
+    <form class="form-horizontal filters">
+        <fieldset class="border">
+        <legend>Filter</legend>
+        
+        <div class="row">
+            <div class="col-sm-2">
+                <label class="inline">Status</label>
+            </div>
+
+            <div class="col-sm-8">
+                <select name="status">
+                    <option value="">All</option>
+                    <option value="completed">Completed</option>
+                    <option value="no-answer">No Answer</option>
+                    <option value="canceled">Canceled</option>
+                    <option value="failed">Failed</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-2">
+                <label class="inline">From</label>
+            </div>
+            <div class="input-group input-daterange col-sm-8">
+                <input type="text" name="start" placeholder="start" value="{{start}}"/>
+                <span class="add-on">to</span>
+                <input type="text" name="end" placeholder="end" value="{{end}}"/>
+            </div>
+        </div>
+        </fieldset>
+    </form>
+
+    <table class="table" id="calls-list">
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Twilio ID</th>
+                <th>Target</th>
+                <th>Status</th>
+                <th>Duration</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/template" id="call-log-tmpl">
+    <td><%= (new Date(data.timestamp)).toUTCString() %> </td>
+    <td><a target="_blank" href="https://www.twilio.com/user/account/monitor/events/<%= data.call_id %>"> <%= data.call_id %></a></td>
+    <td><%= data.target %></td>
+    <td><%= data.status %></td>
+    <td><%= data.duration %></td>
+</script>
+{% endblock %}

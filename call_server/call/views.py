@@ -199,6 +199,7 @@ def create():
         result = jsonify(message=call.status, debugMode=current_app.debug)
         result.status_code = 200 if call.status != 'failed' else 500
     except TwilioRestException, err:
+        current_app.logger.error("Twilio error: %s" % err)
         result = jsonify(message=err.msg)
         result.status_code = 200
 
