@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from flask import Blueprint, render_template, current_app, flash, url_for, redirect
 from flask.ext.login import login_required
 from flask.ext.babel import gettext as _
@@ -46,8 +48,13 @@ def dashboard():
 @admin.route('/statistics')
 def statistics():
     campaigns = Campaign.query.all()
+    today = datetime.today()
+    start = today - timedelta(days=today.weekday())
+    end = start + timedelta(days=6)
     return render_template('admin/statistics.html',
-        campaigns=campaigns, timespans=API_TIMESPANS)
+        campaigns=campaigns, timespans=API_TIMESPANS,
+        this_week_start=start.strftime('%Y-%m-%d'),
+        this_week_end=end.strftime('%Y-%m-%d'))
 
 
 @admin.route('/system')
