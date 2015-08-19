@@ -48,9 +48,11 @@ CUSTOM_CAMPAIGN_CHOICES = [
     'custom'
 ]
 
+SEGMENT_BY_LOCATION = 'location'
+SEGMENT_BY_CUSTOM = 'custom'
 SEGMENT_BY_CHOICES = (
-    ('location', 'Location'),
-    ('custom', 'Custom')
+    (SEGMENT_BY_LOCATION, 'Location'),
+    (SEGMENT_BY_CUSTOM, 'Custom')
 )
 
 LOCATION_POSTAL = 'postal'
