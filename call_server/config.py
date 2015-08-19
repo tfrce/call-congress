@@ -36,10 +36,9 @@ class DefaultConfig(object):
         os.environ.get('TWILIO_ACCOUNT_SID'),
         os.environ.get('TWILIO_AUTH_TOKEN'))
     # limit on the length of the call
-    TWILIO_TIME_LIMIT = 60 * 20  # 4 minutes
-
+    TWILIO_TIME_LIMIT = os.environ.get('TWILIO_TIME_LIMIT', 60 * 60)  # one hour max
     # limit on the amount of time to ring before giving up
-    TWILIO_TIMEOUT = 40  # seconds
+    TWILIO_TIMEOUT = os.environ.get('TWILIO_TIMEOUT', 60)  # seconds
 
     SECRET_KEY = os.environ.get('SECRET_KEY')
 
