@@ -85,7 +85,7 @@
       }
 
       // local or custom: no segment, location or search, show custom target_set
-      if (val === "custom" || val === "local") {
+      if (val === "custom" || val === "local" || val === "executive") {
         $('.form-group.segment_by').hide();
         $('.form-group.locate_by').hide();
         $('#target-search').hide();
@@ -136,7 +136,7 @@
         $('.form-group.locate_by').hide();
       }
 
-      if (selected.val() === "custom") {
+      if (selected.val() === 'custom') {
         $('#set-targets').show();
       } else {
         $('#set-targets').hide();
