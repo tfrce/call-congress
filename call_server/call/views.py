@@ -10,7 +10,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from ..extensions import csrf, db
 
 from .models import Call
-from ..campaign.constants import ORDER_SHUFFLE
+from ..campaign.constants import ORDER_SHUFFLE, LOCATION_POSTAL
 from ..campaign.models import Campaign, Target
 from ..political_data.lookup import locate_targets
 
@@ -223,20 +223,22 @@ def connection():
     if not params or not campaign:
         abort(404)
 
-    if params['targetIds']:
+    if campaign.locate_by == LOCATION_POSTAL:
+        return intro_location_gather(params, campaign)
+    else:
         resp = twilio.twiml.Response()
 
         play_or_say(resp, campaign.audio('msg_intro'))
 
         action = url_for("call._make_calls", **params)
 
+        # wait for user keypress, in case we connected to voicemail
+        # give up after 10 seconds
         with resp.gather(numDigits=1, method="POST", timeout=10,
                          action=action) as g:
             play_or_say(g, campaign.audio('msg_intro_confirm'))
 
             return str(resp)
-    else:
-        return intro_location_gather(params, campaign)
 
 
 @call.route('/incoming', methods=call_methods)
