@@ -119,7 +119,8 @@ class DevelopmentConfig(DefaultConfig):
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     SECRET_KEY = os.environ.get('SECRET_KEY', 'NotARealSecretKey,YouShouldSetOneInYour.Env')
 
-    SQLALCHEMY_DATABASE_URI = 'sqlite:////%s/dev.db' % os.path.abspath(os.curdir)
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI',
+        'sqlite:////%s/dev.db' % os.path.abspath(os.curdir))
 
     SERVER_NAME = 'localhost:5000'
     STORE_PATH = '%s/instance/uploads/' % os.path.abspath(os.curdir)
