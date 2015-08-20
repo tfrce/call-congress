@@ -107,10 +107,10 @@ class Campaign(db.Model):
         if region_code:
             # convert region_code to country_code for comparison
             country_code = phone_number.phonenumbers.country_code_for_region(region_code)
-            return [n.number.national for n in self.phone_number_set if n.number.country_code == country_code]
+            return [n.number.e164 for n in self.phone_number_set if n.number.country_code == country_code]
         else:
             # return all numbers in set
-            return [n.number.national for n in self.phone_number_set]
+            return [n.number.e164 for n in self.phone_number_set]
 
     def required_fields(self):
         """API convenience method for rendering campaigns externally
@@ -129,7 +129,7 @@ class Campaign(db.Model):
 
     def targets(self):
         "Convenience method for getting list of target names and phone numbers"
-        return [(s.name, s.number.national) for s in self.target_set]
+        return [(s.name, s.number.e164) for s in self.target_set]
 
     def targets_display(self):
         "Display method for this campaign's target list if specified, or subtype (like Congress - Senate)"
