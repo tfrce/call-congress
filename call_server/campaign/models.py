@@ -67,7 +67,10 @@ class Campaign(db.Model):
         "Convenience method for getting all selected audio recordings for this campaign"
         table = {}
         for r in self._audio_query().all():
-            table[r.recording.key] = r.recording.file_url()
+            if r.recording.text_to_speech:
+                table[r.recording.key] = r.recording.text_to_speech
+            else:
+                table[r.recording.key] = r.recording.file_url()
         return table
 
     def _audio_query(self):
@@ -173,6 +176,9 @@ class Target(db.Model):
 
     def full_name(self):
         return unicode("{} {}".format(self.title, self.name), 'utf8')
+
+    def phone_number(self):
+        return self.number.e164
 
     @classmethod
     def get_uid_or_cache(cls, uid, prefix=None):
