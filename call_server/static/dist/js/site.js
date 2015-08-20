@@ -465,7 +465,7 @@ $(document).ready(function () {
 
     validateLocateBy: function(formGroup) {
       // if segmentBy is location, locateBy must have value
-      var segmentBy = $('input[name="segment_by"]').val();
+      var segmentBy = $('input[name="segment_by"]:checked').val();
       if (segmentBy === "location") {
         return !!$('input[name="locate_by"]:checked').val();
       } else {
