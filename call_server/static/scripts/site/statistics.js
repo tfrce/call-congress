@@ -34,6 +34,14 @@
       var start = new Date($('input[name="start"]').datepicker('getDate')).toISOString();
       var end = new Date($('input[name="end"]').datepicker('getDate')).toISOString();
 
+      if (start > end) {
+        $('.input-daterange input[name="start"]').addClass('error');
+        return false;
+      } else {
+        $('.input-daterange input').removeClass('error');
+      }
+
+
       var dataUrl = '/api/campaign/'+campaign+'/stats.json?timespan='+timespan;
       if (start) {
         dataUrl += ('&start='+start);
