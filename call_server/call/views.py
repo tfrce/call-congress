@@ -184,7 +184,7 @@ def create():
     phone_numbers = campaign.phone_numbers(params['userCountry'])
 
     if not phone_numbers:
-        current_app.logger.error("no numbers available for campaign %(campaignId)d in %(userCountry)s" % params)
+        current_app.logger.error("no numbers available for campaign %(campaignId)s in %(userCountry)s" % params)
         abort(500)
 
     # validate phonenumber for country
