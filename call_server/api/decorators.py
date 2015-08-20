@@ -8,12 +8,12 @@ def restless_api_auth(*args, **kwargs):
     """Restrict access to logged in user or valid admin api key
     Flask-Restless preprocessor"""
     if current_user.is_authenticated():
-        return True  # allow
+        return  # allow
 
     # check for system api key
     admin_key = current_app.config.get('ADMIN_API_KEY')
     if admin_key and request.args.get('api_key') == admin_key:
-        return True
+        return  # allow
 
     abort(401, 'Not Authenticated')
 
