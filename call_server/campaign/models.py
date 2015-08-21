@@ -190,15 +190,18 @@ class Target(db.Model):
         cached = False
 
         if not t:
-            cache_list = cache.get(key)
-            if cache_list:
-                # TODO, check to ensure it is list-like
-                obj = cache_list[0]
-                data = adapt_to_target(obj, prefix)
+            cached_obj = cache.get(key)
+            if type(cached_obj) is list:
+                data = adapt_to_target(cached_obj[0], prefix)
+            elif type(cached_obj) is dict:
+                data = adapt_to_target(cached_obj, prefix)
+            else:
+                # do it live
+                data = cached_obj
 
-                # create target object and save for reuse
-                t = Target(**data)
-                cached = True
+            # create target object and save for reuse
+            t = Target(**data)
+            cached = True
         return t, cached
 
 

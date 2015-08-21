@@ -7,8 +7,8 @@ from call_server.campaign.constants import (TARGET_CHAMBER_BOTH, TARGET_CHAMBER_
 class TestData(BaseTestCase):
     def setUp(self):
         # mock the flask-cache as a dictionary
-        dictCache = {}
-        self.us_data = USData(dictCache)
+        testCache = {}
+        self.us_data = USData(testCache)
         self.us_data.load_data()
 
     def test_cache(self):
