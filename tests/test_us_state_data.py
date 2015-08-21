@@ -76,5 +76,3 @@ class TestData(BaseTestCase):
 
         second = self.us_state_data.get_uid(uids[1])
         self.assertEqual(second['chamber'], 'lower')
-
-

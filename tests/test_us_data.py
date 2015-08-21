@@ -37,6 +37,17 @@ class TestData(BaseTestCase):
         self.assertEqual(rep['district'], '13')
         self.assertEqual(rep['in_office'], '1')
 
+    def test_dc(self):
+        no_senators = self.us_data.get_senators('DC')
+        self.assertEqual(no_senators, [])
+
+        rep = self.us_data.get_house_member('DC', '0')[0]
+        self.assertEqual(rep['chamber'], 'house')
+        self.assertEqual(rep['state'], 'DC')
+        self.assertEqual(rep['district'], '0')
+        self.assertEqual(rep['in_office'], '1')
+
+
     def test_locate_targets(self):
         uids = self.us_data.locate_targets('05055', TARGET_CHAMBER_BOTH, ORDER_IN_ORDER)
         # returns a list of bioguide ids

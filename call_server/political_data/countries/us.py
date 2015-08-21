@@ -88,16 +88,17 @@ class USData(DataProvider):
         return self.cache.get(key)
 
     def get_senators(self, state):
-        return self.cache.get(self.KEY_SENATE.format(state=state))
+        key = self.KEY_SENATE.format(state=state)
+        return self.cache.get(key) or []
 
     def get_district(self, zipcode):
-        return self.cache.get(self.KEY_ZIPCODE.format(zipcode=zipcode))
+        return self.cache.get(self.KEY_ZIPCODE.format(zipcode=zipcode)) or {}
 
     def get_bioguide(self, uid):
-        return self.cache.get(self.KEY_BIOGUIDE.format(bioguide_id=uid))
+        return self.cache.get(self.KEY_BIOGUIDE.format(bioguide_id=uid)) or {}
 
     def get_uid(self, key):
-        return self.cache.get(key)
+        return self.cache.get(key) or {}
 
     def locate_targets(self, zipcode, chambers=TARGET_CHAMBER_BOTH, order=ORDER_IN_ORDER):
         """ Find all congressional targets for a zipcode, crossing state boundaries if necessary.
