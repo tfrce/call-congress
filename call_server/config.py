@@ -1,5 +1,6 @@
 import os
 import twilio.rest
+import sunlight
 
 
 class DefaultConfig(object):
@@ -43,6 +44,7 @@ class DefaultConfig(object):
     SECRET_KEY = os.environ.get('SECRET_KEY')
 
     SUNLIGHT_API_KEY = os.environ.get('SUNLIGHT_API_KEY')
+    sunlight.config.API_KEY = SUNLIGHT_API_KEY
 
     LOG_PHONE_NUMBERS = True
 

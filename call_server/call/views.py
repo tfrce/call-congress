@@ -1,7 +1,7 @@
 import random
 import pystache
 import twilio.twiml
-import phonenumbers
+from sqlalchemy_utils.types.phone_number import PhoneNumber
 
 from flask import abort, Blueprint, request, url_for, current_app
 from flask_jsonpify import jsonify
@@ -184,19 +184,14 @@ def create():
     phone_numbers = campaign.phone_numbers(params['userCountry'])
 
     if not phone_numbers:
-        current_app.logger.error("no numbers available for campaign %(campaignId)d in %(userCountry)s" % params)
+        current_app.logger.error("no numbers available for campaign %(campaignId)s in %(userCountry)s" % params)
         abort(500)
 
     # validate phonenumber for country
     try:
-        parsed = phonenumbers.parse(params['userPhone'], params['userCountry'])
-        if parsed.country_code > 1:
-            # twilio requires +country code for intl dialing
-            userPhone = '+%s%s' % (parsed.country_code, parsed.national_number)
-        else:
-            # but doesn't like +1 for US
-            userPhone = parsed.national_number
-    except phonenumbers.NumberParseException:
+        parsed = PhoneNumber(params['userPhone'], params['userCountry'])
+        userPhone = parsed.e164
+    except PhoneNumber.NumberParseException:
         current_app.logger.error('Unable to parse %(userPhone)s for %(userCountry)s' % params)
         # press onward, but we may not be able to actually dial
         userPhone = params['userPhone']
@@ -321,7 +316,7 @@ def make_single():
         db.session.add(current_target)
         db.session.commit()
 
-    target_phone = current_target.number.international  # use full E164 syntax here
+    target_phone = current_target.number.e164  # use full E164 syntax here
     resp = twilio.twiml.Response()
 
     play_or_say(resp, campaign.audio('msg_target_intro'),
@@ -331,7 +326,9 @@ def make_single():
         current_app.logger.debug('Call #{}, {} ({}) from {} in call.make_single()'.format(
             i, current_target.name, target_phone, params['userPhone']))
 
-    resp.dial(target_phone, callerId=params['userPhone'],
+    userPhone = PhoneNumber(params['userPhone'], params['userCountry'])
+
+    resp.dial(target_phone, callerId=userPhone.e164,
               timeLimit=current_app.config['TWILIO_TIME_LIMIT'],
               timeout=current_app.config['TWILIO_TIMEOUT'], hangupOnStar=True,
               action=url_for('call.complete', **params))

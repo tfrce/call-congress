@@ -3,7 +3,7 @@
 <script type="text/javascript">
     var call_power_embed = {};
         call_power_embed.form_id = "{{campaign.form_id|default('call-tool')}}";
-        call_power_embed.phone_id = "{{campaign.phone_id|default('inputPhone')}}";
+        call_power_embed.phone_id = "{{campaign.phone_id|default('phone')}}";
         {% if campaign.embed_css%}call_power_embed.css = "https://example.org/custom.css";{%endif%}
 </script>
 <script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True, _scheme=https)}}"></script>

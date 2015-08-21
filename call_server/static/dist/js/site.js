@@ -465,7 +465,7 @@ $(document).ready(function () {
 
     validateLocateBy: function(formGroup) {
       // if segmentBy is location, locateBy must have value
-      var segmentBy = $('input[name="segment_by"]').val();
+      var segmentBy = $('input[name="segment_by"]:checked').val();
       if (segmentBy === "location") {
         return !!$('input[name="locate_by"]:checked').val();
       } else {
@@ -473,6 +473,15 @@ $(document).ready(function () {
       }
     },
 
+    validateStateLocateByLatLon: function(f) {
+      // if campaignType is state and segmentBy is location, locate_by must be latlon
+      var campaignType = $('select#campaign_type').val();
+      var segmentBy = $('input[name="segment_by"]:checked').val();
+      if (campaignType === "state" && segmentBy === "location") {
+        return $('input[name="locate_by"][value="latlon"]:checked').length;
+      }
+      return true;
+    },
 
     validateTargetList: function(formGroup) {
       // if type == custom, ensure we have targets
@@ -511,6 +520,7 @@ $(document).ready(function () {
       // campaign segmentation
       isValid = this.validateField($('.form-group.segment_by'), this.validateSegmentBy, 'Campaign type requires custom targeting') && isValid;
       isValid = this.validateField($('.form-group.locate_by'), this.validateLocateBy, 'Please pick a location attribute') && isValid;
+      isValid = this.validateField($('.form-group.locate_by'), this.validateStateLocateByLatLon, 'State campaigns must locate by lat / lon') && isValid;
       
       // campaign targets
       isValid = this.validateField($('.form-group#set-targets'), this.validateTargetList, 'Add a custom target') && isValid;
@@ -555,15 +565,17 @@ $(document).ready(function () {
 
       statusIcon.addClass('active');
 
+      var campaignId = $('#campaignId').val();
+
       var phone = $('#test_call_number').val();
       phone = phone.replace(/\s/g, '').replace(/\(/g, '').replace(/\)/g, ''); // remove spaces, parens
       phone = phone.replace("+", "").replace(/\-/g, ''); // remove plus, dash
 
-      var campaignId = $('#campaignId').val();
+      var location = $('#test_call_location').val();
 
       $.ajax({
         url: '/call/create',
-        data: {userPhone: phone, campaignId: campaignId},
+        data: {campaignId: campaignId, userPhone: phone, userLocation: location},
         success: function(data) {
           console.log(data);
           alert('Calling you at '+$('#test_call_number').val()+' now!');
@@ -1223,6 +1235,14 @@ $(document).ready(function () {
       var timespan = $('select[name="timespan"]').val();
       var start = new Date($('input[name="start"]').datepicker('getDate')).toISOString();
       var end = new Date($('input[name="end"]').datepicker('getDate')).toISOString();
+
+      if (start > end) {
+        $('.input-daterange input[name="start"]').addClass('error');
+        return false;
+      } else {
+        $('.input-daterange input').removeClass('error');
+      }
+
 
       var dataUrl = '/api/campaign/'+campaign+'/stats.json?timespan='+timespan;
       if (start) {

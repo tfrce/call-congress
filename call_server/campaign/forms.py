@@ -94,6 +94,7 @@ class CampaignLaunchForm(Form):
     next = HiddenField()
 
     test_call_number = TextField(_('Call Me'))
+    test_call_location = TextField(_('Test Location'))
 
     display_script = TextField(_('Display Script'), widget=TextArea())
     embed_code = TextField(_('Embed Code'), widget=TextArea(), description=True)

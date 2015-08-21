@@ -67,7 +67,10 @@ class Campaign(db.Model):
         "Convenience method for getting all selected audio recordings for this campaign"
         table = {}
         for r in self._audio_query().all():
-            table[r.recording.key] = r.recording.file_url()
+            if r.recording.text_to_speech:
+                table[r.recording.key] = r.recording.text_to_speech
+            else:
+                table[r.recording.key] = r.recording.file_url()
         return table
 
     def _audio_query(self):
@@ -107,10 +110,10 @@ class Campaign(db.Model):
         if region_code:
             # convert region_code to country_code for comparison
             country_code = phone_number.phonenumbers.country_code_for_region(region_code)
-            return [n.number.national for n in self.phone_number_set if n.number.country_code == country_code]
+            return [n.number.e164 for n in self.phone_number_set if n.number.country_code == country_code]
         else:
             # return all numbers in set
-            return [n.number.national for n in self.phone_number_set]
+            return [n.number.e164 for n in self.phone_number_set]
 
     def required_fields(self):
         """API convenience method for rendering campaigns externally
@@ -129,7 +132,7 @@ class Campaign(db.Model):
 
     def targets(self):
         "Convenience method for getting list of target names and phone numbers"
-        return [(s.name, s.number.national) for s in self.target_set]
+        return [(s.name, s.number.e164) for s in self.target_set]
 
     def targets_display(self):
         "Display method for this campaign's target list if specified, or subtype (like Congress - Senate)"
@@ -174,6 +177,9 @@ class Target(db.Model):
     def full_name(self):
         return unicode("{} {}".format(self.title, self.name), 'utf8')
 
+    def phone_number(self):
+        return self.number.e164
+
     @classmethod
     def get_uid_or_cache(cls, uid, prefix=None):
         if prefix:
@@ -184,15 +190,18 @@ class Target(db.Model):
         cached = False
 
         if not t:
-            cache_list = cache.get(key)
-            if cache_list:
-                # TODO, check to ensure it is list-like
-                obj = cache_list[0]
-                data = adapt_to_target(obj, prefix)
+            cached_obj = cache.get(key)
+            if type(cached_obj) is list:
+                data = adapt_to_target(cached_obj[0], prefix)
+            elif type(cached_obj) is dict:
+                data = adapt_to_target(cached_obj, prefix)
+            else:
+                # do it live
+                data = cached_obj
 
-                # create target object and save for reuse
-                t = Target(**data)
-                cached = True
+            # create target object and save for reuse
+            t = Target(**data)
+            cached = True
         return t, cached
 
 

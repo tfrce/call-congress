@@ -57,7 +57,7 @@
 {% block scripts %}
 <script type="text/template" id="call-log-tmpl">
     <td><%= (new Date(data.timestamp)).toUTCString() %> </td>
-    <td><a target="_blank" href="https://www.twilio.com/user/account/monitor/events/<%= data.call_id %>"> <%= data.call_id %></a></td>
+    <td><a target="_blank" href="https://www.twilio.com/user/account/log/calls/<%= data.call_id %>"> <%= data.call_id %></a></td>
     <td><%= data.target %></td>
     <td><%= data.status %></td>
     <td><%= data.duration %></td>

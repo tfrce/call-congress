@@ -38,10 +38,12 @@ def configure_restless(app):
                     include_columns=['id', 'name', 'campaign_type', 'campaign_state', 'campaign_subtype',
                                      'target_ordering', 'allow_call_in', 'call_maximum'],
                     include_methods=['phone_numbers', 'targets', 'status', 'audio_msgs', 'required_fields'])
-    rest.create_api(Target, collection_name='target', methods=['GET'],)
+    rest.create_api(Target, collection_name='target', methods=['GET'],
+                    include_columns=['id', 'uid', 'name', 'title'],
+                    include_methods=['phone_number'])
     rest.create_api(AudioRecording, collection_name='audiorecording', methods=['GET'],
                     include_columns=['id', 'key', 'version', 'description',
-                                     'text_to_speech', 'selected', 'hidden'],
+                                     'text_to_speech', 'hidden'],
                     include_methods=['file_url', 'selected_campaigns', 'selected_campaign_ids'])
 
 
