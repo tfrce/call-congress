@@ -38,8 +38,9 @@
             <input id="campaignId" type="hidden" value="{{campaign.id}}" />
             <label class="control-label col-sm-2 " for="{{form.test_call_number.id}}">{{form.test_call_number.label}}</label>
 
-            <div class="controls col-sm-3">
-                <input class="form-control" id="{{form.test_call_number.id}}" name="{{form.test_call_number.id}}" type="text" value="{{current_user.phone}}">
+            <div class="controls col-sm-6">
+                <input class="form-control inline" id="{{form.test_call_number.id}}" name="{{form.test_call_number.id}}" type="text" value="{{current_user.phone}}">
+                <input class="form-control inline" id="{{form.test_call_location.id}}" name="{{form.test_call_location.id}}" type="text" value="{{current_user.location}}" placeholder="{{form.test_call_location.label.text}}">
                                 
                 <span class="help-block"></span>
             </div>
