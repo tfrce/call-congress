@@ -1,13 +1,14 @@
 import csv
 import collections
 import random
-from . import CountryData
+
+from . import DataProvider
 
 from ...campaign.constants import (TARGET_CHAMBER_BOTH, TARGET_CHAMBER_UPPER, TARGET_CHAMBER_LOWER,
         ORDER_IN_ORDER, ORDER_SHUFFLE, ORDER_UPPER_FIRST, ORDER_LOWER_FIRST)
 
 
-class USData(CountryData):
+class USData(DataProvider):
     KEY_BIOGUIDE = 'us:bioguide:{bioguide_id}'
     KEY_HOUSE = 'us:house:{state}:{district}'
     KEY_SENATE = 'us:senate:{state}'
@@ -92,10 +93,13 @@ class USData(CountryData):
     def get_district(self, zipcode):
         return self.cache.get(self.KEY_ZIPCODE.format(zipcode=zipcode))
 
-    def get_uid(self, uid):
+    def get_bioguide(self, uid):
         return self.cache.get(self.KEY_BIOGUIDE.format(bioguide_id=uid))
 
-    def locate_member_ids(self, zipcode, chambers=TARGET_CHAMBER_BOTH, order=ORDER_IN_ORDER):
+    def get_uid(self, key):
+        return self.cache.get(key)
+
+    def locate_targets(self, zipcode, chambers=TARGET_CHAMBER_BOTH, order=ORDER_IN_ORDER):
         """ Find all congressional targets for a zipcode, crossing state boundaries if necessary.
         Returns a list of bioguide ids in specified order.
         """
