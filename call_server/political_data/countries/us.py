@@ -101,7 +101,7 @@ class USData(DataProvider):
 
     def locate_targets(self, zipcode, chambers=TARGET_CHAMBER_BOTH, order=ORDER_IN_ORDER):
         """ Find all congressional targets for a zipcode, crossing state boundaries if necessary.
-        Returns a list of bioguide ids in specified order.
+        Returns a list of cached bioguide keys in specified order.
         """
 
         districts = self.cache.get(self.KEY_ZIPCODE.format(zipcode=zipcode))
