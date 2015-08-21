@@ -20,15 +20,17 @@
 
       statusIcon.addClass('active');
 
+      var campaignId = $('#campaignId').val();
+
       var phone = $('#test_call_number').val();
       phone = phone.replace(/\s/g, '').replace(/\(/g, '').replace(/\)/g, ''); // remove spaces, parens
       phone = phone.replace("+", "").replace(/\-/g, ''); // remove plus, dash
 
-      var campaignId = $('#campaignId').val();
+      var location = $('#test_call_location').val();
 
       $.ajax({
         url: '/call/create',
-        data: {userPhone: phone, campaignId: campaignId},
+        data: {campaignId: campaignId, userPhone: phone, userLocation: location},
         success: function(data) {
           console.log(data);
           alert('Calling you at '+$('#test_call_number').val()+' now!');
