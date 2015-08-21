@@ -23,7 +23,7 @@ class DefaultConfig(object):
 
     CACHE_TYPE = 'simple'
     CACHE_THRESHOLD = 100000  # because we're caching political data
-    CACHE_DEFAULT_TIMEOUT = 4*60*60*24*365  # there's no infinite timeout, so default to one election cycle (4 years)
+    CACHE_DEFAULT_TIMEOUT = 60*60*24*365*2  # there's no infinite timeout, so default to 2 year election cycle
 
     CSRF_ENABLED = False
 
