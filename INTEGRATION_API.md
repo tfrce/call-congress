@@ -43,7 +43,7 @@ A read-only REST API is available for integrating with external services. Access
 * phone_numbers: [formatted for Twilio]
 * required_fields: a hash of field names and values required to place a call. May include
 	* userCountry: a two-character ISO code of the country (default US)
-	* userLocation: method to locate user, one of [postal, latlng]
+	* userLocation: method to locate user, one of [postal, latlon]
 * status: one of [archived, paused, live]
 * target_ordering: one of [in-order, shuffle, upper-first, lower-first]
 
