@@ -56,7 +56,7 @@ SEGMENT_BY_CHOICES = (
 )
 
 LOCATION_POSTAL = 'postal'
-LOCATION_LATLNG = 'latlng'
+LOCATION_LATLNG = 'latlon'
 LOCATION_CHOICES = (
     ('', 'None'),
     (LOCATION_POSTAL, 'ZIP / Postal Code'),
