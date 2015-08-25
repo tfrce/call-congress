@@ -16,17 +16,16 @@ At a minimum, you will need to set:
 * INSTALLED_ORG, displayed on the site homepage
 * SITENAME, defaults to CallPower
 
-To test Twilio functionality in development, you will need to set:
+To test Twilio functionality in development, you will need your server to have a web-routable address. 
 
-* SERVER_NAME to point to a web-routable address. Twilio provides [ngrok](https://ngrok.com) to do this for free. When using the debug server you can use --external=SERVERID.ngrok.com
+* Twilio provides [ngrok](https://ngrok.com) to do this for free. When using the debug server you can use --external=SERVERID.ngrok.com to set SERVER_NAME and STORE_DOMAIN
 
 For production, you will also need to set:
 
 * CALLPOWER_CONFIG='call_server.config:ProductionConfig', so that manager.py knows to use a real database for migrations
 * DATABASE_URI, a sqlalchemy [connection string](https://pythonhosted.org/Flask-SQLAlchemy/config.html#connection-uri-format) for a postgres or mysql database addresses
 * REDIS_URL, a URI for the Redis server
-* APPLICATION_ROOT to the path where the application will live. If you are using a whole domain or subdomain, this should be None.
-* SERVER_NAME to the external name (and port number, if not 80) of the server
+* APPLICATION_ROOT to the path where the application will live. If you are using a whole domain or subdomain, this does not need to be defined.
 
 If you are storing assets on Amazon S3, or another [Flask-Store provider](http://flask-store.soon.build)
 
