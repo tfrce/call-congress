@@ -91,7 +91,8 @@ def create_account():
                          .filter_by(email=email).first()
 
     if user is None:
-        return render_template('user/invalid_invitation.html')
+        return render_template('user/invalid_invitation.html',
+            email=current_app.config['MAIL_DEFAULT_SENDER'], sitename=current_app.config['SITENAME'])
 
     form = CreateUserForm(obj=user)
 
