@@ -89,9 +89,30 @@ def parse_target(key):
     return (uid, prefix)
 
 
+def intro_wait_human(params, campaign):
+    """
+    Play intro message, and wait for key press to ensure we have a human on the line.
+    Then, redirect to _make_calls.
+    """
+    resp = twilio.twiml.Response()
+
+    play_or_say(resp, campaign.audio('msg_intro'))
+
+    action = url_for("call._make_calls", **params)
+
+    # wait for user keypress, in case we connected to voicemail
+    # give up after 10 seconds
+    with resp.gather(numDigits=1, method="POST", timeout=10,
+                     action=action) as g:
+        play_or_say(g, campaign.audio('msg_intro_confirm'))
+
+        return str(resp)
+
+
 def intro_location_gather(params, campaign):
     """
-    If required, play msg_intro_location audio. Otherwise, standard msg_intro.
+    If specified, play msg_intro_location audio. Otherwise, standard msg_intro.
+    Then, redirect to location_gather.
     """
     resp = twilio.twiml.Response()
 
@@ -106,7 +127,8 @@ def intro_location_gather(params, campaign):
 
 def location_gather(resp, params, campaign):
     """
-    Play msg_location, and wait for 5 digits from user
+    Play msg_location, and wait for 5 digits from user.
+    Then, redirect to location_parse
     """
     with resp.gather(numDigits=5, method="POST",
                      action=url_for("call.location_parse", **params)) as g:
@@ -237,19 +259,7 @@ def connection():
     if campaign.locate_by == LOCATION_POSTAL:
         return intro_location_gather(params, campaign)
     else:
-        resp = twilio.twiml.Response()
-
-        play_or_say(resp, campaign.audio('msg_intro'))
-
-        action = url_for("call._make_calls", **params)
-
-        # wait for user keypress, in case we connected to voicemail
-        # give up after 10 seconds
-        with resp.gather(numDigits=1, method="POST", timeout=10,
-                         action=action) as g:
-            play_or_say(g, campaign.audio('msg_intro_confirm'))
-
-            return str(resp)
+        return intro_wait_human(params, campaign)
 
 
 @call.route('/incoming', methods=call_methods)
@@ -267,7 +277,13 @@ def incoming():
     if not params or not campaign:
         abort(404)
 
-    return intro_location_gather(params, campaign)
+    # pull user phone from Twilio incoming request
+    params['userPhone'] = request.values.get('From')
+
+    if campaign.locate_by == LOCATION_POSTAL:
+        return intro_location_gather(params, campaign)
+    else:
+        return intro_wait_human(params, campaign)
 
 
 @call.route("/location_parse", methods=call_methods)
