@@ -4,8 +4,6 @@ from flask import Blueprint, render_template, current_app, flash, url_for, redir
 from flask.ext.login import login_required
 from flask.ext.babel import gettext as _
 
-from twilio.rest import TwilioRestClient
-
 from ..extensions import db
 from sqlalchemy.sql import func
 
@@ -90,8 +88,15 @@ def twilio_resync():
         db.session.add(obj)
         db.session.commit()
 
-    # TODO, find any stale numbers we have in the db that aren't in the response
+    # find any stale numbers we have in the db that aren't in the response
+    stale_numbers = TwilioPhoneNumber.query.filter(
+        TwilioPhoneNumber.number.notin_([n.phone_number for n in twilio_numbers]))
     # and remove them
+    # TODO, check if delete will cascade to campaign
+    for num in stale_numbers.all():
+        deleted_numbers.append(num.phone_number)
+        db.session.delete(num)
+    db.session.commit()
 
     if new_numbers:
         flash(_("Added Twilio Number: ") + ', '.join(new_numbers), 'success')
