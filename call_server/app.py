@@ -173,7 +173,6 @@ def configure_assets(app):
                       filters='rjsmin', output='dist/js/graph.js')
     assets.register('graph_js', graph_js)
 
-
     site_js = Bundle('scripts/site/*.js',
                      output='dist/js/site.js')
     assets.register('site_js', site_js)
@@ -212,3 +211,6 @@ def configure_logging(app):
         app.logger.setLevel(logging.WARNING)
     else:
         app.logger.setLevel(logging.ERROR)
+    
+    if app.config.get('OUTPUT_LOG'):
+        app.logger.addHandler(logging.StreamHandler())
