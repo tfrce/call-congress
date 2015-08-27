@@ -112,7 +112,7 @@ def intro_wait_human(params, campaign):
 def intro_location_gather(params, campaign):
     """
     If specified, play msg_intro_location audio. Otherwise, standard msg_intro.
-    Then, redirect to location_gather.
+    Then, return location_gather.
     """
     resp = twilio.twiml.Response()
 
@@ -141,7 +141,7 @@ def make_calls(params, campaign):
     """
     Connect a user to a sequence of targets.
     Performs target lookup, shuffling, and limiting to maximum.
-    Plays msg_call_block_intro.
+    Plays msg_call_block_intro, then redirects to make_single call.
 
     Required params: campaignId, targetIds
     """
@@ -186,7 +186,7 @@ def _make_calls():
 @crossdomain(origin='*')
 def create():
     """
-    Makes a phone call to a user.
+    Places a phone call to a user, given a country, phone number, and campaign.
 
     Required Params:
         userPhone
@@ -243,13 +243,10 @@ def create():
 def connection():
     """
     Call handler to connect a user with the targets for a given campaign.
-    Plays msg_intro audio, then redirects to make_calls.
+    Redirects to intro_location_gather if campaign requires, or intro_wait_human if not.
 
     Required Params:
         campaignId
-    Optional Params:
-        userLocation (zipcode)
-        targetIds (if not present goes to incoming_call flow and prompt for zipcode)
     """
     params, campaign = parse_params(request)
 
