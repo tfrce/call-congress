@@ -1219,17 +1219,18 @@ $(document).ready(function () {
         });
       });
 
+      _.bindAll(this, 'renderChart');
+      this.$el.on('changeDate', this.renderChart);
+
       this.chartOpts = {
         "library":{"canvasDimensions":{"height":250}},
       };
-      this.$el.on('changeDate', this.renderChart);
     },
 
     changeCampaign: function(event) {
       this.campaignId = $('select[name="campaigns"]').val();
       $.getJSON('/api/campaign/'+this.campaignId+'/stats.json',
         function(data) {
-          console.log(data);
           $('input#calls_completed').val(data.completed);
           if (data.completed && data.total_calls) {
             var conversion_rate = (data.completed / data.total_calls) * 100;
@@ -1240,6 +1241,10 @@ $(document).ready(function () {
     },
 
     renderChart: function(event) {
+      if (!this.campaignId) {
+        return false;
+      }
+
       var timespan = $('select[name="timespan"]').val();
       var start = new Date($('input[name="start"]').datepicker('getDate')).toISOString();
       var end = new Date($('input[name="end"]').datepicker('getDate')).toISOString();

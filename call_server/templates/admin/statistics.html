@@ -14,6 +14,7 @@
             <div class="form-group">
                 <label>Campaign</label>
     			<select name="campaigns">
+                    <option value="">select one</option>
     			{% for c in campaigns%}
     				<option value="{{c.id}}">{{c.name}}</option>
     			{% endfor %}
