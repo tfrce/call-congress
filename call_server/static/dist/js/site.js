@@ -473,7 +473,7 @@ $(document).ready(function () {
       }
     },
 
-    validateStateLocateByLatLon: function(f) {
+    validateStateLocateByLatLon: function(formGroup) {
       // if campaignType is state and segmentBy is location, locate_by must be latlon
       var campaignType = $('select#campaign_type').val();
       var segmentBy = $('input[name="segment_by"]:checked').val();
@@ -483,7 +483,7 @@ $(document).ready(function () {
       return true;
     },
 
-    validateTargetList: function(formGroup) {
+    validateTargetList: function(f) {
       // if type == custom, ensure we have targets
       if ($('select#campaign_type').val() === "custom") {
         return !!CallPower.campaignForm.targetListView.collection.length;
@@ -1205,9 +1205,10 @@ $(document).ready(function () {
 (function () {
   CallPower.Views.StatisticsView = Backbone.View.extend({
     el: $('#statistics'),
+    campaignId: null,
 
     events: {
-      'change select[name="campaigns"]': 'renderChart',
+      'change select[name="campaigns"]': 'changeCampaign',
       'change select[name="timespan"]': 'renderChart',
     },
 
@@ -1218,20 +1219,27 @@ $(document).ready(function () {
         });
       });
 
-      this.renderChart();
       this.chartOpts = {
         "library":{"canvasDimensions":{"height":250}},
       };
-
-      this.$el.on('changeDate', this.renderChart);
       this.$el.on('changeDate', this.renderChart);
     },
 
+    changeCampaign: function(event) {
+      this.campaignId = $('select[name="campaigns"]').val();
+      $.getJSON('/api/campaign/'+this.campaignId+'/stats.json',
+        function(data) {
+          console.log(data);
+          $('input#calls_completed').val(data.completed);
+          if (data.completed && data.total_calls) {
+            var conversion_rate = (data.completed / data.total_calls) * 100;
+            $('input#conversion_rate').val(conversion_rate+"%");
+          }
+        });
+      this.renderChart();
+    },
+
     renderChart: function(event) {
-      var campaign = $('select[name="campaigns"]').val();
-      if (campaign === "") {
-        campaign = 1;
-      }
       var timespan = $('select[name="timespan"]').val();
       var start = new Date($('input[name="start"]').datepicker('getDate')).toISOString();
       var end = new Date($('input[name="end"]').datepicker('getDate')).toISOString();
@@ -1243,8 +1251,7 @@ $(document).ready(function () {
         $('.input-daterange input').removeClass('error');
       }
 
-
-      var dataUrl = '/api/campaign/'+campaign+'/stats.json?timespan='+timespan;
+      var dataUrl = '/api/campaign/'+this.campaignId+'/call_chart.json?timespan='+timespan;
       if (start) {
         dataUrl += ('&start='+start);
       }

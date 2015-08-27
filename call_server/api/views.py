@@ -52,6 +52,23 @@ def configure_restless(app):
 @api.route('/campaign/<int:campaign_id>/stats.json', methods=['GET'])
 @api_key_or_auth_required
 def campaign_stats(campaign_id):
+    campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
+    completed = Campaign.query.filter_by(
+        id=campaign.id,
+        status='complete').count()
+    total_count = Campaign.query.filter_by(id=campaign.id).count()
+
+    return jsonify({
+        'id': campaign.id,
+        'name': campaign.name,
+        'completed': completed,
+        'total_count': total_count
+    })
+
+
+@api.route('/campaign/<int:campaign_id>/call_chart.json', methods=['GET'])
+@api_key_or_auth_required
+def campaign_call_chart(campaign_id):
     start = request.values.get('start')
     end = request.values.get('end')
     timespan = request.values.get('timespan', 'day')

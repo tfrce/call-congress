@@ -58,7 +58,12 @@ A read-only REST API is available for integrating with external services. Access
 * selected_campaigns: list of campaign names that have selected this recording
 * selected_campaign_ids: list of campaign ids that have selected this recording
 
-`GET /api/campaign/ID/stats.json` returns a list of campaign call statistics to graph, formatted for ChartKick. Results can be further limited by passing start or end parameters in ISO format, and a timespan as one of (minute, hour, day, month, year). Each chart includes
+`GET /api/campaign/ID/count.json` returns aggregate statistics for a campaign, including:
+
+* name
+* completed
+
+`GET /api/campaign/ID/call_chart.json` returns a list of campaign calls by status and date to graph, formatted for ChartKick. Results can be further limited by passing start or end parameters in ISO format, and a timespan as one of (minute, hour, day, month, year). Each chart includes
 
 * name
 * data 
