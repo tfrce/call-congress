@@ -53,10 +53,17 @@ def configure_restless(app):
 @api_key_or_auth_required
 def campaign_stats(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
-    completed = Campaign.query.filter_by(
-        id=campaign.id,
-        status='complete').count()
-    total_count = Campaign.query.filter_by(id=campaign.id).count()
+    completed = db.session.query(
+        func.count(Call.id)
+    ).filter_by(
+        campaign_id=campaign.id,
+        status='completed'
+    ).scalar()
+    total_count = db.session.query(
+        func.count(Call.id)
+    ).filter_by(
+        campaign_id=campaign.id
+    ).scalar()
 
     return jsonify({
         'id': campaign.id,

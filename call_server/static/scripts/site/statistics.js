@@ -30,9 +30,12 @@
       $.getJSON('/api/campaign/'+this.campaignId+'/stats.json',
         function(data) {
           $('input#calls_completed').val(data.completed);
-          if (data.completed && data.total_calls) {
-            var conversion_rate = (data.completed / data.total_calls) * 100;
-            $('input#conversion_rate').val(conversion_rate+"%");
+          if (data.completed && data.total_count) {
+            var conversion_rate = (data.completed / data.total_count);
+            conversion_pct = Number((conversion_rate*100).toFixed(2));
+            $('input#conversion_rate').val(conversion_pct+"%");
+          } else {
+            $('input#conversion_rate').val('n/a');
           }
         });
       this.renderChart();
