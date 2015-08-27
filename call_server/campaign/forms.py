@@ -71,6 +71,7 @@ class CampaignForm(Form):
 class CampaignAudioForm(Form):
     next = HiddenField()
     msg_intro = TextField(_('Introduction'))
+    msg_intro_confirm = TextField(_('Start Confirmation'))
     msg_location = TextField(_('Location Prompt'))
     msg_intro_location = TextField(_('Introduction with Location'))
     msg_invalid_location = TextField(_('Invalid Location'))
