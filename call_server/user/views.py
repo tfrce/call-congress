@@ -108,6 +108,7 @@ def create_account():
             user.password = form.password.data
             user.phone = form.phone.data
             user.status_code = USER_ACTIVE
+            user.last_accessed = datetime.now()
             user.activation_key = None
 
             db.session.add(user)
