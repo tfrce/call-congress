@@ -65,12 +65,14 @@ class ProductionConfig(DefaultConfig):
     CACHE_KEY_PREFIX = 'call-power'
 
     LOG_PHONE_NUMBERS = os.environ.get('LOG_PHONE_NUMBERS', False)
+    OUTPUT_LOG = os.environ.get('OUTPUT_LOG', False)
 
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'localhost')
     MAIL_PORT = os.environ.get('MAIL_PORT', 25)
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', True)
 
     SQLALCHEMY_POOL_RECYCLE = 60 * 60  # 1 hour
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI')
