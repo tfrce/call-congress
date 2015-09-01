@@ -22,7 +22,7 @@
             </div>
 
             <div class="form-group">
-                <label>Filter by</label>
+                <label>Group by</label>
                 <div class="input-group inline">
                     <select name="timespan">
                     {% for t in timespans %}
@@ -40,16 +40,7 @@
         </div>
 
         <div class="col-sm-4">
-            <table class="table-condensed">
-                <tr>
-                    <td class="col-sm-6"><input id="calls_completed" class="col-sm-12" readonly /></td>
-                    <td class="col-sm-6"><label class="inline" for="calls_completed">Completed</label></td>
-                </tr>
-                <tr>
-                    <td class="col-sm-6"><input id="conversion_rate" class="col-sm-12" readonly /></td>
-                    <td class="col-sm-6"><label class="inline" for="conversion_rate">Success Rate</label></td>
-                </tr>
-            </table>
+            <table class="table-condensed" id="campaign_data"></table>
         </div>
     </div>
 
@@ -64,4 +55,21 @@
   {% assets "graph_js" %}
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
   {% endassets %}
+
+  <script type="text/template" id="campaign-data-tmpl">
+    <tr>
+        <td class="col-sm-6"><input id="calls_completed" class="col-sm-12" value="<%= data.completed %>" readonly/></td>
+        <td class="col-sm-6"><label class="inline" for="calls_completed">Total Completed</label></td>
+    </tr>
+    <tr>
+        <td class="col-sm-6"><input id="conversion_rate" class="col-sm-12" value="<%= data.success_rate %>" readonly/></td>
+        <td class="col-sm-6"><label class="inline" for="conversion_rate">Success Rate</label></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td class="col-sm-12">
+            <a href="/admin/campaign/<%= data.id %>/calls">call log</a>
+        </td>
+    </tr>
+  </script>
 {% endblock %}

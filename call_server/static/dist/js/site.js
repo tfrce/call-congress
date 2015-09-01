@@ -1231,21 +1231,28 @@ $(document).ready(function () {
       this.chartOpts = {
         "library":{"canvasDimensions":{"height":250}},
       };
+
+      this.campaignDataTemplate = _.template($('#campaign-data-tmpl').html(), { 'variable': 'data' });
     },
 
     changeCampaign: function(event) {
+      var self = this;
+
       this.campaignId = $('select[name="campaigns"]').val();
       $.getJSON('/api/campaign/'+this.campaignId+'/stats.json',
         function(data) {
-          $('input#calls_completed').val(data.completed);
           if (data.completed && data.total_count) {
             var conversion_rate = (data.completed / data.total_count);
             conversion_pct = Number((conversion_rate*100).toFixed(2));
-            $('input#conversion_rate').val(conversion_pct+"%");
+            data.success_rate = (conversion_pct+"%");
           } else {
-            $('input#conversion_rate').val('n/a');
+            data.success_rate = 'n/a';
           }
+          $('#campaign_data').html(
+            self.campaignDataTemplate(data)
+          ).show();
         });
+
       this.renderChart();
     },
 
