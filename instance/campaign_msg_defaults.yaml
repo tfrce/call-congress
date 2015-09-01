@@ -2,7 +2,8 @@ msg_intro: Hi, welcome to Call Power by {{organization}}.
 msg_intro_confirm: Press star to get started.
 msg_location: >
     Please enter your zip code so we can lookup your Congress person.
-msg_invalid_location: Sorry, that zip code didn't work. Please try again.
+msg_invalid_location: Sorry, this campaign is not available in your area.
+msg_unparsed_location: Sorry, we did not understand that zip code. Please try again.
 msg_call_block_intro: >
     {{#many}}We'll now connect you to {{n_targets}} offices. Press
     star for the next call.{{/many}}

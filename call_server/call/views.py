@@ -154,6 +154,10 @@ def make_calls(params, campaign):
         # lookup targets for campaign type by segment, put in desired order
         params['targetIds'] = locate_targets(params['userLocation'], campaign=campaign)
 
+    if not params['targetIds']:
+        play_or_say(resp, campaign.audio('msg_invalid_location'), location=params['userLocation'])
+        resp.hangup()
+
     if campaign.target_ordering == ORDER_SHUFFLE:
         # reshuffle for each caller
         random.shuffle(params['targetIds'])
@@ -302,7 +306,7 @@ def location_parse():
 
     if not target_ids:
         resp = twilio.twiml.Response()
-        play_or_say(resp, campaign.audio('msg_invalid_location'))
+        play_or_say(resp, campaign.audio('msg_unparsed_location'))
 
         return location_gather(resp, params, campaign)
 

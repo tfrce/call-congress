@@ -75,6 +75,7 @@ class CampaignAudioForm(Form):
     msg_location = TextField(_('Location Prompt'))
     msg_intro_location = TextField(_('Introduction with Location'))
     msg_invalid_location = TextField(_('Invalid Location'))
+    msg_unparsed_location = TextField(_('Unparsed Location'))
     msg_choose_target = TextField(_('Choose Target'))
     msg_call_block_intro = TextField(_('Call Block Introduction'))
     msg_target_intro = TextField(_('Target Introduction'))
