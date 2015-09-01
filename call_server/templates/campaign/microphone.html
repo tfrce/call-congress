@@ -73,14 +73,16 @@
                                     <label class="control-label col-xs-2" for="file">Upload</label>
                                     <span class="btn btn-default btn-file">
                                         <span class="glyphicon glyphicon-open"></span> Choose File
-                                        <input type="file" name="file_storage" />
+                                        <input type="file" name="file_storage" accept="audio/mpeg,audio/wav,audio/wave,audio/x-wav,audio/aiff,audio/x-aifc,audio/x-aiff,audio/x-gsm,audio/gsm,audio/ulaw" />
+
                                     </span>
                                     <span class="filename"></span>
                                 </div>
                                 <div class="row">
                                     <br>
                                     <p class="help-text col-xs-12">
-                                        <em>Please record your audio with another application and upload the file here.</em>
+                                        <em>Please record your audio with another application and upload the file here.</em><br>
+                                        <a href="https://www.twilio.com/docs/api/twiml/play#nouns" target="_blank">Accepted filetypes</a> include mp3, wav, aiff, gsm, and &mu;-law.
                                     </p>
                                 </div>
                                 <div class="help-block"></div>
