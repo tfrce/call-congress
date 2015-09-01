@@ -290,6 +290,12 @@
     onSave: function(event) {
       event.preventDefault();
 
+      // change save button to spinner
+      $('.btn.save .glyphicon')
+        .removeClass('glyphicon-circle-arrow-down')
+        .addClass('glyphicon-refresh')
+        .addClass('glyphicon-spin');
+
       // submit file via ajax with html5 FormData
       // probably will not work in old IE
       var formData = new FormData();
