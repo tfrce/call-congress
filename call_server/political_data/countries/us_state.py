@@ -34,7 +34,7 @@ class USStateData(DataProvider):
     def get_uid(self, key):
         return self.cache.get(key)
 
-    def locate_targets(self, latlon, chambers=TARGET_CHAMBER_BOTH, order=ORDER_IN_ORDER):
+    def locate_targets(self, latlon, chambers=TARGET_CHAMBER_BOTH, order=ORDER_IN_ORDER, state=None):
         """ Find all state legistlators for a location, as comma delimited (lat,lon)
             Returns a list of cached openstate keys in specified order.
         """
@@ -53,6 +53,10 @@ class USStateData(DataProvider):
         for l in legislators:
             if not l['active']:
                 # don't include inactive legislators
+                continue
+
+            if state and (state.upper() != l['state'].upper()):
+                # limit to one state
                 continue
 
             cache_key = self.KEY_OPENSTATES.format(**l)

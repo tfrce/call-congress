@@ -39,7 +39,8 @@ def locate_targets(location, campaign):
         if campaign.locate_by == LOCATION_LATLNG:
             return data.locate_targets(latlon=location,
                 chambers=campaign.campaign_subtype,
-                order=campaign.target_ordering)
+                order=campaign.target_ordering,
+                state=campaign.campaign_state)
         else:
             raise NotImplementedError('state campaigns, invalid locate_by value: %s' % campaign.locate_by)
     else:

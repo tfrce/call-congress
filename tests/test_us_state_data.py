@@ -76,3 +76,8 @@ class TestData(BaseTestCase):
 
         second = self.us_state_data.get_uid(uids[1])
         self.assertEqual(second['chamber'], 'lower')
+
+    def test_incorrect_state(self):
+        boston_ma = "42.355662, -71.065483"
+        uids = self.us_state_data.locate_targets(boston_ma, TARGET_CHAMBER_BOTH, ORDER_UPPER_FIRST, state="CA")
+        self.assertEqual(len(uids), 0)
