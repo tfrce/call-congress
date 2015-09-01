@@ -23,10 +23,15 @@
                        navigator.msGetUserMedia);
       window.URL = window.URL || window.webkitURL;
 
-      // add required client-side
+      // add required fields client-side
       _.each(this.requiredFields, function(f) {
         $('label[for='+f+']').addClass('required');
       });
+
+      this.campaign_id = $('input[name="campaign_id"]').val();
+
+      $('audio', this.el).on('ended', this.onPlayEnded);
+      _.bindAll(this, 'onPlayEnded');
     },
 
     onRecord: function(event) {
@@ -38,7 +43,7 @@
                     key: inputGroup.prev('label').attr('for'),
                     description: inputGroup.find('.description .help-inline').text(),
                     example_text: inputGroup.find('.description .example-text').text(),
-                    campaign_id: $('input[name="campaign_id"]').val()
+                    campaign_id: this.campaign_id
                   };
       this.microphoneView = new CallPower.Views.MicrophoneModal();
       this.microphoneView.render(modal);
@@ -46,7 +51,38 @@
 
     onPlay: function(event) {
       event.preventDefault();
-      console.log('onPlay TBD');
+      
+      var button = $(event.target);
+      var inputGroup = button.parents('.input-group');
+      var key = inputGroup.prev('label').attr('for');
+      var playback = button.children('audio');
+
+      var self = this;
+      $.getJSON('/api/campaign/'+self.campaign_id,
+        function(data) {
+          var recording = data.audio_msgs[key];
+          if (recording === undefined) {
+            button.addClass('disabled');
+            return false;
+          }
+          if (recording.substring(0,4) == 'http') {
+            // play file url through <audio> object
+            playback.attr('src', data.audio_msgs[key]);
+            playback[0].play();
+          } else {
+            // TODO, connect twilio API to read text-to-speech
+          }
+
+          button.children('.glyphicon').removeClass('glyphicon-play').addClass('glyphicon-pause');
+          button.children('.text').html('Pause');
+        }
+      );
+    },
+
+    onPlayEnded: function(event) {
+      var button = $(event.target).parents('.btn');
+      button.children('.glyphicon').removeClass('glyphicon-pause').addClass('glyphicon-play');
+      button.children('.text').html('Play');
     },
 
     onVersion: function(event) {
@@ -56,7 +92,7 @@
       var modal = {
         name: inputGroup.prev('label').text(),
         key: inputGroup.prev('label').attr('for'),
-        campaign_id: $('input[name="campaign_id"]').val()
+        campaign_id: this.campaign_id
       };
       this.versionsView = new CallPower.Views.VersionsModal(modal);
       this.versionsView.render();
