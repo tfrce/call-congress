@@ -246,11 +246,13 @@ def select_recording(campaign_id, recording_id):
 @campaign.route('/<int:campaign_id>/audio/<int:recording_id>/hide', methods=['POST'])
 def hide_recording(campaign_id, recording_id):
     recording = AudioRecording.query.filter_by(id=recording_id).first_or_404()
-    campaignAudio = recording.campaign_audio_recordings.filter(campaign_id == campaign_id).first_or_404()
     recording.hidden = True
 
+    campaignAudio = recording.campaign_audio_recordings.filter(campaign_id == campaign_id).first_or_404()
+    campaignAudio.selected = False
+
     db.session.add(recording)
-    db.session.delete(campaignAudio)
+    db.session.add(campaignAudio)
     db.session.commit()
 
     message = "Audio recording hidden"

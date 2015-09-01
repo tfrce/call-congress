@@ -245,16 +245,26 @@ class AudioRecording(db.Model):
         else:
             return None
 
+    def campaign_names(self):
+        recordings = self.campaign_audio_recordings.all()
+        names = set([s.campaign.name for s in recordings])
+        return ','.join(list(names))
+
+    def campaign_ids(self):
+        recordings = self.campaign_audio_recordings.all()
+        ids = set([s.campaign.id for s in recordings])
+        return list(ids)
+
     def selected_recordings(self):
         return self.campaign_audio_recordings.filter_by(selected=True).all()
 
-    def selected_campaigns(self):
-        names = [s.campaign.name for s in self.selected_recordings()]
-        return ','.join(names)
+    def selected_campaign_names(self):
+        names = set([s.campaign.name for s in self.selected_recordings()])
+        return ','.join(list(names))
 
     def selected_campaign_ids(self):
-        ids = [s.campaign.id for s in self.selected_recordings()]
-        return ids
+        ids = set([s.campaign.id for s in self.selected_recordings()])
+        return list(ids)
 
     def __unicode__(self):
         return "%s v%s" % (self.key, self.version)

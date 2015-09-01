@@ -44,7 +44,8 @@ def configure_restless(app):
     rest.create_api(AudioRecording, collection_name='audiorecording', methods=['GET'],
                     include_columns=['id', 'key', 'version', 'description',
                                      'text_to_speech', 'hidden'],
-                    include_methods=['file_url', 'selected_campaigns', 'selected_campaign_ids'])
+                    include_methods=['file_url', 'campaign_names', 'campaign_ids',
+                                     'selected_campaign_names', 'selected_campaign_ids'])
 
 
 # non CRUD-routes

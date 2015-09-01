@@ -1556,11 +1556,11 @@ $(document).ready(function () {
   CallPower.Models.AudioRecording = Backbone.Model.extend({
     defaults: {
       id: null,
-      campaign: null,
       key: null,
       description: null,
       version: null,
       hidden: null,
+      campaign_ids: null,
       selected_campaign_ids: null,
       file_url: null,
       text_to_speech: null
@@ -1573,8 +1573,9 @@ $(document).ready(function () {
     url: '/api/audiorecording',
     comparator: 'version',
 
-    initialize: function(key) {
+    initialize: function(key, campaign_id) {
       this.key = key;
+      this.campaign_id = campaign_id;
     },
 
     parse: function(response) {
@@ -1613,9 +1614,12 @@ $(document).ready(function () {
       this.template = _.template($('#recording-item-tmpl').html(), { 'variable': 'data' });
     },
 
-    render: function(campaign_id) {
+    render: function() {
       var data = this.model.toJSON();
-      data.campaign_id = campaign_id;
+      data.campaign_id = parseInt(this.model.collection.campaign_id);
+      console.log(_.flatten(data.selected_campaign_ids));
+      console.log(data.campaign_id);
+      console.log('selected', _.contains(_.flatten(data.selected_campaign_ids), data.campaign_id));
       var html = this.template(data);
       this.$el.html(html);
       return this;
@@ -1660,9 +1664,7 @@ $(document).ready(function () {
       _.bindAll(this, 'destroyViews');
 
       this.viewData = viewData;
-      console.log('viewData', viewData);
-
-      this.collection = new CallPower.Collections.AudioRecordingList(this.viewData.key);
+      this.collection = new CallPower.Collections.AudioRecordingList(this.viewData.key, this.viewData.campaign_id);
       this.filteredCollection = new FilteredCollection(this.collection);
       this.collection.fetch({ reset: true });
       this.views = [];
@@ -1729,7 +1731,7 @@ $(document).ready(function () {
         this.filteredCollection.removeFilter('campaign_id');
       } else {
         this.filteredCollection.filterBy('campaign_id', function(model) {
-          return _.contains(model.get('selected_campaign_ids'), parseInt(self.viewData.campaign_id));
+          return _.contains(model.get('campaign_ids'), parseInt(self.viewData.campaign_id));
         });
       }
       if (showHidden) {

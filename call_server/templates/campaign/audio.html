@@ -89,7 +89,7 @@
 </script>
 
 <script type="text/template" id="recording-item-tmpl">
-    <td><%= data.selected_campaigns %> </td>
+    <td><%= data.campaign_names %> </td>
     <td><%= data.version %></td>
     <td><%= data.description %></td>
     <td>
@@ -97,12 +97,12 @@
         <code><%= data.text_to_speech %></code>
         <% } else { %>
         <audio controls>
-            <source type="audio/mpeg" src="<%= data.file_url %>"></source>
+            <source type="audio/mpeg" src="<%= data.file_url %>" preload="none"></source>
         </audio>
         <% } %>
     </td>
     <td><% if (_.contains(data.selected_campaign_ids, data.campaign_id)) { %>
-            <span class="glyphicon glyphicon-ok-sign"></span>
+            <button type="button" class="btn btn-default disabled"><span class="glyphicon glyphicon-ok-sign"></span></button>
         <% } else { %>
             <button type="button" class="btn btn-default select"><span class="glyphicon glyphicon-ok-circle"></span></button>
         <% } %>
