@@ -3,6 +3,7 @@ from collections import OrderedDict
 from datetime import datetime, timedelta
 import dateutil
 
+import twilio.twiml
 from flask import Blueprint, Response, render_template, abort, request, jsonify
 
 from sqlalchemy.sql import func, extract
@@ -12,12 +13,13 @@ from ..call.decorators import crossdomain
 
 from constants import API_TIMESPANS
 
-from ..extensions import rest, db
+from ..extensions import csrf, rest, db
 from ..campaign.models import Campaign, Target, AudioRecording
 from ..call.models import Call
 
 
 api = Blueprint('api', __name__, url_prefix='/api')
+csrf.exempt(api)
 
 
 restless_preprocessors = {'GET_SINGLE':   [restless_api_auth],
@@ -151,3 +153,11 @@ def campaign_embed_js(campaign_id):
 def campaign_embed_iframe(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     return render_template('api/embed_iframe.html', campaign=campaign)
+
+
+@api.route('/twilio/text-to-speech', methods=['POST'])
+def twilio_say():
+    resp = twilio.twiml.Response()
+    resp.say(request.values.get('text'))
+    resp.hangup()
+    return str(resp)

@@ -61,6 +61,7 @@
       $.getJSON('/api/campaign/'+self.campaign_id,
         function(data) {
           var recording = data.audio_msgs[key];
+
           if (recording === undefined) {
             button.addClass('disabled');
             return false;
@@ -69,8 +70,14 @@
             // play file url through <audio> object
             playback.attr('src', data.audio_msgs[key]);
             playback[0].play();
+          } else if (CallPower.Config.TWILIO_CAPABILITY) {
+            //connect twilio API to read text-to-speech
+            twilio = Twilio.Device.setup(CallPower.Config.TWILIO_CAPABILITY, 
+              {"rtc": (navigator.getUserMedia !== undefined), "debug":true});
+            twilio.connect({'text': recording });
+            twilio.disconnect(self.onPlayEnded);
           } else {
-            // TODO, connect twilio API to read text-to-speech
+            return false;
           }
 
           button.children('.glyphicon').removeClass('glyphicon-play').addClass('glyphicon-pause');

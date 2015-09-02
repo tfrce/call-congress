@@ -57,6 +57,7 @@
         SUNLIGHT_API_KEY: "{{SUNLIGHT_API_KEY}}",
         SUNLIGHT_CONGRESS_URL: "https://congress.api.sunlightfoundation.com/legislators/",
         SUNLIGHT_STATES_URL: "http://openstates.org/api/v1/legislators/",
+        {% if twilio_capability %}TWILIO_CAPABILITY: "{{twilio_capability.generate()}}", {%endif%}
       }
     };
 </script>

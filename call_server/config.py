@@ -36,6 +36,7 @@ class DefaultConfig(object):
     TWILIO_CLIENT = twilio.rest.TwilioRestClient(
         os.environ.get('TWILIO_ACCOUNT_SID'),
         os.environ.get('TWILIO_AUTH_TOKEN'))
+    TWILIO_PLAYBACK_APP = os.environ.get('TWILIO_PLAYBACK_APP')
     # limit on the length of the call
     TWILIO_TIME_LIMIT = os.environ.get('TWILIO_TIME_LIMIT', 60 * 60)  # one hour max
     # limit on the amount of time to ring before giving up

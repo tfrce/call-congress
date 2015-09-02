@@ -102,12 +102,12 @@ $(document).ready(function () {
       var inputGroup = button.parents('.input-group');
       var key = inputGroup.prev('label').attr('for');
       var playback = button.children('audio');
-      console.log(playback);
 
       var self = this;
       $.getJSON('/api/campaign/'+self.campaign_id,
         function(data) {
           var recording = data.audio_msgs[key];
+
           if (recording === undefined) {
             button.addClass('disabled');
             return false;
@@ -116,8 +116,14 @@ $(document).ready(function () {
             // play file url through <audio> object
             playback.attr('src', data.audio_msgs[key]);
             playback[0].play();
+          } else if (CallPower.Config.TWILIO_CAPABILITY) {
+            //connect twilio API to read text-to-speech
+            twilio = Twilio.Device.setup(CallPower.Config.TWILIO_CAPABILITY, 
+              {"rtc": (navigator.getUserMedia !== undefined), "debug":true});
+            twilio.connect({'text': recording });
+            twilio.disconnect(self.onPlayEnded);
           } else {
-            // TODO, connect twilio API to read text-to-speech
+            return false;
           }
 
           button.children('.glyphicon').removeClass('glyphicon-play').addClass('glyphicon-pause');
@@ -127,7 +133,6 @@ $(document).ready(function () {
     },
 
     onPlayEnded: function(event) {
-      console.log('playback ended');
       var button = $(event.target).parents('.btn');
       button.children('.glyphicon').removeClass('glyphicon-pause').addClass('glyphicon-play');
       button.children('.text').html('Play');

@@ -8,6 +8,8 @@ from flask_store.providers.temp import TemporaryStore
 import sqlalchemy
 from sqlalchemy.sql import func
 
+from twilio.util import TwilioCapability
+
 from ..extensions import db
 from ..utils import choice_items, choice_keys, choice_values_flat, duplicate_object
 
@@ -135,6 +137,10 @@ def audio(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     form = CampaignAudioForm()
 
+    twilio_client = current_app.config.get('TWILIO_CLIENT')
+    twilio_capability = TwilioCapability(*twilio_client.auth)
+    twilio_capability.allow_client_outgoing(current_app.config.get('TWILIO_PLAYBACK_APP'))
+
     for field in form:
         campaign_audio, is_default_message = campaign.audio_or_default(field.name)
         if not is_default_message:
@@ -150,6 +156,7 @@ def audio(campaign_id):
         return redirect(url_for('campaign.launch', campaign_id=campaign.id))
 
     return render_template('campaign/audio.html', campaign=campaign, form=form,
+                           twilio_capability = twilio_capability,
                            descriptions=current_app.config.CAMPAIGN_FIELD_DESCRIPTIONS,
                            example_text=current_app.config.CAMPAIGN_MESSAGE_DEFAULTS)
 
