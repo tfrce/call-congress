@@ -1,3 +1,22 @@
+/* FORM STYLES */
+
+/* Bordered Fieldsets */
+fieldset.border {
+    border: 1px groove #ddd;
+    padding: 0 1.4em 1.4em 1.4em;
+    margin: 0 0 1.5em 0;
+}
+
+fieldset.border legend {
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: left;
+    width:auto;
+    padding:0 10px;
+    border-bottom:none;
+}
+
+/* Input controls */
 .control-label.required:after { 
    content:"*";
    color:red;
@@ -13,44 +32,6 @@ label.inline, input.inline {
     height: auto;
     vertical-align: middle;
     font-weight:normal;
-}
-
-.description {
-    display: inline-block;
-    margin-left: 5px;
-}
-span.help-inline {
-    display: none;
-}
-span.info:hover + span.help-inline {
-    display: inline-block;
-    z-index: 10;
-    position: absolute;
-    top: 0;
-    min-width: 250px;
-    margin-left: 10px;
-
-    border: 1px groove #ddd;
-    background: white;
-    padding: 7px 10px;
-    font-style: italic;
-    color: gray;
-}
-span.status {
-    display: block;
-}
-span.status.inline {
-    display: inline-block;
-}
-span.status.valid, span.status.success {
-    color: green;
-}
-span.status.error {
-    color: red;
-}
-
-select.block {
-    display: block;
 }
 
 .control-group {
@@ -84,6 +65,53 @@ input.form-control[type="radio"] {
     top: 0;
 }
 
+.radio-inline, .checkbox-inline {
+    vertical-align: bottom;
+}
+
+/* Field description tooltips */
+.description {
+    display: inline-block;
+    margin-left: 5px;
+}
+span.help-inline {
+    display: none;
+}
+span.info:hover + span.help-inline {
+    display: inline-block;
+    z-index: 10;
+    position: absolute;
+    top: 0;
+    min-width: 250px;
+    margin-left: 10px;
+
+    border: 1px groove #ddd;
+    background: white;
+    padding: 7px 10px;
+    font-style: italic;
+    color: gray;
+}
+
+/* Field status indicators */
+span.status {
+    display: block;
+}
+span.status.inline {
+    display: inline-block;
+}
+span.status.valid, span.status.success {
+    color: green;
+}
+span.status.error {
+    color: red;
+}
+
+select.block {
+    display: block;
+}
+
+
+/* Buttons */
 .btn[disabled] {
     pointer-events: auto;
 }
@@ -96,10 +124,8 @@ input.form-control[type="radio"] {
     margin-top: 7px; 
 }
 
-.radio-inline, .checkbox-inline {
-    vertical-align: bottom;
-}
 
+/* Search Results */
 .search-results .close {
     font-size: 14px;
     padding-top: 0;
@@ -110,6 +136,7 @@ input.form-control[type="radio"] {
     pointer-events: none;
 }
 
+/* Target List */
 .target-list { padding-top: 10px; }
 .target-list .list-group-item {
     display: list-item;
@@ -142,19 +169,4 @@ input.form-control[type="radio"] {
 [contenteditable].placeholder {
     color: gray;
     font-style: italic;
-}
-
-fieldset.border {
-    border: 1px groove #ddd;
-    padding: 0 1.4em 1.4em 1.4em;
-    margin: 0 0 1.5em 0;
-}
-
-fieldset.border legend {
-    font-size: 1.2em;
-    font-weight: bold;
-    text-align: left;
-    width:auto;
-    padding:0 10px;
-    border-bottom:none;
 }
