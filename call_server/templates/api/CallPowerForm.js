@@ -57,8 +57,9 @@ CallPowerForm.prototype = function() {
   var cleanLocation = cleanUSZipcode;
 
   var onSuccess = function(response) {
+    if (response.campaign !== 'live') { return onError('This campaign is no longer active.'); }
+    if (response.call !== 'queued') { return onError('Could not start call.'); }
     if (response.script === undefined) { return false; }
-    if (response.campaign !== 'active') { return false; }
 
     if (this.scriptDisplay === 'overlay') {
       // display simple overlay with script content
