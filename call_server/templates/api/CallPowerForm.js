@@ -83,12 +83,19 @@ CallPowerForm.prototype = function() {
     return false;
   };
 
-  var makeCall = function(event) {
+  var makeCall = function(event, options) {
     if (event !== undefined) { event.preventDefault(); }
+    // stop default submit event
+
+    options = options || {};
+    if (options.call_started) {
+      return true;
+    }
 
     if (!(this.location() && this.phone())) {
       return this.onError('form invalid');
     }
+
     $.ajax(createCallURL, {
       method: 'GET',
       data: {
@@ -99,7 +106,10 @@ CallPowerForm.prototype = function() {
       },
       success: $.proxy(this.onSuccess, this),
       error: $.proxy(this.onError, this)
-    });
+    }).then(function() {
+      // run previous default event without this callback
+      $(event.currentTarget).trigger(event.type, { 'call_started': true });
+    }).fail(this.onError);
   };
 
   // public method interface
