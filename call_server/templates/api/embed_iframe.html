@@ -1,6 +1,13 @@
-<style>
-	form#call_form label { display: block; }
-</style>
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="{{ url_for('static', filename='scripts/embed/overlay.css', _external=True) }}" type="text/css">
+	<style>
+		form#call_form label { display: block; }
+	</style>
+</head>
+
+<body>
 <form id="call_form">
 	<label for="phone">Phone:
 		<input type="tel" name="phone" id="phone_id"/>
@@ -13,4 +20,7 @@
 	<input type="submit" value="Call Now" />
 </form>
 
-<script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True, _scheme=https)}}"></script>
+<script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True)}}"></script>
+
+</body>
+</html>

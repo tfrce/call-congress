@@ -89,6 +89,13 @@ EMBED_FORM_CHOICES = (
     ('custom', 'Custom'),
 )
 
+EMBED_SCRIPT_DISPLAY = (
+    ('', 'None'),
+    ('overlay', 'Overlay'),
+    ('replace', 'Replace Form'),
+    ('custom', 'Custom')
+)
+
 
 # empty set of choices, for filling in on client-side
 EMPTY_CHOICES = {'': ''}

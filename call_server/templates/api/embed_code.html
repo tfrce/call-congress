@@ -2,7 +2,7 @@
 
 {% if campaign.embed.type == 'iframe' %}
 	{# display widget in iframe #}
-	<iframe src="{{url_for('api.campaign_embed_iframe', campaign_id=campaign.id, _external=True, _scheme=https)}}"></iframe>
+	<iframe src="{{url_for('api.campaign_embed_iframe', campaign_id=campaign.id, _external=True)}}"></iframe>
 {% elif campaign.embed.type == 'custom' %}
 	{# custom embed config object #}
 	<script type="text/javascript">
@@ -10,9 +10,10 @@
 	        CallPowerOptions.callForm = $("#{{campaign.embed.form_id|default('call_form')}}");
 	        CallPowerOptions.phoneField = $("#{{campaign.embed.phone_id|default('phone_id')}}");
 	        CallPowerOptions.locationField = $("#{{campaign.embed.location_id|default('location_id')}}");
+	        CallPowerOptions.scriptDisplay = "{{campaign.embed.script_display|default('overlay')}}";
 	        {% if campaign.embed.custom_css%}CallPowerOptions.css = "{{campaign.embed.custom_css}}";{%endif%}
 	</script>
 {% endif %}
-	<script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True, _scheme=https)}}"></script>
+	<script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True)}}"></script>
 
 {% endstrip %}

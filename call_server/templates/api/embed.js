@@ -2,6 +2,9 @@
 
 var main = function() {
   callPowerForm = new CallPowerForm('#{{campaign.embed.get("form_id","call_form")}}');
+  {% if campaign.embed.get('script_display') == 'overlay' %}
+  	$.getScript("{{ url_for('static', filename='scripts/embed/overlay.js', _external=True) }}");
+  {% endif %}
 }
 
 if (typeof jQuery == 'undefined') {

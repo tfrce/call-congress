@@ -11,7 +11,7 @@ from wtforms.validators import Required, Optional, AnyOf, NumberRange, Validatio
 
 from .constants import (CAMPAIGN_CHOICES, CAMPAIGN_NESTED_CHOICES,
                         SEGMENT_BY_CHOICES, LOCATION_CHOICES, ORDERING_CHOICES,
-                        CAMPAIGN_STATUS, EMBED_FORM_CHOICES)
+                        CAMPAIGN_STATUS, EMBED_FORM_CHOICES, EMBED_SCRIPT_DISPLAY)
 from ..political_data.constants import US_STATES
 
 from .models import TwilioPhoneNumber
@@ -103,10 +103,13 @@ class CampaignLaunchForm(Form):
     embed_type = SelectField(_('Form Embed'), [Optional()], choices=choice_items(EMBED_FORM_CHOICES),
         description=True, default=EMBED_FORM_CHOICES[0][0])
 
+    # custom embed choices
     embed_form_id = TextField(_('Form ID'))
     embed_phone_id = TextField(_('Phone Field ID'))
     embed_location_id = TextField(_('Location Field ID'))
     embed_custom_css = TextField(_('Custom CSS URL'))
+    embed_script_display = SelectField(_('Script Display'), [Optional()], choices=choice_items(EMBED_SCRIPT_DISPLAY),
+        description=True, default=EMBED_SCRIPT_DISPLAY[0][0])
 
     submit = SubmitField(_('Launch'))
 

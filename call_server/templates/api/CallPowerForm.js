@@ -3,6 +3,7 @@
   * Connects embedded action form to CallPower campaign
   * Requires jQuery
   *
+  * Displays call script in overlay or by replacing form
   * Override functions onSuccess or onError in CallPowerOptions
   * Instantiate with form selector to connect callbacks
   * (c) Spacedog.xyz 2015, license AGPLv3
@@ -13,6 +14,7 @@ var CallPowerForm = function (formSelector) {
   this.form = $(formSelector);
   this.locationField = $('#{{campaign.embed.get("location_id","location_id")}}');
   this.phoneField = $('#{{campaign.embed.get("phone_id","phone_id")}}');
+  this.scriptDisplay = 'overlay';
   
   // allow options override
   for (var option in window.CallPowerOptions || []) {
@@ -24,7 +26,7 @@ var CallPowerForm = function (formSelector) {
 
 CallPowerForm.prototype = function() {
   // prototype variables
-  var createCallURL = '{{url_for("call.create", campaign_id=campaign.id, _external=True, _scheme=https)}}';
+  var createCallURL = '{{url_for("call.create", campaign_id=campaign.id, _external=True)}}';
   var campaignId = "{{campaign.id}}";
 
   var getCountry = function() {
@@ -55,8 +57,25 @@ CallPowerForm.prototype = function() {
   var cleanLocation = cleanUSZipcode;
 
   var onSuccess = function(response) {
-    // display script in simple lightbox
-    console.log(response);
+    if (response.script === undefined) { return false; }
+    if (response.campaign !== 'active') { return false; }
+
+    if (this.scriptDisplay === 'overlay') {
+      // display simple overlay with script content
+      var scriptOverlay = $('<div class="overlay"><div class="modal">'+response.script+'</div></div>');
+      $('body').append(scriptOverlay);
+      scriptOverlay.overlay();
+      scriptOverlay.trigger('show');
+      return true;
+    }
+
+    if (this.scriptDisplay === 'replace') {
+      // replace form with script content
+      this.form.html(response.script);
+      return true;
+    }
+
+    return false;
   };
 
   var onError = function(message) {
@@ -78,8 +97,8 @@ CallPowerForm.prototype = function() {
         userPhone: this.phone(),
         userCountry: this.country()
       },
-      success: this.onSuccess,
-      error: this.onError
+      success: $.proxy(this.onSuccess, this),
+      error: $.proxy(this.onError, this)
     });
   };
 
