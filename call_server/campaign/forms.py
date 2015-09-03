@@ -98,15 +98,16 @@ class CampaignLaunchForm(Form):
     test_call_number = TextField(_('Call Me'))
     test_call_location = TextField(_('Test Location'))
 
-    display_script = TextField(_('Display Script'), widget=TextArea())
+    # standard embed fields
+    embed_script = TextField(_('Display Script'), widget=TextArea(), description=True)
     embed_code = TextField(_('Embed Code'), widget=TextArea(), description=True)
     embed_type = SelectField(_('Form Embed'), [Optional()], choices=choice_items(EMBED_FORM_CHOICES),
         description=True, default=EMBED_FORM_CHOICES[0][0])
 
-    # custom embed choices
-    embed_form_id = TextField(_('Form ID'))
-    embed_phone_id = TextField(_('Phone Field ID'))
-    embed_location_id = TextField(_('Location Field ID'))
+    # custom embed fields
+    embed_form_sel = TextField(_('Form Selector'))
+    embed_phone_sel = TextField(_('Phone Field'))
+    embed_location_sel = TextField(_('Location Field'))
     embed_custom_css = TextField(_('Custom CSS URL'))
     embed_script_display = SelectField(_('Script Display'), [Optional()], choices=choice_items(EMBED_SCRIPT_DISPLAY),
         description=True, default=EMBED_SCRIPT_DISPLAY[0][0])

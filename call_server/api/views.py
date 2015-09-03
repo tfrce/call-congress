@@ -169,10 +169,11 @@ def campaign_embed_code(campaign_id):
     # kludge new params into campaign object to render
     temp_params = {
         'type': request.values.get('embed_type'),
-        'form_id': request.values.get('embed_form_id'),
-        'phone_id': request.values.get('embed_phone_id'),
-        'location_id': request.values.get('embed_location_id'),
-        'custom_css': request.values.get('embed_custom_css')
+        'form_sel': request.values.get('embed_form_sel', None),
+        'phone_sel': request.values.get('embed_phone_sel', None),
+        'location_sel': request.values.get('embed_location_sel', None),
+        'custom_css': request.values.get('embed_custom_css'),
+        'script_display': request.values.get('embed_script_display'),
     }
     if type(campaign.embed) == dict():
         campaign.embed.update(temp_params)

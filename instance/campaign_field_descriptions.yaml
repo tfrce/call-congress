@@ -17,5 +17,6 @@ msg_target_intro: When we are about to connect them, remind the caller who they 
 msg_between_calls: Between calls, encourage the caller to keep going and remind them of any specific instructions.
 msg_final_thanks: When all calls are complete, thank the caller for taking action.
 
+embed_script: Enter the suggested call script here as HTML.
 embed_type: How will this form embed into your action page?
 embed_code: Copy and paste this javascript into your action page.

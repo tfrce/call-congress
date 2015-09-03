@@ -55,7 +55,7 @@
     <fieldset class="border">
         <legend>Embed</legend>
 
-        {{ render_field_default(form.display_script, control_class='col-sm-8 col-xs-12', field_class='tall') }}
+        {{ render_field_default(form.embed_script, control_class='col-sm-8 col-xs-12', field_class='tall') }}
         {{ render_field_default(form.embed_type, control_class='col-sm-2') }}
 
         {{ render_field_default(form.embed_code, group_class='hidden', control_class='col-sm-8 col-xs-12', field_class='medium readonly') }}
@@ -66,9 +66,9 @@
             </div>
 
             <div class="panel-body">
-                {{ render_field_default(form.embed_form_id) }}
-                {{ render_field_default(form.embed_phone_id) }}
-                {{ render_field_default(form.embed_location_id) }}
+                {{ render_field_default(form.embed_form_sel) }}
+                {{ render_field_default(form.embed_phone_sel) }}
+                {{ render_field_default(form.embed_location_sel) }}
                 {{ render_field_default(form.embed_script_display) }}
                 {{ render_field_default(form.embed_custom_css) }}
             </div>
