@@ -662,10 +662,11 @@ $(document).ready(function () {
         url: '/api/campaign/'+this.campaignId+'/embed_code.html',
         data: {
           'embed_type': $('#embed_type').val(),
-          'embed_form_id': $('#embed_form_id').val(),
-          'embed_phone_id': $('#embed_phone_id').val(),
-          'embed_location_id': $('#embed_location_id').val(),
+          'embed_form_sel': $('#embed_form_sel').val(),
+          'embed_phone_sel': $('#embed_phone_sel').val(),
+          'embed_location_sel': $('#embed_location_sel').val(),
           'embed_custom_css': $('#embed_custom_css').val(),
+          'embed_script_display': $('#embed_script_display').val(),
         },
         success: function(html) {
           $('textarea#embed_code').val(html);

@@ -12,8 +12,8 @@
 var CallPowerForm = function (formSelector) {
   // instance variables
   this.form = $(formSelector);
-  this.locationField = $('#{{campaign.embed.get("location_id","location_id")}}');
-  this.phoneField = $('#{{campaign.embed.get("phone_id","phone_id")}}');
+  this.locationField = $('{{campaign.embed.get("location_sel","#location_id")}}');
+  this.phoneField = $('{{campaign.embed.get("phone_sel","#phone_id")}}');
   this.scriptDisplay = 'overlay';
   
   // allow options override
@@ -84,7 +84,7 @@ CallPowerForm.prototype = function() {
   };
 
   var makeCall = function(event) {
-    event.preventDefault();
+    if (event !== undefined) { event.preventDefault(); }
 
     if (!(this.location() && this.phone())) {
       return this.onError('form invalid');

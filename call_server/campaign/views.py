@@ -292,10 +292,11 @@ def launch(campaign_id):
         if form.embed_type.data == 'custom':
             campaign.embed = {
                 'type': form.embed_type.data,
-                'form_id': form.embed_form_id.data,
-                'phone_id': form.embed_phone_id.data,
-                'location_id': form.embed_location_id.data,
+                'form_sel': form.embed_form_sel.data,
+                'phone_sel': form.embed_phone_sel.data,
+                'location_sel': form.embed_location_sel.data,
                 'custom_css': form.embed_custom_css.data,
+                'script_display': form.embed_script_display.data
             }
         elif form.embed_type.data == 'iframe':
             campaign.embed = {
@@ -305,7 +306,7 @@ def launch(campaign_id):
         else:
             campaign.embed = {}
 
-        campaign.embed['script'] = form.display_script.data
+        campaign.embed['script'] = form.embed_script.data
 
         db.session.add(campaign)
         db.session.commit()
@@ -318,13 +319,14 @@ def launch(campaign_id):
             form.embed_type.data = campaign.embed.get('type')
 
             if campaign.embed.get('type') == 'custom':
-                form.embed_form_id.data = campaign.embed.get('form_id')
-                form.embed_phone_id.data = campaign.embed.get('phone_id')
-                form.embed_location_id.data = campaign.embed.get('location_id')
+                form.embed_form_sel.data = campaign.embed.get('form_sel')
+                form.embed_phone_sel.data = campaign.embed.get('phone_sel')
+                form.embed_location_sel.data = campaign.embed.get('location_sel')
                 form.embed_custom_css.data = campaign.embed.get('custom_css')
+                form.embed_script_display.data = campaign.embed.get('script_display')
 
             if campaign.embed.get('script'):
-                form.display_script.data = campaign.embed.get('script')
+                form.embed_script.data = campaign.embed.get('script')
 
     return render_template('campaign/launch.html', campaign=campaign, form=form,
         descriptions=current_app.config.CAMPAIGN_FIELD_DESCRIPTIONS)
