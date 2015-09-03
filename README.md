@@ -42,8 +42,7 @@ Action Integration
 ------------------
 For most uses, you can just place the `<script>` tag provided in the launch page into your action platform. This will add a post-submit callback to your action form to connect the caller, and optionally display the script in a lightbox.
 
-For more complex integrations, Call Power provides [json APIs](INTEGRATION_API.md). You will need to authenticate either as a logged in user, or with an ADMIN_API_KEY specified the python environment.
-
+For more complex integrations, Call Power provides [javascript embeds](JAVASCRIPT.md) and a full [json API](INTEGRATION_API.md).
 
 Installation Instructions
 -------------------

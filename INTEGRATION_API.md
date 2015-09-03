@@ -1,23 +1,6 @@
 
-Integration
-===========
-
-Embedding
----------
-
-Campaigns can be easily embedded in external forms by including `<script src="/campaign/ID/embed.js"></script>`. 
-This script attaches a post-submit callback to an existing form, using standard javascript event listeners and XMLHTTPRequests.
-
-Additional parameters can be specified on the `call_power_embed` object before inserting the script:
-
-* form_id: form id to attach, defaults to 'call-tool'
-* phone_id: input id with the user phone number, defaults to 'phone'
-* location_id: input id with the user location, defaults to 'location'
-
-To render a complete form, append ?widget=1 to embed.js, and the script will insert an iframe with a form ready to be filled out.
-
 REST API
---------
+===========
 
 A read-only REST API is available for integrating with external services. Access is allowed by passing an api_key parameter, or through flask user authentication. Results can be filtered by any field, using a [flask-restless](http://flask-restless.readthedocs.org/en/latest/searchformat.html) formatted parameter.
 

@@ -1,15 +1,16 @@
 <style>
-	form#call-form label { display: block; }
-
+	form#call_form label { display: block; }
 </style>
-<form id="call-form">
+<form id="call_form">
 	<label for="phone">Phone:
-		<input type="tel" name="phone" />
+		<input type="tel" name="phone" id="phone_id"/>
 	</label>
 
 	<label for="location">Zipcode:
-		<input type="text" name="location" />
+		<input type="text" name="location" id="location_id" />
 	</label>
 
 	<input type="submit" value="Call Now" />
 </form>
+
+<script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True, _scheme=https)}}"></script>
