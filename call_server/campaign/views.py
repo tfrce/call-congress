@@ -304,6 +304,8 @@ def launch(campaign_id):
         else:
             campaign.embed = {}
 
+        campaign.embed['script'] = form.display_script.data
+
         db.session.add(campaign)
         db.session.commit()
 
@@ -314,11 +316,14 @@ def launch(campaign_id):
         if campaign.embed:
             form.embed_type.data = campaign.embed.get('type')
 
-        if campaign.embed and (campaign.embed.get('type') == 'custom'):
-            form.embed_form_id.data = campaign.embed.get('form_id')
-            form.embed_phone_id.data = campaign.embed.get('phone_id')
-            form.embed_location_id.data = campaign.embed.get('location_id')
-            form.embed_custom_css.data = campaign.embed.get('custom_css')
+            if campaign.embed.get('type') == 'custom':
+                form.embed_form_id.data = campaign.embed.get('form_id')
+                form.embed_phone_id.data = campaign.embed.get('phone_id')
+                form.embed_location_id.data = campaign.embed.get('location_id')
+                form.embed_custom_css.data = campaign.embed.get('custom_css')
+
+            if campaign.embed.get('script'):
+                form.display_script.data = campaign.embed.get('script')
 
     return render_template('campaign/launch.html', campaign=campaign, form=form,
         descriptions=current_app.config.CAMPAIGN_FIELD_DESCRIPTIONS)
