@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from flask import current_app
-from sqlalchemy_utils.types import phone_number
+from sqlalchemy_utils.types import phone_number, JSONType
 from flask_store.sqla import FlaskStoreType
 from sqlalchemy import UniqueConstraint
 
@@ -39,6 +39,8 @@ class Campaign(db.Model):
                                        backref=db.backref('campaigns'))
 
     status_code = db.Column(db.SmallInteger, default=STATUS_PAUSED)
+
+    embed = db.Column(JSONType)
 
     @property
     def status(self):

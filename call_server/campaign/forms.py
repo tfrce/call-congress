@@ -101,9 +101,11 @@ class CampaignLaunchForm(Form):
     display_script = TextField(_('Display Script'), widget=TextArea())
     embed_code = TextField(_('Embed Code'), widget=TextArea(), description=True)
 
-    form_selector = TextField(_('Form Selector'))
-    display_script_selector = TextField(_('Display Script Selector'))
-    success_endpoint = TextField(_('Success Endpoint'))
+    custom_embed = BooleanField(_('Custom Form Embed'), [Optional()], default=False)
+    embed_form_id = TextField(_('Form ID'), default="call_power_form")
+    embed_phone_id = TextField(_('Phone Field ID'), default="phone_id")
+    embed_location_id = TextField(_('Location Field ID'), default="location_id")
+    embed_custom_css = TextField(_('Custom CSS URL'))
 
     submit = SubmitField(_('Launch'))
 

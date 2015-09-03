@@ -38,7 +38,7 @@ def configure_restless(app):
                                     'call_id', 'status', 'duration'])
     rest.create_api(Campaign, collection_name='campaign', methods=['GET'],
                     include_columns=['id', 'name', 'campaign_type', 'campaign_state', 'campaign_subtype',
-                                     'target_ordering', 'allow_call_in', 'call_maximum'],
+                                     'target_ordering', 'allow_call_in', 'call_maximum', 'embed'],
                     include_methods=['phone_numbers', 'targets', 'status', 'audio_msgs', 'required_fields'])
     rest.create_api(Target, collection_name='target', methods=['GET'],
                     include_columns=['id', 'uid', 'name', 'title'],
@@ -155,6 +155,25 @@ def campaign_embed_iframe(campaign_id):
     return render_template('api/embed_iframe.html', campaign=campaign)
 
 
+@api.route('/campaign/<int:campaign_id>/embed_code.html', methods=['GET'])
+@api_key_or_auth_required
+def campaign_embed_code(campaign_id):
+    campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
+    # kludge new params into campaign object to render
+    temp_params = {
+        'custom': bool(int(request.values.get('custom_embed'))),
+        'form_id': request.values.get('embed_form_id'),
+        'phone_id': request.values.get('embed_phone_id'),
+        'location_id': request.values.get('embed_location_id'),
+        'custom_css': request.values.get('embed_custom_css')
+    }
+    campaign.embed.update(temp_params)
+    # don't save
+    return render_template('api/embed_code.html', campaign=campaign)
+
+
+# route for twilio to get twiml response
+# must be publicly accessible to post
 @api.route('/twilio/text-to-speech', methods=['POST'])
 def twilio_say():
     resp = twilio.twiml.Response()

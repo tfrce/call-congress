@@ -55,21 +55,20 @@
     <fieldset class="border">
         <legend>Embed</legend>
 
-        {{ render_field_default(form.display_script, control_class='col-sm-8 col-xs-12') }}
-        {{ render_field_default(form.embed_code, control_class='col-sm-8 col-xs-12', field_class='readonly') }}
+        {{ render_field_default(form.display_script, control_class='col-sm-8 col-xs-12', field_class='tall') }}
+        {{ render_field_default(form.embed_code, control_class='col-sm-8 col-xs-12', field_class='medium readonly') }}
+        {{ render_field_default(form.custom_embed, offset='col-sm-offset-2', control_class='col-sm-2') }}
 
-        <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#embed-advanced">Advanced Options</button>
-
-
-        <div class="panel panel-info collapse out" id="embed-advanced">
+        <div class="panel panel-info collapse {% if form.custom_embed.data %}in{%else%}out{%endif%}" id="custom_embed_options">
             <div class="panel-heading">
-                <h3 class="panel-title">Advanced</h3>
+                <h3 class="panel-title">Custom Embed Options</h3>
             </div>
 
             <div class="panel-body">
-                {{ render_field_default(form.success_endpoint) }}
-                {{ render_field_default(form.form_selector) }}
-                {{ render_field_default(form.display_script_selector) }}
+                {{ render_field_default(form.embed_form_id) }}
+                {{ render_field_default(form.embed_phone_id) }}
+                {{ render_field_default(form.embed_location_id) }}
+                {{ render_field_default(form.embed_custom_css) }}
             </div>
         </div>
 

@@ -285,17 +285,30 @@ def launch(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     form = CampaignLaunchForm()
 
-    # TEMP, this will always be true for EFF campaigns
-    # but maybe not for others
-    campaign.custom_embed = True
-
     # render javascript embed_code, stripping whitespace
-    form.embed_code.data = (render_template('api/embed_code.html', campaign=campaign)
-        .replace('\n', '').replace('\t', ' ').replace('    ', ' '))
+    form.embed_code.data = (render_template('api/embed_code.html', campaign=campaign))
+
+    if campaign.embed:
+        form.custom_embed.data = campaign.embed.get('custom')
+        form.embed_form_id.data = campaign.embed.get('form_id')
+        form.embed_phone_id.data = campaign.embed.get('phone_id')
+        form.embed_location_id.data = campaign.embed.get('location_id')
+        form.embed_custom_css.data = campaign.embed.get('custom_css')
 
     if form.validate_on_submit():
         campaign.status_code = STATUS_LIVE
-        # TODO update campaign embed settings
+        
+        # update campaign embed settings
+        if form.custom_embed:
+            campaign.embed = {
+                'custom': True,
+                'form_id': form.embed_form_id.data,
+                'phone_id': form.embed_phone_id.data,
+                'location_id': form.embed_location_id.data,
+                'custom_css': form.embed_custom_css.data,
+            }
+        else:
+            campaign.embed = None
 
         db.session.add(campaign)
         db.session.commit()

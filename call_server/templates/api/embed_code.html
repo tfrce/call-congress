@@ -1,17 +1,22 @@
-{% if campaign.custom_embed %}
-{# custom embed config object #}
-<script type="text/javascript">
-    var call_power_embed = {};
-        call_power_embed.form_id = "{{campaign.form_id|default('call-tool')}}";
-        call_power_embed.phone_id = "{{campaign.phone_id|default('phone')}}";
-        {% if campaign.embed_css%}call_power_embed.css = "https://example.org/custom.css";{%endif%}
-</script>
-<script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True, _scheme=https)}}"></script>
+{% strip %}
 
+{% if campaign.embed.render_widget %}
+	{# display widget in iframe #}
+	<script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True, _scheme=https, widget=1)}}"></script>
+	{# link to be fetched and rendered #}
+	<a id="call-power-widget" href="{{url_for('api.campaign_embed_iframe', campaign_id=campaign.id, _external=True, _scheme=https)}}"></a>
 {% else %}
-
-{# render widget instead #}
-<script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True, _scheme=https, widget=1)}}"></script>
-{# link to be fetched and rendered as an iframe #}
-<a id="call-power-widget" href="{{url_for('api.campaign_embed_iframe', campaign_id=campaign.id, _external=True, _scheme=https)}}"></a>
+	{% if campaign.embed.custom %}
+	{# custom embed config object #}
+	<script type="text/javascript">
+	    var call_power_embed = {};
+	        call_power_embed.form_id = "{{campaign.embed.form_id|default('call-tool')}}";
+	        call_power_embed.phone_id = "{{campaign.embed.phone_id|default('phone_id')}}";
+	        call_power_embed.location_id = "{{campaign.embed.location_id|default('location_id')}}";
+	        {% if campaign.embed.custom_css%}call_power_embed.css = "{{campaign.embed.custom_css}}";{%endif%}
+	</script>
+	{% endif %}
+	<script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True, _scheme=https)}}"></script>
 {% endif %}
+
+{% endstrip %}

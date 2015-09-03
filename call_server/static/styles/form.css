@@ -16,7 +16,7 @@ fieldset.border legend {
     border-bottom:none;
 }
 
-/* Input controls */
+/* Generic input controls */
 .control-label.required:after { 
    content:"*";
    color:red;
@@ -67,6 +67,14 @@ input.form-control[type="radio"] {
 
 .radio-inline, .checkbox-inline {
     vertical-align: bottom;
+}
+
+/* Specific input overrides */
+textarea.medium {
+    height: 5em;
+}
+textarea.tall {
+    height: 10em;
 }
 
 /* Field description tooltips */
