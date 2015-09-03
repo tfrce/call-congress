@@ -4,7 +4,7 @@ var main = function() {
   callPowerForm = new CallPowerForm('#{{campaign.embed.get("form_sel","#call_form")}}');
   {% if campaign.embed.get('script_display') == 'overlay' %}
     $.getScript("{{ url_for('static', filename='scripts/embed/overlay.js', _external=True) }}");
-    $('head').append('<link rel="stylesheet" href="{{ url_for("static", filename="scripts/embed/overlay.js", _external=True) }}" />');
+    $('head').append('<link rel="stylesheet" href="{{ url_for("static", filename="scripts/embed/overlay.css", _external=True) }}" />');
   {% endif %}
 }
 
