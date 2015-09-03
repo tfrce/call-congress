@@ -285,36 +285,40 @@ def launch(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     form = CampaignLaunchForm()
 
-    # render javascript embed_code, stripping whitespace
-    form.embed_code.data = (render_template('api/embed_code.html', campaign=campaign))
-
-    if campaign.embed:
-        form.custom_embed.data = campaign.embed.get('custom')
-        form.embed_form_id.data = campaign.embed.get('form_id')
-        form.embed_phone_id.data = campaign.embed.get('phone_id')
-        form.embed_location_id.data = campaign.embed.get('location_id')
-        form.embed_custom_css.data = campaign.embed.get('custom_css')
-
     if form.validate_on_submit():
         campaign.status_code = STATUS_LIVE
-        
+
         # update campaign embed settings
-        if form.custom_embed:
+        if form.embed_type.data == 'custom':
             campaign.embed = {
-                'custom': True,
+                'type': form.embed_type.data,
                 'form_id': form.embed_form_id.data,
                 'phone_id': form.embed_phone_id.data,
                 'location_id': form.embed_location_id.data,
                 'custom_css': form.embed_custom_css.data,
             }
+        elif form.embed_type.data == 'iframe':
+            campaign.embed = {
+                'type': form.embed_type.data,
+            }
         else:
-            campaign.embed = None
+            campaign.embed = {}
 
         db.session.add(campaign)
         db.session.commit()
 
         flash('Campaign launched!', 'success')
         return redirect(url_for('campaign.index'))
+
+    else:
+        if campaign.embed:
+            form.embed_type.data = campaign.embed.get('type')
+
+        if campaign.embed and (campaign.embed.get('type') == 'custom'):
+            form.embed_form_id.data = campaign.embed.get('form_id')
+            form.embed_phone_id.data = campaign.embed.get('phone_id')
+            form.embed_location_id.data = campaign.embed.get('location_id')
+            form.embed_custom_css.data = campaign.embed.get('custom_css')
 
     return render_template('campaign/launch.html', campaign=campaign, form=form,
         descriptions=current_app.config.CAMPAIGN_FIELD_DESCRIPTIONS)

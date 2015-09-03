@@ -56,10 +56,11 @@
         <legend>Embed</legend>
 
         {{ render_field_default(form.display_script, control_class='col-sm-8 col-xs-12', field_class='tall') }}
-        {{ render_field_default(form.embed_code, control_class='col-sm-8 col-xs-12', field_class='medium readonly') }}
-        {{ render_field_default(form.custom_embed, offset='col-sm-offset-2', control_class='col-sm-2') }}
+        {{ render_field_default(form.embed_type, control_class='col-sm-2') }}
 
-        <div class="panel panel-info collapse {% if form.custom_embed.data %}in{%else%}out{%endif%}" id="custom_embed_options">
+        {{ render_field_default(form.embed_code, group_class='hidden', control_class='col-sm-8 col-xs-12', field_class='medium readonly') }}
+
+        <div class="panel panel-info collapse {% if form.embed_type.data == 'custom' %}in{%else%}out{%endif%}" id="custom_embed_options">
             <div class="panel-heading">
                 <h3 class="panel-title">Custom Embed Options</h3>
             </div>

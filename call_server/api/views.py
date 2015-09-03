@@ -161,13 +161,16 @@ def campaign_embed_code(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
     # kludge new params into campaign object to render
     temp_params = {
-        'custom': bool(int(request.values.get('custom_embed'))),
+        'type': request.values.get('embed_type'),
         'form_id': request.values.get('embed_form_id'),
         'phone_id': request.values.get('embed_phone_id'),
         'location_id': request.values.get('embed_location_id'),
         'custom_css': request.values.get('embed_custom_css')
     }
-    campaign.embed.update(temp_params)
+    if type(campaign.embed) == dict():
+        campaign.embed.update(temp_params)
+    else:
+        campaign.embed = temp_params
     # don't save
     return render_template('api/embed_code.html', campaign=campaign)
 

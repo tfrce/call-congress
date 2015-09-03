@@ -594,13 +594,14 @@ $(document).ready(function () {
 
     events: {
       'click .test-call': 'makeTestCall',
-      'change #custom_embed': 'toggleCustomEmbedPanel',
+      'change #embed_type': 'toggleCustomEmbedPanel',
       'blur #custom_embed_options input': 'updateEmbedCode',
     },
 
     initialize: function() {
       this.campaignId = $('#campaignId').val();
       $('.readonly').attr('readonly', 'readonly');
+      this.toggleCustomEmbedPanel();
     },
 
     makeTestCall: function(event) {
@@ -641,17 +642,26 @@ $(document).ready(function () {
     },
 
     toggleCustomEmbedPanel: function(event) {
-      console.log('toggle');
-      $('#custom_embed_options').collapse('toggle');
+      var formType = $('#embed_type').val();
+      if (formType) {
+        $('.form-group.embed_code').removeClass('hidden');
+      } else {
+        $('.form-group.embed_code').addClass('hidden');
+      }
+
+      if (formType === 'custom') {
+        $('#custom_embed_options').collapse('show');
+      } else {
+        $('#custom_embed_options').collapse('hide');
+      }
       this.updateEmbedCode();
     },
 
     updateEmbedCode: function(event) {
-      console.log('update!');
       $.ajax({
         url: '/api/campaign/'+this.campaignId+'/embed_code.html',
         data: {
-          'custom_embed': $('#custom_embed:checked').length,
+          'embed_type': $('#embed_type').val(),
           'embed_form_id': $('#embed_form_id').val(),
           'embed_phone_id': $('#embed_phone_id').val(),
           'embed_location_id': $('#embed_location_id').val(),

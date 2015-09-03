@@ -83,6 +83,13 @@ CAMPAIGN_STATUS = {
     STATUS_LIVE: 'live',
 }
 
+EMBED_FORM_CHOICES = (
+    ('', 'None'),
+    ('iframe', 'iFrame'),
+    ('custom', 'Custom'),
+)
+
+
 # empty set of choices, for filling in on client-side
 EMPTY_CHOICES = {'': ''}
 
