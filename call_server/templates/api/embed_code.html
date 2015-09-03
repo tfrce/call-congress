@@ -2,17 +2,15 @@
 
 {% if campaign.embed.type == 'iframe' %}
 	{# display widget in iframe #}
-	<script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True, _scheme=https, widget=1)}}"></script>
-	{# link to be fetched and rendered #}
-	<a id="call-power-widget" href="{{url_for('api.campaign_embed_iframe', campaign_id=campaign.id, _external=True, _scheme=https)}}"></a>
+	<iframe src="{{url_for('api.campaign_embed_iframe', campaign_id=campaign.id, _external=True, _scheme=https)}}"></iframe>
 {% elif campaign.embed.type == 'custom' %}
 	{# custom embed config object #}
 	<script type="text/javascript">
-	    var call_power_embed = {};
-	        call_power_embed.form_id = "{{campaign.embed.form_id|default('call-tool')}}";
-	        call_power_embed.phone_id = "{{campaign.embed.phone_id|default('phone_id')}}";
-	        call_power_embed.location_id = "{{campaign.embed.location_id|default('location_id')}}";
-	        {% if campaign.embed.custom_css%}call_power_embed.css = "{{campaign.embed.custom_css}}";{%endif%}
+	    var CallPowerOptions = {};
+	        CallPowerOptions.callForm = $("#{{campaign.embed.form_id|default('call_form')}}");
+	        CallPowerOptions.phoneField = $("#{{campaign.embed.phone_id|default('phone_id')}}");
+	        CallPowerOptions.locationField = $("#{{campaign.embed.location_id|default('location_id')}}");
+	        {% if campaign.embed.custom_css%}CallPowerOptions.css = "{{campaign.embed.custom_css}}";{%endif%}
 	</script>
 {% endif %}
 	<script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True, _scheme=https)}}"></script>

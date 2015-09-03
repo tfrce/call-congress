@@ -149,6 +149,13 @@ def campaign_embed_js(campaign_id):
     return render_template('api/embed.js', campaign=campaign, mimetype='text/javascript')
 
 
+@api.route('/campaign/<int:campaign_id>/CallPowerForm.js', methods=['GET'])
+@crossdomain(origin='*')
+def campaign_form_js(campaign_id):
+    campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
+    return render_template('api/CallPowerForm.js', campaign=campaign, mimetype='text/javascript')
+
+
 @api.route('/campaign/<int:campaign_id>/embed_iframe.html', methods=['GET'])
 def campaign_embed_iframe(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
