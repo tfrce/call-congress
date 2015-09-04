@@ -16,5 +16,6 @@ To render a complete form, include `<iframe src="/api/campaign/ID/embed_iframe.h
 Custom Embeds
 -------------
 
-If you have a form with a submit callback already defined, you may want to do more complex integrations. Include the CallPowerForm.js from `/api/campaign/ID/CallPowerForm.js` and define your own callbacks for onSuccess and onError.
+The embed script should interoperate with existing forms, but if you have a form with a submit callback already defined, you may want to write your own integration. You can add javascript that will be run after the success callback in the Custom JS field. For example, if you are using the overlay script display, you might want to manually trigger an action after the overlay is closed, like `$('.overlay').on('hide', function() { actionkit.form.submit(); });`
 
+If your validation needs are more complex, you can include just CallPowerForm.js from `/api/campaign/ID/CallPowerForm.js` and define your own functions for location, phone, onSuccess or onError.

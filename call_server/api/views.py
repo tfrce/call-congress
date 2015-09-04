@@ -173,6 +173,7 @@ def campaign_embed_code(campaign_id):
         'phone_sel': request.values.get('embed_phone_sel', None),
         'location_sel': request.values.get('embed_location_sel', None),
         'custom_css': request.values.get('embed_custom_css'),
+        'custom_js': request.values.get('embed_custom_js'),
         'script_display': request.values.get('embed_script_display'),
     }
     if type(campaign.embed) == dict():

@@ -78,6 +78,7 @@
           'embed_phone_sel': $('#embed_phone_sel').val(),
           'embed_location_sel': $('#embed_location_sel').val(),
           'embed_custom_css': $('#embed_custom_css').val(),
+          'embed_custom_js': $('#embed_custom_js').val(),
           'embed_script_display': $('#embed_script_display').val(),
         },
         success: function(html) {

@@ -111,6 +111,7 @@ class CampaignLaunchForm(Form):
     embed_custom_css = TextField(_('Custom CSS URL'))
     embed_script_display = SelectField(_('Script Display'), [Optional()], choices=choice_items(EMBED_SCRIPT_DISPLAY),
         description=True, default=EMBED_SCRIPT_DISPLAY[0][0])
+    embed_custom_js = TextField(_('Custom JS Code'), description=True)
 
     submit = SubmitField(_('Launch'))
 

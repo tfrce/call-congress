@@ -22,6 +22,8 @@ var CallPowerForm = function (formSelector) {
   }
 
   this.form.on("submit", $.proxy(this.makeCall, this));
+  // include custom css
+  if(this.customCSS !== undefined) { $('head').append('<link rel="stylesheet" href="'+this.customCSS+'" />'); }
 };
 
 CallPowerForm.prototype = function() {
@@ -57,7 +59,8 @@ CallPowerForm.prototype = function() {
   var cleanLocation = cleanUSZipcode;
 
   var onSuccess = function(response) {
-    if (response.campaign !== 'live') { return onError('This campaign is no longer active.'); }
+    if (response.campaign === 'archived') { return onError('This campaign is no longer active.'); }
+    if (response.campaign !== 'live') { return onError('This campaign is not active.'); }
     if (response.call !== 'queued') { return onError('Could not start call.'); }
     if (response.script === undefined) { return false; }
 
@@ -67,16 +70,17 @@ CallPowerForm.prototype = function() {
       $('body').append(scriptOverlay);
       scriptOverlay.overlay();
       scriptOverlay.trigger('show');
-      return true;
     }
 
     if (this.scriptDisplay === 'replace') {
       // replace form with script content
       this.form.html(response.script);
-      return true;
     }
 
-    return false;
+    // run custom js function 
+    if(this.customJS !== undefined) { eval(this.customJS); }
+
+    return true;
   };
 
   var onError = function(message) {
