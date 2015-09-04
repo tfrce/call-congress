@@ -11,7 +11,8 @@
 	        CallPowerOptions.phoneField = $("{{campaign.embed.phone_sel|default('#phone_id', True)}}");
 	        CallPowerOptions.locationField = $("{{campaign.embed.location_sel|default('#location_id', True)}}");
 	        CallPowerOptions.scriptDisplay = "{{campaign.embed.script_display|default('overlay', True)}}";
-	        {% if campaign.embed.custom_css%}CallPowerOptions.css = "{{campaign.embed.custom_css}}";{%endif%}
+	        {% if campaign.embed.custom_css%}CallPowerOptions.customCSS = "{{campaign.embed.custom_css}}";{%endif%}
+	        {% if campaign.embed.custom_js%}CallPowerOptions.customJS = "{{campaign.embed.custom_js|safe}}";{%endif%}
 	</script>
 {% endif %}
 	<script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True)}}"></script>
