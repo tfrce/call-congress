@@ -36,6 +36,7 @@ CallPowerForm.prototype = function() {
   };
 
   var cleanUSZipcode = function() {
+    if (this.locationField.length === 0) { return undefined; }
     var isValid = /(\d{5}([\-]\d{4})?)/.test(this.locationField.val());
     return isValid ? this.locationField.val() : false;
   };
