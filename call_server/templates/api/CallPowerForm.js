@@ -98,12 +98,12 @@ CallPowerForm.prototype = function() {
       return true;
     }
 
-    if (this.locationField.length && !this.location())
+    if (this.locationField.length && !this.location()) {
       return this.onError('invalid location');
-    };
-    if (this.phoneField.length && !this.phone())
+    }
+    if (this.phoneField.length && !this.phone()) {
       return this.onError('invalid phone');
-    };
+    }
 
     $.ajax(createCallURL, {
       method: 'GET',
