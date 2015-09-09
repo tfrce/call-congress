@@ -42,6 +42,7 @@ CallPowerForm.prototype = function() {
   };
 
   var cleanUSPhone = function() {
+    if (this.phoneField.length === 0) { return undefined; }
     var num = this.phoneField.val();
     // remove whitespace, parens
     num = num.replace(/\s/g, '').replace(/\(/g, '').replace(/\)/g, '');
