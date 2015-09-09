@@ -26,7 +26,7 @@ var CallPowerForm = function (formSelector, $) {
   if(this.customCSS !== undefined) { $('head').append('<link rel="stylesheet" href="'+this.customCSS+'" />'); }
 };
 
-CallPowerForm.prototype = function() {
+CallPowerForm.prototype = function($) {
   // prototype variables
   var createCallURL = '{{url_for("call.create", campaign_id=campaign.id, _external=True)}}';
   var campaignId = "{{campaign.id}}";
@@ -131,4 +131,4 @@ CallPowerForm.prototype = function() {
     onSuccess: onSuccess,
     makeCall: makeCall,
   };
-} ();
+} (jQuery);
