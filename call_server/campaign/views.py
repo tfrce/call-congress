@@ -302,7 +302,8 @@ def launch(campaign_id):
         elif form.embed_type.data == 'iframe':
             campaign.embed = {
                 'type': form.embed_type.data,
-                'script_display': 'overlay'
+                'custom_css': form.embed_custom_css.data,
+                'script_display': 'replace'
             }
         else:
             campaign.embed = {}

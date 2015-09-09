@@ -5,7 +5,7 @@
 	<style>iframe{width:100%}</style>
 	<iframe src="{{ url_for('api.campaign_embed_iframe', campaign_id=campaign.id, _external=True) }}" frameBorder="0" scrolling="no" id="CallPowerFrame"></iframe>
 	<script src="{{ url_for('static', filename='embed/iframeResizer.min.js', _external=True) }}"></script>
-	<script type="text/javascript">iFrameResize('#CallPowerFrame');</script>
+	<script type="text/javascript">iFrameResize({}, '#CallPowerFrame');</script>
 {% elif campaign.embed.type == 'custom' %}
 	{# custom embed config object #}
 	<script type="text/javascript">

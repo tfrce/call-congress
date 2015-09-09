@@ -649,10 +649,17 @@ $(document).ready(function () {
         $('.form-group.embed_code').addClass('hidden');
       }
 
-      if (formType === 'custom') {
+      if (formType === 'custom' || formType === 'iframe') {
         $('#custom_embed_options').collapse('show');
       } else {
         $('#custom_embed_options').collapse('hide');
+      }
+      if (formType === 'iframe') {
+        $('#custom_embed_options h3').text('iFrame Embed Options');
+        $('#custom_embed_options .form-group').hide().filter('.iframe').show();
+      } else {
+        $('#custom_embed_options h3').text('Custom Embed Options');
+        $('#custom_embed_options .form-group').show();
       }
       this.updateEmbedCode();
     },
