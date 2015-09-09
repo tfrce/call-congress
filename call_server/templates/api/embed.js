@@ -3,8 +3,8 @@
 var main = function() {
   callPowerForm = new CallPowerForm('#{{campaign.embed.get("form_sel","#call_form")}}', jQuery);
   {% if campaign.embed.get('script_display') == 'overlay' %}
-    jQuery.getScript("{{ url_for('static', filename='scripts/embed/overlay.js', _external=True) }}");
-    jQuery('head').append('<link rel="stylesheet" href="{{ url_for("static", filename="scripts/embed/overlay.css", _external=True) }}" />');
+    jQuery.getScript("{{ url_for('static', filename='embed/overlay.js', _external=True) }}");
+    jQuery('head').append('<link rel="stylesheet" href="{{ url_for("static", filename="embed/overlay.css", _external=True) }}" />');
   {% endif %}
 }
 
