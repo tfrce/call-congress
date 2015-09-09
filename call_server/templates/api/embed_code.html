@@ -7,9 +7,9 @@
 	{# custom embed config object #}
 	<script type="text/javascript">
 	    var CallPowerOptions = {};
-	        CallPowerOptions.form = $("{{campaign.embed.form_sel|default('#call_form', True)}}");
-	        CallPowerOptions.phoneField = $("{{campaign.embed.phone_sel|default('#phone_id', True)}}");
-	        CallPowerOptions.locationField = $("{{campaign.embed.location_sel|default('#location_id', True)}}");
+	        CallPowerOptions.form = jQuery("{{campaign.embed.form_sel|default('#call_form', True)}}");
+	        CallPowerOptions.phoneField = jQuery("{{campaign.embed.phone_sel|default('#phone_id', True)}}");
+	        CallPowerOptions.locationField = jQuery("{{campaign.embed.location_sel|default('#location_id', True)}}");
 	        CallPowerOptions.scriptDisplay = "{{campaign.embed.script_display|default('overlay', True)}}";
 	        {% if campaign.embed.custom_css%}CallPowerOptions.customCSS = "{{campaign.embed.custom_css}}";{%endif%}
 	        {% if campaign.embed.custom_js%}CallPowerOptions.customJS = "{{campaign.embed.custom_js|safe}}";{%endif%}

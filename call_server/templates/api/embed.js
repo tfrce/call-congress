@@ -1,10 +1,10 @@
 {% include "api/CallPowerForm.js" with context %}
 
 var main = function() {
-  callPowerForm = new CallPowerForm('#{{campaign.embed.get("form_sel","#call_form")}}');
+  callPowerForm = new CallPowerForm('#{{campaign.embed.get("form_sel","#call_form")}}', jQuery);
   {% if campaign.embed.get('script_display') == 'overlay' %}
-    $.getScript("{{ url_for('static', filename='scripts/embed/overlay.js', _external=True) }}");
-    $('head').append('<link rel="stylesheet" href="{{ url_for("static", filename="scripts/embed/overlay.css", _external=True) }}" />');
+    jQuery.getScript("{{ url_for('static', filename='scripts/embed/overlay.js', _external=True) }}");
+    jQuery('head').append('<link rel="stylesheet" href="{{ url_for("static", filename="scripts/embed/overlay.css", _external=True) }}" />');
   {% endif %}
 }
 
@@ -16,5 +16,5 @@ if (typeof jQuery == 'undefined') {
   head.appendChild(scriptElement);
   scriptElement.onload = main;
 } else {
-  $(document).ready(main);
+  jQuery(document).ready(main);
 }

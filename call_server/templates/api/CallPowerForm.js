@@ -9,7 +9,7 @@
   * (c) Spacedog.xyz 2015, license AGPLv3
   */
 
-var CallPowerForm = function (formSelector) {
+var CallPowerForm = function (formSelector, $) {
   // instance variables
   this.form = $(formSelector);
   this.locationField = $('{{campaign.embed.get("location_sel","#location_id")}}');
