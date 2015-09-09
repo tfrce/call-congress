@@ -1,7 +1,7 @@
 import random
 import pystache
 import twilio.twiml
-from sqlalchemy_utils.types.phone_number import PhoneNumber
+from sqlalchemy_utils.types.phone_number import PhoneNumber, phonenumbers
 
 from flask import abort, Blueprint, request, url_for, current_app
 from flask_jsonpify import jsonify
@@ -217,7 +217,7 @@ def create():
     try:
         parsed = PhoneNumber(params['userPhone'], params['userCountry'])
         userPhone = parsed.e164
-    except PhoneNumber.NumberParseException:
+    except phonenumbers.NumberParseException:
         current_app.logger.error('Unable to parse %(userPhone)s for %(userCountry)s' % params)
         # press onward, but we may not be able to actually dial
         userPhone = params['userPhone']
