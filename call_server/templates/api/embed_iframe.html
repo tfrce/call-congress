@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<link rel="stylesheet" href="{{ url_for('static', filename='embed/bootstrap.custon.min.css', _external=True) }}" type="text/css" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='embed/bootstrap.custom.min.css', _external=True) }}" type="text/css" />
 	<link rel="stylesheet" href="{{ url_for('static', filename='embed/overlay.css', _external=True) }}" type="text/css" />
 	<style>
 		form#call_form label { display: block; }
@@ -10,17 +10,33 @@
 
 <body>
 <form id="call_form">
-	<label for="phone">Phone:
+	<div class="form-group">
+		<label for="phone">Phone:</label>
 		<input type="tel" name="phone" id="phone_id"/>
-	</label>
+	</div>
 
-	<label for="location">Zipcode:
+	{% if campaign.segment_by == 'location' %}
+	<div class="form-group">
+		<label for="location">Zipcode:</label>
 		<input type="text" name="location" id="location_id" />
-	</label>
+	</div>
+	{% endif %}
 
-	<input type="submit" value="Call Now" />
+	<input type="submit" class="btn btn-default" value="Call Now" />
 </form>
 
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script type="text/javascript">
+	    var CallPowerOptions = {};
+	        CallPowerOptions.form = jQuery("#call_form");
+	        CallPowerOptions.phoneField = jQuery("#phone_id");
+	        {% if campaign.segment_by == 'location' %}
+	        CallPowerOptions.locationField = jQuery("#location_id");
+	        {% endif %}
+	        CallPowerOptions.scriptDisplay = "replace";
+	        {% if campaign.embed.custom_css%}CallPowerOptions.customCSS = "{{campaign.embed.custom_css}}";{%endif%}
+	</script>
 <script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True)}}"></script>
 
 </body>

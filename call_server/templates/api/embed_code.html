@@ -2,7 +2,7 @@
 
 {% if campaign.embed.type == 'iframe' %}
 	{# display widget in iframe #}
-	<iframe src="{{url_for('api.campaign_embed_iframe', campaign_id=campaign.id, _external=True)}}"></iframe>
+	<iframe src="{{url_for('api.campaign_embed_iframe', campaign_id=campaign.id, _external=True)}}" frameBorder="0"min-height="200px"></iframe>
 {% elif campaign.embed.type == 'custom' %}
 	{# custom embed config object #}
 	<script type="text/javascript">
@@ -14,7 +14,7 @@
 	        {% if campaign.embed.custom_css%}CallPowerOptions.customCSS = "{{campaign.embed.custom_css}}";{%endif%}
 	        {% if campaign.embed.custom_js%}CallPowerOptions.customJS = "{{campaign.embed.custom_js|safe}}";{%endif%}
 	</script>
-{% endif %}
 	<script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True)}}"></script>
+{% endif %}
 
 {% endstrip %}
