@@ -9,16 +9,18 @@
 </head>
 
 <body>
-<form id="call_form">
-	<div class="form-group">
+<form id="call_form" class="col-sm-2">
+	<div class="form-group has-feedback">
 		<label for="phone">Phone:</label>
-		<input type="tel" name="phone" id="phone_id"/>
+		<input type="tel"  class="form-control" name="phone" id="phone_id"/>
+		<span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 	</div>
 
 	{% if campaign.segment_by == 'location' %}
-	<div class="form-group">
+	<div class="form-group has-feedback">
 		<label for="location">Zipcode:</label>
-		<input type="text" name="location" id="location_id" />
+		<input type="text" class="form-control" name="location" id="location_id" />
+		<span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 	</div>
 	{% endif %}
 
@@ -37,6 +39,33 @@
 	        {% endif %}
 	        CallPowerOptions.scriptDisplay = "replace";
 	        {% if campaign.embed.custom_css%}CallPowerOptions.customCSS = "{{campaign.embed.custom_css}}";{%endif%}
+	        CallPowerOptions.onError = function(element, message) {
+			    element.parent('.form-group').addClass('has-error');
+			    element.next('.form-control-feedback').addClass('glyphicon-remove');
+			    return false;
+			 };
+			 CallPowerOptions.cleanPhone = function() {
+			    var isValid = this.cleanUSPhone();
+			    if (isValid) {
+			    	this.phoneField.parent('.form-group')
+			    		.removeClass('has-error')
+			    		.addClass('has-success');
+			    	this.phoneField.next('.form-control-feedback')
+			    		.removeClass('glyphicon-remove')
+			    		.addClass('glyphicon-ok');
+				}
+			 };
+			 CallPowerOptions.cleanLocation = function() {
+			    var isValid = this.cleanUSZipcode();
+			    if (isValid) {
+			    	this.locationField.parent('.form-group')
+			    		.removeClass('has-error')
+			    		.addClass('has-success');
+			    	this.locationField.next('.form-control-feedback')
+			    		.removeClass('glyphicon-remove')
+			    		.addClass('glyphicon-ok');
+				}
+			 };
 	</script>
 <script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True)}}"></script>
 

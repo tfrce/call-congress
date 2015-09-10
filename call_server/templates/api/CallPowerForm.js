@@ -61,9 +61,9 @@ CallPowerForm.prototype = function($) {
   var cleanLocation = cleanUSZipcode;
 
   var onSuccess = function(response) {
-    if (response.campaign === 'archived') { return onError('This campaign is no longer active.'); }
-    if (response.campaign !== 'live') { return onError('This campaign is not active.'); }
-    if (response.call !== 'queued') { return onError('Could not start call.'); }
+    if (response.campaign === 'archived') { return onError(this.form, 'This campaign is no longer active.'); }
+    if (response.campaign !== 'live') { return onError(this.form, 'This campaign is not active.'); }
+    if (response.call !== 'queued') { return onError(this.form, 'Could not start call.'); }
     if (response.script === undefined) { return false; }
 
     if (this.scriptDisplay === 'overlay') {
@@ -85,8 +85,12 @@ CallPowerForm.prototype = function($) {
     return true;
   };
 
-  var onError = function(message) {
-    console.error(message);
+  var onError = function(element, message) {
+    if (element !== undefined) {
+      element.addClass('has-error');  
+    } else {
+      console.error(message);  
+    }
     return false;
   };
 
@@ -100,10 +104,10 @@ CallPowerForm.prototype = function($) {
     }
 
     if (this.locationField.length && !this.location()) {
-      return this.onError('invalid location');
+      return this.onError(this.locationField, 'Invalid location');
     }
     if (this.phoneField.length && !this.phone()) {
-      return this.onError('invalid phone');
+      return this.onError(this.phoneField, 'Invalid phone number');
     }
 
     $.ajax(createCallURL, {
@@ -115,7 +119,7 @@ CallPowerForm.prototype = function($) {
         userCountry: this.country()
       },
       success: $.proxy(this.onSuccess, this),
-      error: $.proxy(this.onError, this)
+      error: $.proxy(this.onError, this, this.form, 'Please fill out the form completely')
     }).then(function() {
       // run previous default event without this callback
       $(event.currentTarget).trigger(event.type, { 'call_started': true });
