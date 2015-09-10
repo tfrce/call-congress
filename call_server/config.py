@@ -45,6 +45,8 @@ class DefaultConfig(object):
     SECRET_KEY = os.environ.get('SECRET_KEY')
 
     SUNLIGHT_API_KEY = os.environ.get('SUNLIGHT_API_KEY')
+    if not SUNLIGHT_API_KEY:
+        SUNLIGHT_API_KEY = os.environ.get('SUNLIGHT_KEY')
     sunlight.config.API_KEY = SUNLIGHT_API_KEY
 
     LOG_PHONE_NUMBERS = True
