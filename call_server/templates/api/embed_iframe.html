@@ -3,21 +3,18 @@
 <head>
 	<link rel="stylesheet" href="{{ url_for('static', filename='embed/bootstrap.custom.min.css', _external=True) }}" type="text/css" />
 	<link rel="stylesheet" href="{{ url_for('static', filename='embed/overlay.css', _external=True) }}" type="text/css" />
-	<style>
-		form#call_form label { display: block; }
-	</style>
 </head>
 
 <body>
 <form id="call_form">
-	<div class="form-group has-feedback">
+	<div class="form-group has-feedback col-sm-2">
 		<label for="phone">Phone:</label>
 		<input type="tel"  class="form-control" name="phone" id="phone_id"/>
 		<span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 	</div>
 
 	{% if campaign.segment_by == 'location' %}
-	<div class="form-group has-feedback">
+	<div class="form-group has-feedback col-sm-2">
 		<label for="location">Zipcode:</label>
 		<input type="text" class="form-control" name="location" id="location_id" />
 		<span class="glyphicon form-control-feedback" aria-hidden="true"></span>
