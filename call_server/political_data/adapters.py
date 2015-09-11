@@ -35,7 +35,12 @@ class OpenStatesData(object):
             mapped['title'] = "Senator"
         if data['chamber'] == "lower":
             mapped['title'] = "Representative"
-        mapped['number'] = data['offices'][0]['phone']
+        if type(data['offices']) == list() and 'phone' in data['offices'][0]:
+            mapped['number'] = data['offices'][0]['phone']
+        elif type(data['offices']) == dict() and 'phone' in data['offices']:
+            mapped['number'] = data['offices']['phone']
+        else:
+            mapped['number'] = None
         mapped['uid'] = data['leg_id']
 
         return mapped

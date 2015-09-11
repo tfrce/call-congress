@@ -333,9 +333,13 @@ def make_single():
         db.session.add(current_target)
         db.session.commit()
 
-    target_phone = current_target.number.e164  # use full E164 syntax here
     resp = twilio.twiml.Response()
 
+    if not current_target.number:
+        play_or_say(resp, campaign.audio('msg_invalid_location'))
+        return str(resp)
+
+    target_phone = current_target.number.e164  # use full E164 syntax here
     play_or_say(resp, campaign.audio('msg_target_intro'),
         title=current_target.title, name=current_target.name)
 
