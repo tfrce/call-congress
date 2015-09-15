@@ -44,6 +44,10 @@
   border-radius: 3px;
 }
 
+.overlay .modal ul {
+  padding: 0 0 0 20px;
+}
+
 .overlay.shown {
   opacity: 1;
 }
