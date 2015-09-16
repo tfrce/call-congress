@@ -74,13 +74,12 @@ def campaign_stats(campaign_id):
     ).scalar()
 
     # number of calls completed in campaign
-    # and have realistic duration
     calls_completed = db.session.query(
-        func.count(Call.id)
-    ).filter(
-        Call.campaign_id == campaign.id,
-        Call.status == 'completed'
-    ).scalar()
+        Call.timestamp, Call.id
+    ).filter_by(
+        campaign_id=campaign.id,
+        status='completed'
+    ).all()
 
     # list of completed calls per session in campaign
     calls_session_grouped = db.session.query(
@@ -95,14 +94,22 @@ def campaign_stats(campaign_id):
     calls_session_list = [int(n[0]) for n in calls_session_grouped]
     calls_per_session = median(calls_session_list)
 
-    return jsonify({
+    data = {
         'id': campaign.id,
         'name': campaign.name,
-        'calls_completed': calls_completed,
         'sessions_completed': sessions_completed,
         'sessions_started': sessions_started,
         'calls_per_session': calls_per_session,
-    })
+    }
+
+    if calls_completed:
+        data.update({
+            'date_first': datetime.strftime(calls_completed[0][0], '%Y-%m-%d'),
+            'date_last': datetime.strftime(calls_completed[-1][0], '%Y-%m-%d'),
+            'calls_completed': calls_completed.count(Call.id)
+        })
+
+    return jsonify(data)
 
 
 @api.route('/campaign/<int:campaign_id>/call_chart.json', methods=['GET'])
