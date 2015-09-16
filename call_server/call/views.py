@@ -10,7 +10,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from ..extensions import csrf, db
 
-from .models import Call
+from .models import Call, Session
 from ..campaign.constants import ORDER_SHUFFLE, LOCATION_POSTAL
 from ..campaign.models import Campaign, Target
 from ..political_data.lookup import locate_targets
@@ -56,6 +56,7 @@ def parse_params(r):
     Should not edit param values.
     """
     params = {
+        'sessionId': r.values.get('sessionId', None),
         'campaignId': r.values.get('campaignId', 0),
         'userPhone': r.values.get('userPhone', ''),
         'userCountry': r.values.get('userCountry', 'US'),
@@ -222,15 +223,36 @@ def create():
         # press onward, but we may not be able to actually dial
         userPhone = params['userPhone']
 
-    # initiate the call
+    # start call session for user
     try:
+        from_number = random.choice(phone_numbers)
+
+        call_session_data = {
+            'campaign_id': campaign.id,
+            'location': params['userLocation'],
+            'from_number': from_number,
+        }
+        if current_app.config['LOG_PHONE_NUMBERS']:
+            call_session_data['phone_number'] = params['userPhone']
+            # user phone numbers are hashed by the init method
+            # but some installations may not want to log at all
+
+        call_session = Session(**call_session_data)
+        db.session.add(call_session)
+        db.session.commit()
+
+        params['sessionId'] = call_session.id
+
+        # initiate outbound call
         call = current_app.config['TWILIO_CLIENT'].calls.create(
             to=userPhone,
-            from_=random.choice(phone_numbers),
+            from_=from_number,
             url=url_for('call.connection', _external=True, **params),
             timeLimit=current_app.config['TWILIO_TIME_LIMIT'],
             timeout=current_app.config['TWILIO_TIMEOUT'],
             status_callback=url_for("call.complete_status", _external=True, **params))
+
+        # save call.sid to call_session.twilio_id?
 
         result = jsonify(campaign=campaign.status, call=call.status, script=campaign.embed.get('script'))
         result.status_code = 200 if call.status != 'failed' else 500
@@ -368,6 +390,7 @@ def complete():
     (uid, prefix) = parse_target(params['targetIds'][i])
     (current_target, cached) = Target.get_uid_or_cache(uid, prefix)
     call_data = {
+        'session_id': params['sessionId'],
         'campaign_id': campaign.id,
         'target_id': current_target.id,
         'location': params['userLocation'],
@@ -375,10 +398,6 @@ def complete():
         'status': request.values.get('DialCallStatus', 'unknown'),
         'duration': request.values.get('DialCallDuration', 0)
     }
-    if current_app.config['LOG_PHONE_NUMBERS']:
-        call_data['phone_number'] = params['userPhone']
-        # user phone numbers are hashed by the init method
-        # but some installations may not want to log at all
 
     try:
         db.session.add(Call(**call_data))
@@ -412,9 +431,16 @@ def complete_status():
     if not params:
         abort(404)
 
+    # update call_session with complete status
+    call_session = Session.query.get(id=request.values.get('sessionId'))
+    call_session.status = request.values.get('CallStatus', 'unknown')
+    call_session.duration = request.values.get('CallDuration', None)
+    db.session.add(call_session)
+    db.session.commit()
+
     return jsonify({
         'phoneNumber': request.values.get('To', ''),
-        'callStatus': request.values.get('CallStatus', 'unknown'),
+        'callStatus': call_session.status,
         'targetIds': params['targetIds'],
         'campaignId': params['campaignId']
     })
