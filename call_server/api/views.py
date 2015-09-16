@@ -9,13 +9,14 @@ from flask import Blueprint, Response, render_template, abort, request, jsonify
 from sqlalchemy.sql import func, extract
 
 from decorators import api_key_or_auth_required, restless_api_auth
+from ..utils import median
 from ..call.decorators import crossdomain
 
 from constants import API_TIMESPANS
 
 from ..extensions import csrf, rest, db
 from ..campaign.models import Campaign, Target, AudioRecording
-from ..call.models import Call
+from ..call.models import Call, Session
 
 
 api = Blueprint('api', __name__, url_prefix='/api')
@@ -56,23 +57,51 @@ def configure_restless(app):
 @api_key_or_auth_required
 def campaign_stats(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
-    completed = db.session.query(
-        func.count(Call.id)
-    ).filter_by(
-        campaign_id=campaign.id,
-        status='completed'
-    ).scalar()
-    total_count = db.session.query(
-        func.count(Call.id)
+
+    # number of sessions started in campaign
+    sessions_started = db.session.query(
+        func.count(Session.id)
     ).filter_by(
         campaign_id=campaign.id
     ).scalar()
 
+    # number of sessions completed in campaign
+    sessions_completed = db.session.query(
+        func.count(Session.id)
+    ).filter_by(
+        campaign_id=campaign.id,
+        status='completed'
+    ).scalar()
+
+    # number of calls completed in campaign
+    # and have realistic duration
+    calls_completed = db.session.query(
+        func.count(Call.id)
+    ).filter(
+        Call.campaign_id == campaign.id,
+        Call.status == 'completed'
+    ).scalar()
+
+    # list of completed calls per session in campaign
+    calls_session_grouped = db.session.query(
+        func.count(Call.id)
+    ).filter(
+        Call.campaign_id == campaign.id,
+        Call.status == 'completed',
+        Call.session_id != None
+    ).group_by(
+        Call.session_id
+    ).all()
+    calls_session_list = [int(n[0]) for n in calls_session_grouped]
+    calls_per_session = median(calls_session_list)
+
     return jsonify({
         'id': campaign.id,
         'name': campaign.name,
-        'completed': completed,
-        'total_count': total_count
+        'calls_completed': calls_completed,
+        'sessions_completed': sessions_completed,
+        'sessions_started': sessions_started,
+        'calls_per_session': calls_per_session,
     })
 
 

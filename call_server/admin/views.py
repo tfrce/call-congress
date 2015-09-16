@@ -31,6 +31,7 @@ def dashboard():
             .join(Call).group_by(Campaign.id))
 
     calls_by_day = (db.session.query(func.date(Call.timestamp), func.count(Call.id))
+            .filter(Call.status == 'completed')
             .group_by(func.date(Call.timestamp)))
 
     active_phone_numbers = TwilioPhoneNumber.query.all()

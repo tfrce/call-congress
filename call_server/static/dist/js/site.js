@@ -1331,12 +1331,15 @@ $(document).ready(function () {
       this.campaignId = $('select[name="campaigns"]').val();
       $.getJSON('/api/campaign/'+this.campaignId+'/stats.json',
         function(data) {
-          if (data.completed && data.total_count) {
-            var conversion_rate = (data.completed / data.total_count);
+          if (data.sessions_completed && data.sessions_started) {
+            var conversion_rate = (data.sessions_completed / data.sessions_started);
             conversion_pct = Number((conversion_rate*100).toFixed(2));
-            data.success_rate = (conversion_pct+"%");
+            data.conversion_rate = (conversion_pct+"%");
           } else {
-            data.success_rate = 'n/a';
+            data.conversion_rate = 'n/a';
+          }
+          if (!data.sessions_completed) {
+            data.calls_per_session = 'n/a';
           }
           $('#campaign_data').html(
             self.campaignDataTemplate(data)
