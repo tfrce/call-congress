@@ -48,12 +48,13 @@ def dashboard():
 def statistics():
     campaigns = Campaign.query.all()
     today = datetime.today()
-    start = today - timedelta(days=today.weekday())
-    end = start + timedelta(days=6)
+    start = today.replace(day=1)  # first day of the current month
+    next_month = today.replace(day=28) + timedelta(days=4)  # a day in next month (for months with 28,29,30,31)
+    end = next_month - timedelta(days=next_month.day)  # the last day of the current month
     return render_template('admin/statistics.html',
         campaigns=campaigns, timespans=API_TIMESPANS,
-        this_week_start=start.strftime('%Y-%m-%d'),
-        this_week_end=end.strftime('%Y-%m-%d'))
+        default_start=start.strftime('%Y/%m/%d'),
+        default_end=end.strftime('%Y/%m/%d'))
 
 
 @admin.route('/system')
