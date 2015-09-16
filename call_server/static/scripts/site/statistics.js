@@ -21,9 +21,12 @@
       this.$el.on('changeDate', this.renderChart);
 
       this.chartOpts = {
-        "library":{"canvasDimensions":{"height":250}},
+        "stacked": true,
+        "library": {
+          "canvasDimensions":{"height":250},
+          "yAxis": { "allowDecimals": false },
+        }
       };
-
       this.campaignDataTemplate = _.template($('#campaign-data-tmpl').html(), { 'variable': 'data' });
     },
 
@@ -79,7 +82,7 @@
         dataUrl += ('&end='+end);
       }
 
-      this.chart = new Chartkick.LineChart('calls_for_campaign', dataUrl, this.chartOpts);
+      this.chart = new Chartkick.ColumnChart('calls_for_campaign', dataUrl, this.chartOpts);
     }
 
   });

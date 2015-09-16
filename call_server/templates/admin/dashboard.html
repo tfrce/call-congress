@@ -58,13 +58,16 @@
   {% endassets %}
 
 <script type="text/javascript">
-new Chartkick.LineChart(
+new Chartkick.ColumnChart(
     'calls_by_day',
-    [{'name': 'Calls per Day',
+    [{'name': 'Calls Completed',
      'data':{ {% for entry in calls_by_day %}
-            '{{entry[0]}}': {{entry[1]}}, {%endfor%} }
+            '{{entry[0]}}': {{entry[1]}}, {%endfor%} },
     }],
-    {"library":{"canvasDimensions":{"height":250}}}
+    { "library":{ 
+        "canvasDimensions": { "height": 250 },
+        "yAxis": {"allowDecimals": false }
+    }}
 );
 </script>
 {% endblock %}
