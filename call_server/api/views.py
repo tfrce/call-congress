@@ -104,9 +104,9 @@ def campaign_stats(campaign_id):
 
     if calls_completed:
         data.update({
-            'date_first': datetime.strftime(calls_completed[0][0], '%Y-%m-%d'),
-            'date_last': datetime.strftime(calls_completed[-1][0], '%Y-%m-%d'),
-            'calls_completed': calls_completed.count(Call.id)
+            'date_start': datetime.strftime(calls_completed[0][0], '%Y-%m-%d'),
+            'date_end': datetime.strftime(calls_completed[-1][0] + timedelta(days=1), '%Y-%m-%d'),
+            'calls_completed': len(calls_completed)
         })
 
     return jsonify(data)

@@ -47,9 +47,9 @@
             self.campaignDataTemplate(data)
           ).show();
 
-          if (data.date_first && data.date_last) {
-            $('input[name="start"]').datepicker('setDate', data.date_first);
-            $('input[name="end"]').datepicker('setDate', data.date_last);
+          if (data.date_start && data.date_end) {
+            $('input[name="start"]').datepicker('setDate', data.date_start);
+            $('input[name="end"]').datepicker('setDate', data.date_end);
           }
           self.renderChart();
         });
