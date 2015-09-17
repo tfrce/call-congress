@@ -172,12 +172,12 @@ def reset_password():
                 email=user.email,
                 activation_key=user.activation_key,
                 _external=True)
-            html = render_template('user/email/reset_password.txt',
+            body = render_template('user/email/reset_password.txt',
                 sitename=current_app.config['SITENAME'],
                 username=user.name,
                 url=url)
             message = Message(subject='Reset your password for ' + current_app.config['SITENAME'],
-                html=html,
+                body=body,
                 recipients=[user.email])
             mail.send(message)
 
@@ -234,11 +234,11 @@ def invite():
             email=user.email,
             activation_key=user.activation_key,
             _external=True)
-        html = render_template('user/email/invite_user.txt', sitename=current_app.config['SITENAME'],
+        body = render_template('user/email/invite_user.txt', sitename=current_app.config['SITENAME'],
             username=user.name,
             url=url)
         message = Message(subject='Create account on ' + current_app.config['SITENAME'],
-            html=html,
+            body=body,
             recipients=[user.email])
         mail.send(message)
 
