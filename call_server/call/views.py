@@ -15,11 +15,12 @@ from ..campaign.constants import ORDER_SHUFFLE, LOCATION_POSTAL
 from ..campaign.models import Campaign, Target
 from ..political_data.lookup import locate_targets
 
-from .decorators import crossdomain
+from .decorators import crossdomain, abortJSON, stripANSI
 
 call = Blueprint('call', __name__, url_prefix='/call')
 call_methods = ['GET', 'POST']
 csrf.exempt(call)
+call.errorhandler(400)(abortJSON)
 
 
 def play_or_say(r, audio, **kwds):
@@ -56,17 +57,23 @@ def parse_params(r):
     Should not edit param values.
     """
     params = {
-        'campaignId': r.values.get('campaignId', 0),
-        'userPhone': r.values.get('userPhone', ''),
+        'campaignId': r.values.get('campaignId', None),
+        'userPhone': r.values.get('userPhone', None),
         'userCountry': r.values.get('userCountry', 'US'),
         'userLocation': r.values.get('userLocation', None),
         'targetIds': r.values.getlist('targetIds'),
     }
 
+    if not params['userPhone']:
+        abort(400, 'userPhone required')
+
+    if not params['campaignId']:
+        abort(400, 'campaignId required')
+
     # lookup campaign by ID
     campaign = Campaign.query.get(params['campaignId'])
     if not campaign:
-        return None, None
+        abort(400, 'invalid campaignId %(campaignId)s' % params)
 
     return params, campaign
 
@@ -181,7 +188,7 @@ def _make_calls():
     params, campaign = parse_params(request)
 
     if not params or not campaign:
-        abort(404)
+        abort(400)
 
     return make_calls(params, campaign)
 
@@ -203,15 +210,12 @@ def create():
     # parse the info needed to make the call
     params, campaign = parse_params(request)
 
-    if not params or not campaign:
-        abort(404)
-
     # find outgoing phone number in same country as user
     phone_numbers = campaign.phone_numbers(params['userCountry'])
 
     if not phone_numbers:
-        current_app.logger.error("no numbers available for campaign %(campaignId)s in %(userCountry)s" % params)
-        abort(500)
+        msg = "no numbers available for campaign %(campaignId)s in %(userCountry)s" % params
+        return abort(400, msg)
 
     # validate phonenumber for country
     try:
@@ -235,9 +239,8 @@ def create():
         result = jsonify(campaign=campaign.status, call=call.status, script=campaign.embed.get('script'))
         result.status_code = 200 if call.status != 'failed' else 500
     except TwilioRestException, err:
-        current_app.logger.error("Twilio error: %s" % err)
-        result = jsonify(message=err.msg)
-        result.status_code = 200
+        twilio_error = stripANSI(err.msg)
+        abort(400, twilio_error)
 
     return result
 
@@ -255,7 +258,7 @@ def connection():
     params, campaign = parse_params(request)
 
     if not params or not campaign:
-        abort(404)
+        return abortJSON(404)
 
     if campaign.locate_by == LOCATION_POSTAL:
         return intro_location_gather(params, campaign)
@@ -276,7 +279,7 @@ def incoming():
     params, campaign = parse_params(request)
 
     if not params or not campaign:
-        abort(404)
+        abort(400)
 
     # pull user phone from Twilio incoming request
     params['userPhone'] = request.values.get('From')
@@ -296,7 +299,7 @@ def location_parse():
     params, campaign = parse_params(request)
 
     if not params or not campaign:
-        abort(404)
+        abort(400)
 
     location = request.values.get('Digits', '')
     target_ids = locate_targets(location, campaign)
@@ -321,7 +324,7 @@ def make_single():
     params, campaign = parse_params(request)
 
     if not params or not campaign:
-        abort(404)
+        abort(400)
 
     i = int(request.values.get('call_index', 0))
     params['call_index'] = i
@@ -363,7 +366,7 @@ def complete():
     i = int(request.values.get('call_index', 0))
 
     if not params or not campaign:
-        abort(404)
+        abort(400)
 
     (uid, prefix) = parse_target(params['targetIds'][i])
     (current_target, cached) = Target.get_uid_or_cache(uid, prefix)
@@ -410,7 +413,7 @@ def complete_status():
     params, _ = parse_params(request)
 
     if not params:
-        abort(404)
+        abort(400)
 
     return jsonify({
         'phoneNumber': request.values.get('To', ''),
