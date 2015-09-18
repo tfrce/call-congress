@@ -260,7 +260,7 @@ def connection():
     if not params or not campaign:
         return abortJSON(404)
 
-    if campaign.locate_by == LOCATION_POSTAL:
+    if campaign.locate_by == LOCATION_POSTAL and not params['userLocation']:
         return intro_location_gather(params, campaign)
     else:
         return intro_wait_human(params, campaign)
