@@ -1,5 +1,7 @@
+import re
 from datetime import timedelta
 from flask import make_response, request, current_app
+from flask_jsonpify import jsonify
 from functools import update_wrapper
 
 
@@ -43,3 +45,24 @@ def crossdomain(origin=None, methods=None, headers=None,
         f.provide_automatic_options = False
         return update_wrapper(wrapped_function, f)
     return decorator
+
+
+def abortJSON(status, message=None):
+    if message:
+        current_app.logger.error(message)
+        response = jsonify({'error': message})
+    else:
+
+        response = jsonify({'error': status.description})
+    response.status_code = status.code
+    return response
+
+
+def stripANSI(text):
+    ansi = re.compile("""
+        \\x1b     # literal ESC
+        \\[         # literal [
+        [;\\d]*   # zero or more digits or semicolons
+        [A-Za-z] # a letter
+        """, re.VERBOSE)
+    return ansi.sub('', text).replace('\\', '').replace('\n\n', ' ').replace('\n', '')
