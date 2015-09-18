@@ -94,7 +94,7 @@ def twilio_resync():
     # and remove them
     # TODO, check if delete will cascade to campaign
     for num in stale_numbers.all():
-        deleted_numbers.append(num.number)
+        deleted_numbers.append(str(num.number))
         db.session.delete(num)
     db.session.commit()
 
