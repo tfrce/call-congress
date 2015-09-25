@@ -17,6 +17,7 @@ from constants import API_TIMESPANS
 from ..extensions import csrf, rest, db
 from ..campaign.models import Campaign, Target, AudioRecording
 from ..call.models import Call, Session
+from ..call.constants import TWILIO_CALL_STATUS
 
 
 api = Blueprint('api', __name__, url_prefix='/api')
@@ -162,18 +163,20 @@ def campaign_call_chart(campaign_id):
     # create a separate series for each status value
     series = []
 
-    STATUS_LIST = ('completed', 'canceled', 'failed', 'unknown')
-    for status in STATUS_LIST:
+    for status in TWILIO_CALL_STATUS:
         data = {}
+        total_count = 0
         # combine status values by date
         for (date, timespan, call_status, count) in query.all():
             # entry like ('2015-08-10', u'canceled', 8)
             if call_status == status:
                 date_string = date.strftime(timespan_strf)
                 data[date_string] = count
+                total_count += count
         new_series = {'name': status.capitalize(),
                       'data': OrderedDict(sorted(data.items()))}
-        series.append(new_series)
+        if total_count > 0:
+            series.append(new_series)
     return Response(json.dumps(series), mimetype='application/json')
 
 
@@ -231,8 +234,7 @@ def campaign_target_calls(campaign_id):
 
     targets = defaultdict(dict)
 
-    STATUS_LIST = ('completed', 'canceled', 'failed', 'unknown')
-    for status in STATUS_LIST:
+    for status in TWILIO_CALL_STATUS:
         # combine calls status for each target
         for (target_name, call_status, count) in query_targets.all():
             if call_status == status:

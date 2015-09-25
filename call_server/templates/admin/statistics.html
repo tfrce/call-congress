@@ -89,8 +89,10 @@
     <thead><tr>
         <th>Target</th>
         <th>Completed</th>
-        <th>Canceled</th>
+        <th>Busy</th>
         <th>Failed</th>
+        <th>No Answer</th>
+        <th>Canceled</th>
         <th>Unknown</th>
     </tr></thead>
     <tbody>
@@ -98,8 +100,10 @@
     <tr>
         <td><%= name %></td>
         <td><%= data.completed %></td>
-        <td><%= data.canceled %></td>
+        <td><%= data.busy %></td>
         <td><%= data.failed %></td>
+        <td><%= data['no-answer'] %></td>
+        <td><%= data.canceled %></td>
         <td><%= data.unknown %></td>
     </tr>
     <% }); %>
