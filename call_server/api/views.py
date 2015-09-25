@@ -1,5 +1,5 @@
 import json
-from collections import OrderedDict
+from collections import defaultdict, OrderedDict
 from datetime import datetime, timedelta
 import dateutil
 
@@ -162,7 +162,7 @@ def campaign_call_chart(campaign_id):
     # create a separate series for each status value
     series = []
 
-    STATUS_LIST = ('completed', 'canceled', 'failed')
+    STATUS_LIST = ('completed', 'canceled', 'failed', 'unknown')
     for status in STATUS_LIST:
         data = {}
         # combine status values by date
@@ -175,6 +175,73 @@ def campaign_call_chart(campaign_id):
                       'data': OrderedDict(sorted(data.items()))}
         series.append(new_series)
     return Response(json.dumps(series), mimetype='application/json')
+
+
+@api.route('/campaign/<int:campaign_id>/target_calls.json', methods=['GET'])
+@api_key_or_auth_required
+def campaign_target_calls(campaign_id):
+    start = request.values.get('start')
+    end = request.values.get('end')
+
+    campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
+
+    query_calls = (
+        db.session.query(
+            Call.target_id,
+            Call.status,
+            func.count(distinct(Call.id)).label('calls_count')
+        )
+        .filter(Call.campaign_id == int(campaign.id))
+        .group_by(Call.target_id)
+        .group_by(Call.status)
+    )
+
+    if start:
+        try:
+            startDate = dateutil.parser.parse(start)
+        except ValueError:
+            abort(400, 'start should be in isostring format')
+        query_calls = query_calls.filter(Call.timestamp >= startDate)
+
+    if end:
+        try:
+            endDate = dateutil.parser.parse(end)
+            if endDate < startDate:
+                abort(400, 'end should be after start')
+            if endDate == startDate:
+                endDate = startDate + timedelta(days=1)
+        except ValueError:
+            abort(400, 'end should be in isostring format')
+        query_calls = query_calls.filter(Call.timestamp <= endDate)
+
+    # join with targets for name
+    subquery = query_calls.subquery('query_calls')
+    query_targets = (
+        db.session.query(
+            distinct(Target.name),
+            subquery.c.status,
+            subquery.c.calls_count
+        )
+        .join(subquery, subquery.c.target_id == Target.id)
+    )
+
+    # in case some calls don't get matched directly to targets
+    # they are filtered out by join, so hold on to them
+    calls_wo_targets = query_calls.filter(Call.target_id == None)
+
+    targets = defaultdict(dict)
+
+    STATUS_LIST = ('completed', 'canceled', 'failed', 'unknown')
+    for status in STATUS_LIST:
+        # combine calls status for each target
+        for (target_name, call_status, count) in query_targets.all():
+            if call_status == status:
+                targets[target_name][call_status] = count
+
+        for (target_name, call_status, count) in calls_wo_targets.all():
+            if call_status == status:
+                targets['Unknown'][call_status] = count
+    return Response(json.dumps(targets), mimetype='application/json')
 
 
 # embed campaign routes, should be public

@@ -215,7 +215,7 @@ $(document).ready(function () {
       // always include campaign_id filter
       var filters = [{name: 'campaign_id', op: 'eq', val: this.campaign_id}];
       if (options.filters) {
-        filters = _.extend(filters, options.filters);
+        Array.prototype.push.apply(filters, options.filters);
       }
       var flaskQuery = {
         q: JSON.stringify({ filters: filters })
@@ -1326,6 +1326,7 @@ $(document).ready(function () {
         }
       };
       this.campaignDataTemplate = _.template($('#campaign-data-tmpl').html(), { 'variable': 'data' });
+      this.targetDataTemplate = _.template($('#target-data-tmpl').html(), { 'variable': 'targets'});
     },
 
     changeCampaign: function(event) {
@@ -1372,15 +1373,30 @@ $(document).ready(function () {
         $('.input-daterange input').removeClass('error');
       }
 
-      var dataUrl = '/api/campaign/'+this.campaignId+'/call_chart.json?timespan='+timespan;
+      var chartDataUrl = '/api/campaign/'+this.campaignId+'/call_chart.json?timespan='+timespan;
       if (start) {
-        dataUrl += ('&start='+start);
+        chartDataUrl += ('&start='+start);
       }
       if (end) {
-        dataUrl += ('&end='+end);
+        chartDataUrl += ('&end='+end);
       }
 
-      this.chart = new Chartkick.ColumnChart('calls_for_campaign', dataUrl, this.chartOpts);
+      this.chart = new Chartkick.ColumnChart('calls_for_campaign', chartDataUrl, this.chartOpts);
+
+      var tableDataUrl = '/api/campaign/'+this.campaignId+'/target_calls.json?';
+      if (start) {
+        tableDataUrl += ('&start='+start);
+      }
+      if (end) {
+        tableDataUrl += ('&end='+end);
+      }
+
+      var self = this;
+      $.getJSON(tableDataUrl, function(data) {
+        var content = self.targetDataTemplate(data);
+        $('table#target_data').html(content);
+        $('#target_counts').show();
+      });
     }
 
   });

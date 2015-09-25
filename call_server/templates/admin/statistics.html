@@ -47,6 +47,14 @@
 	<div id="calls_for_campaign" style="height: 250px;">
         <div class="alert alert-info"> Please select a campaign </div>   
     </div>
+
+    <div class="row hide-initial" id="target_counts">
+        <div class="col-sm-12">
+            <label>Call Counts</label>
+            <table class="table table-condensed table-striped" id="target_data"></table>
+        </div>
+    </div>
+
 </fieldset>
 </div>
 {% endblock %}
@@ -75,5 +83,26 @@
             <a href="/admin/campaign/<%= data.id %>/calls">call log</a>
         </td>
     </tr>
+  </script>
+
+  <script type="text/template" id="target-data-tmpl">
+    <thead><tr>
+        <th>Target</th>
+        <th>Completed</th>
+        <th>Canceled</th>
+        <th>Failed</th>
+        <th>Unknown</th>
+    </tr></thead>
+    <tbody>
+    <% _.each(targets, function(data, name) { %> 
+    <tr>
+        <td><%= name %></td>
+        <td><%= data.completed %></td>
+        <td><%= data.canceled %></td>
+        <td><%= data.failed %></td>
+        <td><%= data.unknown %></td>
+    </tr>
+    <% }); %>
+    </tbody>
   </script>
 {% endblock %}
