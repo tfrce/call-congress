@@ -6,7 +6,7 @@ from flask.ext.login import login_required
 from flask_store.providers.temp import TemporaryStore
 
 import sqlalchemy
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func, desc
 
 from twilio.util import TwilioCapability
 
@@ -31,7 +31,7 @@ def before_request():
 
 @campaign.route('/')
 def index():
-    campaigns = Campaign.query.all()
+    campaigns = Campaign.query.order_by(desc(Campaign.status_code)).all()
     calls = (db.session.query(Campaign.id, func.count(Call.id))
             .join(Call).group_by(Campaign.id))
     return render_template('campaign/list.html',

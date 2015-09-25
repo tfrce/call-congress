@@ -5,7 +5,7 @@ from flask.ext.login import login_required
 from flask.ext.babel import gettext as _
 
 from ..extensions import db
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func, desc
 
 from ..campaign.models import TwilioPhoneNumber, Campaign
 from ..call.models import Call
@@ -25,12 +25,15 @@ def before_request():
 
 @admin.route('/')
 def dashboard():
-    campaigns = Campaign.query.filter(Campaign.status_code >= STATUS_PAUSED)
+    campaigns = (Campaign.query
+        .filter(Campaign.status_code >= STATUS_PAUSED)
+        .order_by(desc(Campaign.status_code))
+    )
     calls_by_campaign = (db.session.query(Campaign.id, func.count(Call.id))
             .filter(Campaign.status_code >= STATUS_PAUSED)
             .join(Call).group_by(Campaign.id))
-
     calls_by_day = (db.session.query(func.date(Call.timestamp), func.count(Call.id))
+            .filter(Call.status == 'completed')
             .group_by(func.date(Call.timestamp)))
 
     active_phone_numbers = TwilioPhoneNumber.query.all()
@@ -47,12 +50,13 @@ def dashboard():
 def statistics():
     campaigns = Campaign.query.all()
     today = datetime.today()
-    start = today - timedelta(days=today.weekday())
-    end = start + timedelta(days=6)
+    start = today.replace(day=1)  # first day of the current month
+    next_month = today.replace(day=28) + timedelta(days=4)  # a day in next month (for months with 28,29,30,31)
+    end = next_month - timedelta(days=next_month.day)  # the last day of the current month
     return render_template('admin/statistics.html',
         campaigns=campaigns, timespans=API_TIMESPANS,
-        this_week_start=start.strftime('%Y-%m-%d'),
-        this_week_end=end.strftime('%Y-%m-%d'))
+        default_start=start.strftime('%Y/%m/%d'),
+        default_end=end.strftime('%Y/%m/%d'))
 
 
 @admin.route('/system')

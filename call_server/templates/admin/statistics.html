@@ -32,9 +32,9 @@
                 </div>
                 <div class="input-group inline input-daterange">
                     <span class="add-on">from</span>
-        		    <input type="text" name="start" placeholder="start" value="{{this_week_start}}"/>
+        		    <input type="text" name="start" placeholder="start" value="{{default_start}}"/>
         		    <span class="add-on">to</span>
-        		    <input type="text" name="end" placeholder="end" value="{{this_week_end}}"/>
+        		    <input type="text" name="end" placeholder="end" value="{{default_end}}"/>
         		</div>
             </div>
         </div>
@@ -58,12 +58,16 @@
 
   <script type="text/template" id="campaign-data-tmpl">
     <tr>
-        <td class="col-sm-6"><input id="calls_completed" class="col-sm-12" value="<%= data.completed %>" readonly/></td>
-        <td class="col-sm-6"><label class="inline" for="calls_completed">Total Completed</label></td>
+        <td class="col-sm-6"><input id="calls_completed" class="col-sm-12" value="<%= data.calls_completed %>" readonly/></td>
+        <td class="col-sm-6"><label class="inline" for="calls_completed">Calls Completed</label></td>
     </tr>
     <tr>
-        <td class="col-sm-6"><input id="conversion_rate" class="col-sm-12" value="<%= data.success_rate %>" readonly/></td>
-        <td class="col-sm-6"><label class="inline" for="conversion_rate">Success Rate</label></td>
+        <td class="col-sm-6"><input id="conversion_rate" class="col-sm-12" value="<%= data.conversion_rate %>" readonly/></td>
+        <td class="col-sm-6"><label class="inline" for="conversion_rate">Conversion Rate</label></td>
+    </tr>
+    <tr>
+        <td class="col-sm-6"><input id="calls_per_session" class="col-sm-12" value="<%= data.calls_per_session %>" readonly/></td>
+        <td class="col-sm-6"><label class="inline" for="calls_per_session">Session Median</label></td>
     </tr>
     <tr>
         <td></td>
