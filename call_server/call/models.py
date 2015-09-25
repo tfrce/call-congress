@@ -30,13 +30,14 @@ class Call(db.Model):
     status = db.Column(db.String(25))     # twilio call status
     duration = db.Column(db.Integer)      # twilio call time in seconds
 
-    def __init__(self, campaign_id, target_id, call_id=None, status='unknown', duration=0):
+    def __init__(self, session_id, campaign_id, target_id, call_id=None, status='unknown', duration=0):
         self.timestamp = datetime.now()
-        self.status = status
-        self.duration = duration
+        self.session_id = session_id
         self.campaign_id = campaign_id
         self.target_id = target_id
         self.call_id = call_id
+        self.status = status
+        self.duration = duration
 
     def __repr__(self):
         return '<Call to {}>'.format(self.target.name)
@@ -58,7 +59,7 @@ class Session(db.Model):
     location = db.Column(db.String(STRING_LEN))  # provided location
 
     # twilio attributes
-    from_number = db.Column(db.String(10))  # outbound call number, e164
+    from_number = db.Column(db.String(16))  # outbound call number, e164
     twilio_id = db.Column(db.String(40))    # twilio call ID
     duration = db.Column(db.Integer)        # twilio call time in seconds
     status = db.Column(db.String(25))       # session status (initiated, completed, failed)
@@ -70,13 +71,15 @@ class Session(db.Model):
         """
         return hashlib.sha256(number).hexdigest()
 
-    def __init__(self, campaign_id, location=None, phone_number=None, status='initiated'):
+    def __init__(self, campaign_id, phone_number=None, location=None, from_number=None, status='initiated'):
         self.timestamp = datetime.now()
-        self.status = status
         self.campaign_id = campaign_id
-        self.location = location
         if phone_number:
             self.phone_hash = self.hash_phone(phone_number)
+        self.location = location
+        self.from_number = from_number
+        self.status = status
+        
 
     def __repr__(self):
         return '<Session for {}>'.format(self.phone_hash)

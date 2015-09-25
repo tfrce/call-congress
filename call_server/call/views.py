@@ -279,7 +279,7 @@ def connection():
     if not params or not campaign:
         abort(404)
 
-    if campaign.locate_by == LOCATION_POSTAL:
+    if campaign.locate_by == LOCATION_POSTAL and not params['userLocation']:
         return intro_location_gather(params, campaign)
     else:
         return intro_wait_human(params, campaign)
@@ -393,7 +393,6 @@ def complete():
         'session_id': params['sessionId'],
         'campaign_id': campaign.id,
         'target_id': current_target.id,
-        'location': params['userLocation'],
         'call_id': request.values.get('CallSid', None),
         'status': request.values.get('DialCallStatus', 'unknown'),
         'duration': request.values.get('DialCallDuration', 0)
@@ -432,7 +431,7 @@ def complete_status():
         abort(404)
 
     # update call_session with complete status
-    call_session = Session.query.get(id=request.values.get('sessionId'))
+    call_session = Session.query.get(request.values.get('sessionId'))
     call_session.status = request.values.get('CallStatus', 'unknown')
     call_session.duration = request.values.get('CallDuration', None)
     db.session.add(call_session)

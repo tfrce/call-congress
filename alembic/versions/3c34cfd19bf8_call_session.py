@@ -24,7 +24,7 @@ def upgrade():
     sa.Column('campaign_id', sa.Integer(), nullable=True),
     sa.Column('phone_hash', sa.String(length=64), nullable=True),
     sa.Column('location', sa.String(length=100), nullable=True),
-    sa.Column('from_number', sa.String(length=10), nullable=True),
+    sa.Column('from_number', sa.String(length=16), nullable=True),
     sa.Column('twilio_id', sa.String(length=40), nullable=True),
     sa.Column('duration', sa.Integer(), nullable=True),
     sa.Column('status', sa.String(length=25), nullable=True),
