@@ -42,6 +42,10 @@ class Call(db.Model):
     def __repr__(self):
         return '<Call to {}>'.format(self.target.name)
 
+    def target_display(self):
+        if self.target:
+            return self.target.full_name()
+
 
 class Session(db.Model):
     # tracks calls session by user for a campaign
@@ -79,7 +83,6 @@ class Session(db.Model):
         self.location = location
         self.from_number = from_number
         self.status = status
-        
 
     def __repr__(self):
         return '<Session for {}>'.format(self.phone_hash)

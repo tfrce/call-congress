@@ -1,12 +1,12 @@
 import json
-from collections import OrderedDict
+from collections import defaultdict, OrderedDict
 from datetime import datetime, timedelta
 import dateutil
 
 import twilio.twiml
 from flask import Blueprint, Response, render_template, abort, request, jsonify
 
-from sqlalchemy.sql import func, extract
+from sqlalchemy.sql import func, extract, distinct
 
 from decorators import api_key_or_auth_required, restless_api_auth
 from ..utils import median
@@ -17,6 +17,7 @@ from constants import API_TIMESPANS
 from ..extensions import csrf, rest, db
 from ..campaign.models import Campaign, Target, AudioRecording
 from ..call.models import Call, Session
+from ..call.constants import TWILIO_CALL_STATUS
 
 
 api = Blueprint('api', __name__, url_prefix='/api')
@@ -36,7 +37,8 @@ restless_preprocessors = {'GET_SINGLE':   [restless_api_auth],
 def configure_restless(app):
     rest.create_api(Call, collection_name='call', methods=['GET'],
                     include_columns=['id', 'timestamp', 'campaign_id', 'target_id',
-                                    'call_id', 'status', 'duration'])
+                                    'call_id', 'status', 'duration'],
+                    include_methods=['target_display'])
     rest.create_api(Campaign, collection_name='campaign', methods=['GET'],
                     include_columns=['id', 'name', 'campaign_type', 'campaign_state', 'campaign_subtype',
                                      'target_ordering', 'allow_call_in', 'call_maximum', 'embed'],
@@ -112,9 +114,9 @@ def campaign_stats(campaign_id):
     return jsonify(data)
 
 
-@api.route('/campaign/<int:campaign_id>/call_chart.json', methods=['GET'])
+@api.route('/campaign/<int:campaign_id>/date_calls.json', methods=['GET'])
 @api_key_or_auth_required
-def campaign_call_chart(campaign_id):
+def campaign_date_calls(campaign_id):
     start = request.values.get('start')
     end = request.values.get('end')
     timespan = request.values.get('timespan', 'day')
@@ -132,7 +134,7 @@ def campaign_call_chart(campaign_id):
             func.min(Call.timestamp.label('date')),
             timespan_extract,
             Call.status,
-            func.count(Call.id).label('calls_count')
+            func.count(distinct(Call.id)).label('calls_count')
         )
         .filter(Call.campaign_id == int(campaign.id))
         .group_by(timespan_extract)
@@ -158,22 +160,82 @@ def campaign_call_chart(campaign_id):
             abort(400, 'end should be in isostring format')
         query = query.filter(Call.timestamp <= endDate)
 
-    # create a separate series for each status value
-    series = []
+    dates = defaultdict(dict)
 
-    STATUS_LIST = ('completed', 'canceled', 'failed')
-    for status in STATUS_LIST:
-        data = {}
+    for (date, timespan, call_status, count) in query.all():
         # combine status values by date
-        for (date, timespan, call_status, count) in query.all():
-            # entry like ('2015-08-10', u'canceled', 8)
+        for status in TWILIO_CALL_STATUS:
             if call_status == status:
                 date_string = date.strftime(timespan_strf)
-                data[date_string] = count
-        new_series = {'name': status.capitalize(),
-                      'data': OrderedDict(sorted(data.items()))}
-        series.append(new_series)
-    return Response(json.dumps(series), mimetype='application/json')
+                dates[date_string][status] = count
+    sorted_dates = OrderedDict(sorted(dates.items()))
+    return Response(json.dumps(sorted_dates), mimetype='application/json')
+
+
+@api.route('/campaign/<int:campaign_id>/target_calls.json', methods=['GET'])
+@api_key_or_auth_required
+def campaign_target_calls(campaign_id):
+    start = request.values.get('start')
+    end = request.values.get('end')
+
+    campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
+
+    query_calls = (
+        db.session.query(
+            Call.target_id,
+            Call.status,
+            func.count(distinct(Call.id)).label('calls_count')
+        )
+        .filter(Call.campaign_id == int(campaign.id))
+        .group_by(Call.target_id)
+        .group_by(Call.status)
+    )
+
+    if start:
+        try:
+            startDate = dateutil.parser.parse(start)
+        except ValueError:
+            abort(400, 'start should be in isostring format')
+        query_calls = query_calls.filter(Call.timestamp >= startDate)
+
+    if end:
+        try:
+            endDate = dateutil.parser.parse(end)
+            if endDate < startDate:
+                abort(400, 'end should be after start')
+            if endDate == startDate:
+                endDate = startDate + timedelta(days=1)
+        except ValueError:
+            abort(400, 'end should be in isostring format')
+        query_calls = query_calls.filter(Call.timestamp <= endDate)
+
+    # join with targets for name
+    subquery = query_calls.subquery('query_calls')
+    query_targets = (
+        db.session.query(
+            distinct(Target.name),
+            subquery.c.status,
+            subquery.c.calls_count
+        )
+        .join(subquery, subquery.c.target_id == Target.id)
+    )
+
+    # in case some calls don't get matched directly to targets
+    # they are filtered out by join, so hold on to them
+    calls_wo_targets = query_calls.filter(Call.target_id == None)
+
+    targets = defaultdict(dict)
+
+    for status in TWILIO_CALL_STATUS:
+        # combine calls status for each target
+        for (target_name, call_status, count) in query_targets.all():
+            if call_status == status:
+                targets[target_name][call_status] = count
+
+        for (target_name, call_status, count) in calls_wo_targets.all():
+            if call_status == status:
+                targets['Unknown'][call_status] = count
+    return Response(json.dumps(targets), mimetype='application/json')
 
 
 # embed campaign routes, should be public

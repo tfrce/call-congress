@@ -47,10 +47,7 @@ A read-only REST API is available for integrating with external services. Access
 * completed
 * total_counts
 
-`GET /api/campaign/ID/call_chart.json` returns a list of campaign calls by status and date to graph, formatted for ChartKick. Results can be further limited by passing start or end parameters in ISO format, and a timespan as one of (minute, hour, day, month, year). Each chart includes
+`GET /api/campaign/ID/date_calls.json` returns a list of campaign calls by date and status. Results can be further limited by passing start or end parameters in ISO format, and a timespan as one of (minute, hour, day, month, year).
 
-* name
-* data 
-	* date
-	* value
+`GET /api/campaign/ID/target_calls.json` returns a list of campaign calls by target and status. Results can be further limited by passing start or end parameters in ISO format.
 

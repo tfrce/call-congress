@@ -31,7 +31,7 @@
       // always include campaign_id filter
       var filters = [{name: 'campaign_id', op: 'eq', val: this.campaign_id}];
       if (options.filters) {
-        filters = _.extend(filters, options.filters);
+        Array.prototype.push.apply(filters, options.filters);
       }
       var flaskQuery = {
         q: JSON.stringify({ filters: filters })
