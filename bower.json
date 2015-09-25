@@ -29,7 +29,7 @@
     "audioRecord": "https://github.com/sb2702/audioRecord.js.git",
     "backbone-filtered-collection": "~0.4.0",
     "highcharts": "~4.1.7",
-    "chartkick": "~1.3.0",
+    "chartkick": "~1.4.0",
     "bootstrap-datepicker": "~1.4.0"
   }
 }

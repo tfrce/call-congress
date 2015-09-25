@@ -1319,9 +1319,12 @@ $(document).ready(function () {
       this.$el.on('changeDate', this.renderChart);
 
       this.chartOpts = {
-        "library":{"canvasDimensions":{"height":250}},
+        "stacked": true,
+        "library": {
+          "canvasDimensions":{"height":250},
+          "yAxis": { "allowDecimals": false },
+        }
       };
-
       this.campaignDataTemplate = _.template($('#campaign-data-tmpl').html(), { 'variable': 'data' });
     },
 
@@ -1331,20 +1334,23 @@ $(document).ready(function () {
       this.campaignId = $('select[name="campaigns"]').val();
       $.getJSON('/api/campaign/'+this.campaignId+'/stats.json',
         function(data) {
-          if (data.completed && data.total_count) {
-            var conversion_rate = (data.completed / data.total_count);
+          if (data.sessions_completed && data.sessions_started) {
+            var conversion_rate = (data.sessions_completed / data.sessions_started);
             conversion_pct = Number((conversion_rate*100).toFixed(2));
-            data.success_rate = (conversion_pct+"%");
+            data.conversion_rate = (conversion_pct+"%");
           } else {
-            data.success_rate = 'n/a';
+            data.conversion_rate = 'n/a';
+          }
+          if (!data.sessions_completed) {
+            data.calls_per_session = 'n/a';
           }
           $('#campaign_data').html(
             self.campaignDataTemplate(data)
           ).show();
 
-          if (data.date_first && data.date_last) {
-            $('input[name="start"]').datepicker('setDate', data.date_first);
-            $('input[name="end"]').datepicker('setDate', data.date_last);
+          if (data.date_start && data.date_end) {
+            $('input[name="start"]').datepicker('setDate', data.date_start);
+            $('input[name="end"]').datepicker('setDate', data.date_end);
           }
           self.renderChart();
         });
@@ -1374,7 +1380,7 @@ $(document).ready(function () {
         dataUrl += ('&end='+end);
       }
 
-      this.chart = new Chartkick.LineChart('calls_for_campaign', dataUrl, this.chartOpts);
+      this.chart = new Chartkick.ColumnChart('calls_for_campaign', dataUrl, this.chartOpts);
     }
 
   });
