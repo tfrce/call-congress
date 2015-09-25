@@ -114,9 +114,9 @@ def campaign_stats(campaign_id):
     return jsonify(data)
 
 
-@api.route('/campaign/<int:campaign_id>/call_chart.json', methods=['GET'])
+@api.route('/campaign/<int:campaign_id>/date_calls.json', methods=['GET'])
 @api_key_or_auth_required
-def campaign_call_chart(campaign_id):
+def campaign_date_calls(campaign_id):
     start = request.values.get('start')
     end = request.values.get('end')
     timespan = request.values.get('timespan', 'day')
@@ -160,24 +160,16 @@ def campaign_call_chart(campaign_id):
             abort(400, 'end should be in isostring format')
         query = query.filter(Call.timestamp <= endDate)
 
-    # create a separate series for each status value
-    series = []
+    dates = defaultdict(dict)
 
-    for status in TWILIO_CALL_STATUS:
-        data = {}
-        total_count = 0
+    for (date, timespan, call_status, count) in query.all():
         # combine status values by date
-        for (date, timespan, call_status, count) in query.all():
-            # entry like ('2015-08-10', u'canceled', 8)
+        for status in TWILIO_CALL_STATUS:
             if call_status == status:
                 date_string = date.strftime(timespan_strf)
-                data[date_string] = count
-                total_count += count
-        new_series = {'name': status.capitalize(),
-                      'data': OrderedDict(sorted(data.items()))}
-        if total_count > 0:
-            series.append(new_series)
-    return Response(json.dumps(series), mimetype='application/json')
+                dates[date_string][status] = count
+    sorted_dates = OrderedDict(sorted(dates.items()))
+    return Response(json.dumps(sorted_dates), mimetype='application/json')
 
 
 @api.route('/campaign/<int:campaign_id>/target_calls.json', methods=['GET'])

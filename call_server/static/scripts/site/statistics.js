@@ -22,9 +22,11 @@
 
       this.chartOpts = {
         "stacked": true,
+        "discrete": true,
         "library": {
           "canvasDimensions":{"height":250},
-          "yAxis": { "allowDecimals": false },
+          "hAxis": { "format":"yy-MM-dd" },
+          "yAxis": { "allowDecimals": false, "min": null },
         }
       };
       this.campaignDataTemplate = _.template($('#campaign-data-tmpl').html(), { 'variable': 'data' });
@@ -60,6 +62,8 @@
     },
 
     renderChart: function(event) {
+      var self = this;
+
       if (!this.campaignId) {
         return false;
       }
@@ -75,7 +79,7 @@
         $('.input-daterange input').removeClass('error');
       }
 
-      var chartDataUrl = '/api/campaign/'+this.campaignId+'/call_chart.json?timespan='+timespan;
+      var chartDataUrl = '/api/campaign/'+this.campaignId+'/date_calls.json?timespan='+timespan;
       if (start) {
         chartDataUrl += ('&start='+start);
       }
@@ -83,7 +87,17 @@
         chartDataUrl += ('&end='+end);
       }
 
-      this.chart = new Chartkick.ColumnChart('calls_for_campaign', chartDataUrl, this.chartOpts);
+      $.getJSON(chartDataUrl, function(data) {
+        // api data is by date, map to series by status
+        var DISPLAY_STATUS = ['completed', 'busy', 'failed', 'no-answer', 'canceled', 'unknown'];
+        series = _.map(DISPLAY_STATUS, function(status) { 
+          var s = _.map(data, function(value, date) {
+            return [date, value[status]];
+          });
+          return {'name': status, 'data': s };
+        });
+        self.chart = new Chartkick.ColumnChart('calls_for_campaign', series, self.chartOpts);
+      });
 
       var tableDataUrl = '/api/campaign/'+this.campaignId+'/target_calls.json?';
       if (start) {
@@ -93,7 +107,6 @@
         tableDataUrl += ('&end='+end);
       }
 
-      var self = this;
       $.getJSON(tableDataUrl, function(data) {
         var content = self.targetDataTemplate(data);
         $('table#target_data').html(content);
