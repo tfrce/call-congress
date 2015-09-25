@@ -201,8 +201,10 @@ class Target(db.Model):
                 # do it live
                 data = cached_obj
 
-            # create target object and save for reuse
+            # create target object and save to db
             t = Target(**data)
+            db.session.add(t)
+            db.session.commit()
             cached = True
         return t, cached
 

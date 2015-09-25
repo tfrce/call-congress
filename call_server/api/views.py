@@ -6,7 +6,7 @@ import dateutil
 import twilio.twiml
 from flask import Blueprint, Response, render_template, abort, request, jsonify
 
-from sqlalchemy.sql import func, extract
+from sqlalchemy.sql import func, extract, distinct
 
 from decorators import api_key_or_auth_required, restless_api_auth
 from ..utils import median
@@ -36,7 +36,8 @@ restless_preprocessors = {'GET_SINGLE':   [restless_api_auth],
 def configure_restless(app):
     rest.create_api(Call, collection_name='call', methods=['GET'],
                     include_columns=['id', 'timestamp', 'campaign_id', 'target_id',
-                                    'call_id', 'status', 'duration'])
+                                    'call_id', 'status', 'duration'],
+                    include_methods=['target_display'])
     rest.create_api(Campaign, collection_name='campaign', methods=['GET'],
                     include_columns=['id', 'name', 'campaign_type', 'campaign_state', 'campaign_subtype',
                                      'target_ordering', 'allow_call_in', 'call_maximum', 'embed'],
@@ -132,7 +133,7 @@ def campaign_call_chart(campaign_id):
             func.min(Call.timestamp.label('date')),
             timespan_extract,
             Call.status,
-            func.count(Call.id).label('calls_count')
+            func.count(distinct(Call.id)).label('calls_count')
         )
         .filter(Call.campaign_id == int(campaign.id))
         .group_by(timespan_extract)
