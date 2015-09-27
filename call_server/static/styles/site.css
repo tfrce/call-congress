@@ -19,6 +19,8 @@
 .voffset-100 { margin-top: 100px; }
 .voffset-150 { margin-top: 150px; }
 
+.limit-height-50 { max-height: 50px; overflow:auto; }
+
 #global_message_container {
     display: none;
     position: absolute;
