@@ -1202,6 +1202,17 @@ $(document).ready(function () {
       if (campaign_type === 'congress') {
         // hit Sunlight OpenCongress v3
 
+        //convert generic chamber names to House / Senate
+        if (chamber === 'lower') {
+          chamber = 'house';
+        }
+        if (chamber === 'upper') {
+          chamber = 'senate';
+        }
+        if (chamber === 'both') {
+          chamber = '';
+        }
+
         $.ajax({
           url: CallPower.Config.SUNLIGHT_CONGRESS_URL,
           data: {
