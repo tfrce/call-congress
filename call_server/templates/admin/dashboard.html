@@ -24,7 +24,7 @@
         <tr>
             <td><a href="{{url_for('campaign.launch', campaign_id=c.id)}}">{{c.name}}</a></td>
             <td>{{c.campaign_type_display()}}</td>
-            <td>{{c.targets_display()|safe}}</td>
+            <td><div class="limit-height-50">{{c.targets_display()|safe}}</div></td>
             <td>{{calls_by_campaign[c.id] }}</td>
             <td><span class="glyphicon {% if c.status == 'live' %}glyphicon-play{%elif c.status=='paused'%}glyphicon-pause{%else%}glyphicon-stop{%endif%}"></td>
         </tr>

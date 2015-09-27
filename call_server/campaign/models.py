@@ -134,12 +134,12 @@ class Campaign(db.Model):
 
     def targets(self):
         "Convenience method for getting list of target names and phone numbers"
-        return [(s.name, s.number.e164) for s in self.target_set]
+        return [(t.name, t.number.e164) for t in self.target_set]
 
     def targets_display(self):
         "Display method for this campaign's target list if specified, or subtype (like Congress - Senate)"
         if self.target_set:
-            return "<br>".join(["%s %s" % (t) for t in self.targets()])
+            return ", ".join(["%s" % t.name for t in self.target_set])
         else:
             return self.campaign_subtype_display()
 
