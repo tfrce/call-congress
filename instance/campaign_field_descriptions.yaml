@@ -3,8 +3,7 @@ segment_by: Segment callers to targets by which attribute?
 locate_by: Determine location by which attribute?
 target_set: Search for target phone numbers, or add them directly.
 target_ordering: |
-    Default order is alphabetical by last name, or as listed above.
-    Shuffle is re-done for every caller.
+    Calls will be placed as ordered above. Shuffle is re-done for every caller.
 
 msg_intro: Introduce yourself and the campaign briefly. First thing the caller hears when they start the call.
 msg_intro_confirm: Ask the caller to get started by pressing the star key. Used to screen out voicemails.
