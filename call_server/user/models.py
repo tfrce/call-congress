@@ -5,6 +5,7 @@ from werkzeug import generate_password_hash, check_password_hash
 from flask.ext.login import UserMixin
 
 from ..extensions import db
+from sqlalchemy import func
 from .constants import (USER_ROLE, USER_ADMIN, USER_STAFF,
                         USER_STATUS, USER_ACTIVE,
                         STRING_LEN, PASSWORD_LEN_MAX)
@@ -65,7 +66,10 @@ class User(db.Model, UserMixin):
 
     @classmethod
     def authenticate(cls, login, password):
-        user = cls.query.filter(db.or_(User.name == login, User.email == login)).first()
+        user = cls.query.filter(db.or_(
+            func.lower(User.name) == func.lower(login),
+            func.lower(User.email) == func.lower(login)
+        )).first()
 
         if user:
             authenticated = user.check_password(password)

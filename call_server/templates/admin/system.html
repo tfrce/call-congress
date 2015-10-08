@@ -13,17 +13,11 @@
     <div class="row">
         <div class="col-sm-6">
             <label class="control-label">Account SID:</label>
-            <input type="text" class="form-control" value="{{twilio_auth.0}}" readonly />
+            <input type="text" class="form-control" value="{{twilio_account}}" readonly />
         </div>
-
         <div class="col-sm-6">
-            <label class="control-label">Private Key:</label>
-            <div class="input-group">
-                <input type="password" class="form-control" value="{{twilio_auth.1}}" readonly />
-                <span class="input-group-btn">
-                    <button class="btn btn-default reveal" type="button"><i class="glyphicon glyphicon-eye-open"></i></button>
-              </span>
-            </div>
+            <label class="control-label">&nbsp;</label>
+            <div class="form-group"><a class="btn btn-success" href="https://www.twilio.com/user/account/voice-sms-mms" target="_blank">Login</a></div>
         </div>
     </div>
 
@@ -41,14 +35,14 @@
         <tr>
             <td>{{ p.number }} </td>
             <td>{% for c in p.campaigns %}{{c.name}}{%if not loop.last%}, {%endif%}{%endfor%}</td>
-            <td>{% for c in p.campaigns%}{{c.allow_call_in }}{%endfor%}</td>
+            <td>{% for c in p.campaigns%}{{c.allow_call_in }}{%if not loop.last%}, {%endif%}{%endfor%}</td>
         </tr>
         {% endfor %}
     </table>
     <form class="form-inline pull-right" method="POST" action="{{url_for('admin.twilio_resync')}}">
         <input id="csrf_token" name="csrf_token" type="hidden" value="{{csrf_token()}}">
-        <div class="form-group"><button type="submit" class="btn btn-warning">Refresh</button></div>
-        <a class="btn btn-success" href="https://www.twilio.com/user/account/phone-numbers/search" target="_blank">Buy Another</a>
+        <div class="form-group"><button type="submit" class="btn btn-warning">Refresh</button>
+        <a class="btn btn-success" href="https://www.twilio.com/user/account/phone-numbers/search" target="_blank">Buy Another</a></div>
     </form>
     </fieldset>
 
@@ -71,6 +65,7 @@
     <span class="help-block">Edit these defaults in <samp>APPLICATION_ROOT/instance/campaign_msg_defaults.yaml</samp></span>
     </fieldset>
 
+    {% if admin_api_key %}
     <fieldset class="border">
     <legend>Integration API</legend>
     <div class="row">
@@ -85,6 +80,6 @@
         </div>
     </div>
     </fieldset>
-
+    {% endif %}
 </div>
 {% endblock %}
