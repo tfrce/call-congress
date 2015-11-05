@@ -12,9 +12,8 @@
 if ($.proxy === undefined) {
   // for jQuery < 1.4, add simple proxy defintion
   $.proxy = function( fn, context ) {
-    args = slice.call( arguments, 2 );
     return function() {
-      return fn.apply( context || this, args.concat( slice.call( arguments ) ) );
+      return fn.apply( context || this, arguments );
     };
   };
 }
