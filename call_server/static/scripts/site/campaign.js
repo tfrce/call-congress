@@ -86,10 +86,14 @@
 
       // local or custom: no segment, location or search, show custom target_set
       if (val === "custom" || val === "local" || val === "executive") {
+        // set default values
+        $('.form-group.locate_by input[name="locate_by"][value=""]').click();
+        $('.form-group.segment_by input[name="segment_by"][value="custom"]').click();
+        // hide fields
         $('.form-group.segment_by').hide();
         $('.form-group.locate_by').hide();
         $('#target-search').hide();
-        
+        // show custom target search
         $('#set-targets').show();
       } else {
         $('.form-group.segment_by').show();
