@@ -16,5 +16,19 @@ if (typeof jQuery == 'undefined') {
   head.appendChild(scriptElement);
   scriptElement.onload = main;
 } else {
+  // use in-page jQuery
+
+  // fallbacks for old versions
+  if ($.proxy === undefined) {
+    $.proxy = function( fn, context ) {
+      return function() {
+        return fn.apply( context || this, arguments );
+      };
+    };
+  }
+  if ($.on === undefined) {
+    $.on = $.bind;
+  }
+
   jQuery(document).ready(main);
 }
