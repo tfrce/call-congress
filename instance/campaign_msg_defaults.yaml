@@ -8,5 +8,6 @@ msg_call_block_intro: >
     {{#many}}We'll now connect you to {{n_targets}} offices. Press
     star for the next call.{{/many}}
 msg_target_intro: We're now connecting you to {{title}} {{name}}
+msg_target_busy: Sorry, {{title}} {{name}} is busy right now. Please try again later.
 msg_between_calls: You're doing great - here's the next call.
 msg_final_thanks: Thank you!
