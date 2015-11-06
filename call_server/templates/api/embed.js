@@ -8,7 +8,23 @@ var main = function() {
   {% endif %}
 }
 
-if (typeof jQuery == 'undefined') {
+// from substack/semver-compare
+// license MIT
+function versionCmp (a, b) {
+    var pa = a.split('.');
+    var pb = b.split('.');
+    for (var i = 0; i < 3; i++) {
+        var na = Number(pa[i]);
+        var nb = Number(pb[i]);
+        if (na > nb) return 1;
+        if (nb > na) return -1;
+        if (!isNaN(na) && isNaN(nb)) return 1;
+        if (isNaN(na) && !isNaN(nb)) return -1;
+    }
+    return 0;
+};
+
+if ((typeof jQuery == 'undefined') || (versionCmp(jQuery.fn.jquery, '1.5.0') >= 0)) {
   var scriptElement = document.createElement("script");
   scriptElement.src = '//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js';
   scriptElement.type = "text/javascript";
@@ -18,14 +34,6 @@ if (typeof jQuery == 'undefined') {
 } else {
   // use in-page jQuery
 
-  // fallbacks for old versions
-  if ($.proxy === undefined) {
-    $.proxy = function( fn, context ) {
-      return function() {
-        return fn.apply( context || this, arguments );
-      };
-    };
-  }
   if ($.fn.on === undefined) {
     $.fn.on = $.fn.bind;
   }

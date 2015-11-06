@@ -1,7 +1,8 @@
 /*!
   * CallPowerForm.js
   * Connects embedded action form to CallPower campaign
-  * Requires jQuery
+  * Requires jQuery >= 1.5.0
+  *    proxy (1.4), deferred (1.5), on (1.7) or bind (1.0)
   *
   * Displays call script in overlay or by replacing form
   * Override functions onSuccess or onError in CallPowerOptions
