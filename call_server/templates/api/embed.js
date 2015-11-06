@@ -26,8 +26,8 @@ if (typeof jQuery == 'undefined') {
       };
     };
   }
-  if ($.on === undefined) {
-    $.on = $.bind;
+  if ($.fn.on === undefined) {
+    $.fn.on = $.fn.bind;
   }
 
   jQuery(document).ready(main);
