@@ -24,7 +24,8 @@ function versionCmp (a, b) {
     return 0;
 };
 
-if ((typeof jQuery == 'undefined') || (versionCmp(jQuery.fn.jquery, '1.5.0') < 0)) {
+if ((typeof jQuery == 'undefined') || (versionCmp(jQuery.fn.jquery, '1.7.0') < 0)) {
+  // load jQuery from cloudflare
   var scriptElement = document.createElement("script");
   scriptElement.src = '//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js';
   scriptElement.type = "text/javascript";
@@ -33,10 +34,5 @@ if ((typeof jQuery == 'undefined') || (versionCmp(jQuery.fn.jquery, '1.5.0') < 0
   scriptElement.onload = main;
 } else {
   // use in-page jQuery
-
-  if ($.fn.on === undefined) {
-    $.fn.on = $.fn.bind;
-  }
-
   jQuery(document).ready(main);
 }
