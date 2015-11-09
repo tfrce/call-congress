@@ -77,7 +77,7 @@ class ProductionConfig(DefaultConfig):
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', True)
 
-    SQLALCHEMY_POOL_SIZE = os.environ.get('SQLALCHEMY_POOL_SIZE', 5)
+    SQLALCHEMY_POOL_SIZE = int(os.environ.get('SQLALCHEMY_POOL_SIZE', 5))
     SQLALCHEMY_POOL_RECYCLE = os.environ.get('SQLALCHEMY_POOL_RECYCLE', 60 * 60)  # default 1 hour
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI')
 
