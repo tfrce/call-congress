@@ -65,6 +65,10 @@ def parse_params(r):
         'targetIds': r.values.getlist('targetIds'),
     }
 
+    # for inbound calls, get userPhone from Twilio params
+    if r.values.get('Direction') is 'inbound':
+        params['userPhone'] = r.values.get('Caller')
+
     if not params['userPhone']:
         abort(400, 'userPhone required')
 
