@@ -50,7 +50,7 @@ def play_or_say(r, audio, **kwds):
         current_app.logger.error(kwds)
 
 
-def parse_params(r):
+def parse_params(r, inbound=False):
     """
     Rehydrate objects from the parameter list.
     Gets invoked before each Twilio call.
@@ -65,11 +65,7 @@ def parse_params(r):
         'targetIds': r.values.getlist('targetIds'),
     }
 
-    # for inbound calls, get userPhone from Twilio params
-    if r.values.get('Direction') is 'inbound':
-        params['userPhone'] = r.values.get('Caller')
-
-    if not params['userPhone']:
+    if (not params['userPhone']) or inbound:
         abort(400, 'userPhone required')
 
     if not params['campaignId']:
@@ -302,7 +298,7 @@ def incoming():
     server.org/call/incoming?campaignId=12345
     from twilio.com/user/account/phone-numbers/incoming
     """
-    params, campaign = parse_params(request)
+    params, campaign = parse_params(request, inbound=True)
 
     if not params or not campaign:
         abort(400)
