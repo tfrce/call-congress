@@ -65,7 +65,7 @@ def parse_params(r, inbound=False):
         'targetIds': r.values.getlist('targetIds'),
     }
 
-    if (not params['userPhone']) or inbound:
+    if (not params['userPhone']) and not inbound:
         abort(400, 'userPhone required')
 
     if not params['campaignId']:
