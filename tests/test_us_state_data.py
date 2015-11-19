@@ -1,10 +1,10 @@
 import logging
 
-from test import BaseTestCase
+from run import BaseTestCase
 from call_server.political_data.countries.us_state import USStateData
 from call_server.campaign.constants import (TARGET_CHAMBER_BOTH, TARGET_CHAMBER_UPPER, TARGET_CHAMBER_LOWER,
         ORDER_IN_ORDER, ORDER_UPPER_FIRST, ORDER_LOWER_FIRST)
-
+from call_server.political_data.constants import US_STATES
 
 class TestData(BaseTestCase):
     def setUp(self):
@@ -81,3 +81,18 @@ class TestData(BaseTestCase):
         boston_ma = "42.355662, -71.065483"
         uids = self.us_state_data.locate_targets(boston_ma, TARGET_CHAMBER_BOTH, ORDER_UPPER_FIRST, state="CA")
         self.assertEqual(len(uids), 0)
+
+    def test_50_governors(self):
+        NO_GOV = ['AS', 'GU', 'MP', 'PR', 'VI', '']
+        for (abbr, state) in US_STATES:
+            gov = self.us_state_data.get_governor(state)
+            if not gov:
+                self.assertIn(abbr, NO_GOV)
+                continue
+            self.assertEqual(len(gov.keys()), 3)
+            self.assertEqual(gov['title'], 'Governor')
+
+    def test_ca_governor(self):
+        gov = self.us_state_data.get_governor('California')
+        self.assertEqual(gov['name'], 'Edmund G. (Jerry) Brown Jr.')
+        self.assertEqual(gov['phone'], '18008076755')

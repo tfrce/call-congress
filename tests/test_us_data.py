@@ -1,4 +1,4 @@
-from test import BaseTestCase
+from run import BaseTestCase
 from call_server.political_data.countries.us import USData
 from call_server.campaign.constants import (TARGET_CHAMBER_BOTH, TARGET_CHAMBER_UPPER, TARGET_CHAMBER_LOWER,
         ORDER_IN_ORDER, ORDER_UPPER_FIRST, ORDER_LOWER_FIRST)

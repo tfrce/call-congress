@@ -1,3 +1,5 @@
+import csv
+import collections
 import random
 
 from sunlight import openstates, response_cache
@@ -9,15 +11,45 @@ from ...campaign.constants import (TARGET_CHAMBER_BOTH, TARGET_CHAMBER_UPPER, TA
 
 class USStateData(DataProvider):
     KEY_OPENSTATES = 'us_state:openstates:{id}'
+    KEY_GOVERNOR = 'us_state:governor:{state}'
 
     def __init__(self, cache, api_cache=None):
         self.cache = cache
         if api_cache:
             response_cache.enable(api_cache)
 
+    def _load_governors(self):
+        """
+        Load US state governor data from saved file
+        Returns a dictionary keyed by state to cache for fast lookup
+
+        eg us:governor:CA = {'title':'Governor', 'name':'Jerry Brown Jr.', 'phone': '18008076755'}
+        """
+        governors = collections.defaultdict(list)
+
+        with open('call_server/political_data/data/us_states.csv') as f:
+            reader = csv.DictReader(f)
+
+            for l in reader:
+                direct_key = self.KEY_GOVERNOR.format(**l)
+                d = {
+                    'title': 'Governor',
+                    'name': l.get('governor'),
+                    'phone': l.get('phone_primary'),
+                }
+                governors[direct_key].append(d)
+
+        return governors
+
     def load_data(self):
-        "Not needed, data provided over Sunlight OpenStates API, and cached on response"
-        pass
+        governors = self._load_governors()
+
+        if hasattr(self.cache, 'set_many'):
+            self.cache.set_many(governors)
+        elif hasattr(self.cache, 'update'):
+            self.cache.update(governors)
+        else:
+            raise AttributeError('cache does not appear to be dict-like')
 
     def cache_set(self, key, val):
         if hasattr(self.cache, 'set'):
@@ -33,6 +65,10 @@ class USStateData(DataProvider):
 
     def get_uid(self, key):
         return self.cache.get(key)
+
+    def get_governor(self, state):
+        cache_key = self.KEY_GOVERNOR.format(state=state)
+        return self.cache.get(cache_key, [{}])[0]
 
     def locate_targets(self, latlon, chambers=TARGET_CHAMBER_BOTH, order=ORDER_IN_ORDER, state=None):
         """ Find all state legistlators for a location, as comma delimited (lat,lon)
