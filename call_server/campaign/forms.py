@@ -79,6 +79,7 @@ class CampaignAudioForm(Form):
     msg_choose_target = TextField(_('Choose Target'))
     msg_call_block_intro = TextField(_('Call Block Introduction'))
     msg_target_intro = TextField(_('Target Introduction'))
+    msg_target_busy = TextField(_('Target Busy'))
     msg_between_calls = TextField(_('Between Calls'))
     msg_final_thanks = TextField(_('Final Thanks'))
 

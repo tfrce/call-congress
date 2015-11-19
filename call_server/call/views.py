@@ -413,6 +413,10 @@ def complete():
 
     resp = twilio.twiml.Response()
 
+    if call_data['status'] == 'busy':
+        play_or_say(resp, campaign.audio('msg_target_busy'),
+            title=current_target.title, name=current_target.name)
+
     i = int(request.values.get('call_index', 0))
 
     if i == len(params['targetIds']) - 1:

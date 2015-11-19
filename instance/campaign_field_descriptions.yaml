@@ -13,6 +13,7 @@ msg_invalid_location: If their location is not within the campaign area, let the
 msg_unparsed_location: If we could not understand their location entry, ask them to try again.
 msg_call_block_intro: Before beginning a block of calls, let the caller know what to expect.
 msg_target_intro: When we are about to connect them, remind the caller who they are going to speak with.
+msg_target_busy: If the target is busy, let the caller know when to call again.
 msg_between_calls: Between calls, encourage the caller to keep going and remind them of any specific instructions.
 msg_final_thanks: When all calls are complete, thank the caller for taking action.
 
