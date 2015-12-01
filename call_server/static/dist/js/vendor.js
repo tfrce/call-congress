@@ -314,5 +314,5 @@ DPGlobal.contTemplate+
 DPGlobal.footTemplate+'</table>'+'</div>'+'<div class="datepicker-years">'+'<table class="table-condensed">'+
 DPGlobal.headTemplate+
 DPGlobal.contTemplate+
-DPGlobal.footTemplate+'</table>'+'</div>'+'</div>';$.fn.datepicker.DPGlobal=DPGlobal;$.fn.datepicker.noConflict=function(){$.fn.datepicker=old;return this;};$.fn.datepicker.version="1.4.0";$(document).on('focus.datepicker.data-api click.datepicker.data-api','[data-provide="datepicker"]',function(e){var $this=$(this);if($this.data('datepicker'))
+DPGlobal.footTemplate+'</table>'+'</div>'+'</div>';$.fn.datepicker.DPGlobal=DPGlobal;$.fn.datepicker.noConflict=function(){$.fn.datepicker=old;return this;};$.fn.datepicker.version="1.4.1";$(document).on('focus.datepicker.data-api click.datepicker.data-api','[data-provide="datepicker"]',function(e){var $this=$(this);if($this.data('datepicker'))
 return;e.preventDefault();datepickerPlugin.call($this,'show');});$(function(){datepickerPlugin.call($('[data-provide="datepicker-inline"]'));});}(window.jQuery));
