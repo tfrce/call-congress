@@ -24,7 +24,7 @@
             <td>{{c.campaign_type_display()}}</td>
             <td><div class="limit-height-50">{{c.targets_display()|safe}}</div></td>
             <td>{{calls[c.id] }}</td>
-            <td><span class="glyphicon {% if c.status == 'live' %}glyphicon-play{%elif c.status=='paused'%}glyphicon-pause{%else%}glyphicon-stop{%endif%}"></td>
+            <td><span class="glyphicon {% if c.status == 'live' %}glyphicon-play text-success{%elif c.status=='paused'%}glyphicon-pause text-warning{%else%}glyphicon-stop text-danger{%endif%}"></td>
             <td><a href="{{url_for('campaign.form', campaign_id=c.id)}}">edit</a> /
                 <a href="{{url_for('campaign.copy', campaign_id=c.id)}}">copy</a> / 
                 <a href="{{url_for('campaign.launch', campaign_id=c.id)}}">test</a> /
