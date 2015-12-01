@@ -33,17 +33,31 @@ def dashboard():
             .filter(Campaign.status_code >= STATUS_PAUSED)
             .filter(Call.status == 'completed')
             .join(Call).group_by(Campaign.id))
+
+    today = datetime.today()
+    month_start = today.replace(day=1)  # first day of the current month
+    next_month = today.replace(day=28) + timedelta(days=4)  # a day in next month (for months with 28,29,30,31)
+    month_end = next_month - timedelta(days=next_month.day)  # the last day of the current month
+
+    calls_this_month = (db.session.query(func.count(Call.id))
+            .filter(Call.status == 'completed')
+            .filter(Call.timestamp >= month_start)
+            .filter(Call.timestamp <= month_end)
+        ).scalar()
+
     calls_by_day = (db.session.query(func.date(Call.timestamp), func.count(Call.id))
             .filter(Call.status == 'completed')
-            .group_by(func.date(Call.timestamp)))
-
-    active_phone_numbers = TwilioPhoneNumber.query.all()
+            .filter(Call.timestamp >= month_start)
+            .filter(Call.timestamp <= month_end)
+            .group_by(func.date(Call.timestamp))
+            .order_by(func.date(Call.timestamp))
+        )
 
     return render_template('admin/dashboard.html',
         campaigns=campaigns,
         calls_by_campaign=dict(calls_by_campaign.all()),
         calls_by_day=calls_by_day.all(),
-        active_phone_numbers=active_phone_numbers
+        calls_this_month=calls_this_month
     )
 
 
@@ -51,13 +65,13 @@ def dashboard():
 def statistics():
     campaigns = Campaign.query.all()
     today = datetime.today()
-    start = today.replace(day=1)  # first day of the current month
+    month_start = today.replace(day=1)  # first day of the current month
     next_month = today.replace(day=28) + timedelta(days=4)  # a day in next month (for months with 28,29,30,31)
-    end = next_month - timedelta(days=next_month.day)  # the last day of the current month
+    month_end = next_month - timedelta(days=next_month.day)  # the last day of the current month
     return render_template('admin/statistics.html',
         campaigns=campaigns, timespans=API_TIMESPANS,
-        default_start=start.strftime('%Y/%m/%d'),
-        default_end=end.strftime('%Y/%m/%d'))
+        default_start=month_start.strftime('%Y/%m/%d'),
+        default_end=month_end.strftime('%Y/%m/%d'))
 
 
 @admin.route('/system')

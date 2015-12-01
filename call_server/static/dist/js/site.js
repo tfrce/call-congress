@@ -59,7 +59,7 @@ $(document).ready(function () {
       'submit': 'submitForm'
     },
 
-    requiredFields: ['msg_intro', 'msg_call_block_intro', 'msg_final_thanks'],
+    requiredFields: ['msg_intro', 'msg_call_block_intro'],
 
     initialize: function() {
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -412,10 +412,14 @@ $(document).ready(function () {
 
       // local or custom: no segment, location or search, show custom target_set
       if (val === "custom" || val === "local" || val === "executive") {
+        // set default values
+        $('.form-group.locate_by input[name="locate_by"][value=""]').click();
+        $('.form-group.segment_by input[name="segment_by"][value="custom"]').click();
+        // hide fields
         $('.form-group.segment_by').hide();
         $('.form-group.locate_by').hide();
         $('#target-search').hide();
-        
+        // show custom target search
         $('#set-targets').show();
       } else {
         $('.form-group.segment_by').show();
@@ -1327,15 +1331,20 @@ $(document).ready(function () {
       });
 
       _.bindAll(this, 'renderChart');
-      this.$el.on('changeDate', this.renderChart);
+      this.$el.on('changeDate', _.debounce(this.renderChart, this));
 
       this.chartOpts = {
-        "stacked": true,
-        "discrete": true,
-        "library": {
-          "canvasDimensions":{"height":250},
-          "hAxis": { "format":"yy-MM-dd" },
-          "yAxis": { "allowDecimals": false, "min": null },
+        stacked: true,
+        discrete: true,
+        library: {
+          canvasDimensions:{ height:250},
+          xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: {
+                day: '%e. %b'
+            }
+          },
+          yAxis: { allowDecimals: false, min: null },
         }
       };
       this.campaignDataTemplate = _.template($('#campaign-data-tmpl').html(), { 'variable': 'data' });
@@ -1396,6 +1405,7 @@ $(document).ready(function () {
         chartDataUrl += ('&end='+end);
       }
 
+      $('#calls_for_campaign').html('loading');
       $.getJSON(chartDataUrl, function(data) {
         // api data is by date, map to series by status
         var DISPLAY_STATUS = ['completed', 'busy', 'failed', 'no-answer', 'canceled', 'unknown'];
@@ -1416,6 +1426,7 @@ $(document).ready(function () {
         tableDataUrl += ('&end='+end);
       }
 
+      $('table#target_data').html('loading');
       $.getJSON(tableDataUrl, function(data) {
         var content = self.targetDataTemplate(data);
         $('table#target_data').html(content);

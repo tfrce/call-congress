@@ -18,15 +18,20 @@
       });
 
       _.bindAll(this, 'renderChart');
-      this.$el.on('changeDate', this.renderChart);
+      this.$el.on('changeDate', _.debounce(this.renderChart, this));
 
       this.chartOpts = {
-        "stacked": true,
-        "discrete": true,
-        "library": {
-          "canvasDimensions":{"height":250},
-          "hAxis": { "format":"yy-MM-dd" },
-          "yAxis": { "allowDecimals": false, "min": null },
+        stacked: true,
+        discrete: true,
+        library: {
+          canvasDimensions:{ height:250},
+          xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: {
+                day: '%e. %b'
+            }
+          },
+          yAxis: { allowDecimals: false, min: null },
         }
       };
       this.campaignDataTemplate = _.template($('#campaign-data-tmpl').html(), { 'variable': 'data' });
@@ -87,6 +92,7 @@
         chartDataUrl += ('&end='+end);
       }
 
+      $('#calls_for_campaign').html('loading');
       $.getJSON(chartDataUrl, function(data) {
         // api data is by date, map to series by status
         var DISPLAY_STATUS = ['completed', 'busy', 'failed', 'no-answer', 'canceled', 'unknown'];
@@ -107,6 +113,7 @@
         tableDataUrl += ('&end='+end);
       }
 
+      $('table#target_data').html('loading');
       $.getJSON(tableDataUrl, function(data) {
         var content = self.targetDataTemplate(data);
         $('table#target_data').html(content);

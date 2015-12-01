@@ -41,12 +41,8 @@
     <div class="panel-heading"><h3 class="panel-title">Usage Statistics</h3></div>
     <div class="panel-body">
         <div id="calls_by_day"></div>
-        <label>Active Phone Numbers: </label>
-            <select>
-                {% for n in active_phone_numbers %}
-                <option>{{n}}</option>
-                {%endfor%}
-            </select>
+        <label>Calls this month: </label>
+        <span>{{calls_this_month}}</span>
     </div>
   </div>
 </div>
@@ -65,8 +61,14 @@ new Chartkick.ColumnChart(
             '{{entry[0]}}': {{entry[1]}}, {%endfor%} },
     }],
     { "library":{ 
-        "canvasDimensions": { "height": 250 },
-        "yAxis": {"allowDecimals": false }
+        canvasDimensions: { height: 250 },
+        xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: {
+                day: '%e. %b'
+            }
+        },
+        yAxis: {allowDecimals: false }
     }}
 );
 </script>
