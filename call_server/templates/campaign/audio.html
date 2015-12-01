@@ -24,8 +24,11 @@
         <legend>Record</legend>
 
         <div class="form-group">
-            <label class="control-label col-sm-2">Campaign Name</label>
-            <div class="col-sm-6" id="campaign_name">{{campaign.name}}</div>
+            <label class="col-sm-2 text-right">Campaign Name</label>
+            <div class="col-sm-2" id="campaign_name">{{campaign.name}}</div>
+
+            <label class="col-sm-2">Campaign ID</label>
+            <div class="col-sm-2" id="campaign_name">{{campaign.id}}</div>
         </div>
 
         {{ render_audio_default(form.msg_intro) }}
