@@ -33,6 +33,7 @@ def before_request():
 def index():
     campaigns = Campaign.query.order_by(desc(Campaign.status_code)).all()
     calls = (db.session.query(Campaign.id, func.count(Call.id))
+            .filter(Call.status == 'completed')
             .join(Call).group_by(Campaign.id))
     return render_template('campaign/list.html',
         campaigns=campaigns, calls=dict(calls.all()))

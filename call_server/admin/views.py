@@ -31,6 +31,7 @@ def dashboard():
     )
     calls_by_campaign = (db.session.query(Campaign.id, func.count(Call.id))
             .filter(Campaign.status_code >= STATUS_PAUSED)
+            .filter(Call.status == 'completed')
             .join(Call).group_by(Campaign.id))
     calls_by_day = (db.session.query(func.date(Call.timestamp), func.count(Call.id))
             .filter(Call.status == 'completed')
