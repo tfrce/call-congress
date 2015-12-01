@@ -13,7 +13,7 @@
       'submit': 'submitForm'
     },
 
-    requiredFields: ['msg_intro', 'msg_call_block_intro', 'msg_final_thanks'],
+    requiredFields: ['msg_intro', 'msg_call_block_intro'],
 
     initialize: function() {
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
