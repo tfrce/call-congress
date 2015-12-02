@@ -63,13 +63,13 @@ def campaign_count(campaign_id):
 
     # number of calls completed in campaign
     calls_completed = db.session.query(
-        Call.timestamp, Call.id
+        func.Count(Call.id)
     ).filter_by(
         campaign_id=campaign.id,
         status='completed'
-    ).all()
+    ).scalar()
 
-    return jsonify({'completed', calls_completed})
+    return jsonify({'completed': calls_completed})
 
 
 # more detailed campaign statistics
