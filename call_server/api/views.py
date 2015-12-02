@@ -54,26 +54,9 @@ def configure_restless(app):
 
 
 # non CRUD-routes
-
-# simple call count
-# NOT PROTECTED
-@api.route('/campaign/<int:campaign_id>/count.json', methods=['GET'])
-def campaign_count(campaign_id):
-    campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
-
-    # number of calls completed in campaign
-    calls_completed = db.session.query(
-        func.Count(Call.id)
-    ).filter_by(
-        campaign_id=campaign.id,
-        status='completed'
-    ).scalar()
-
-    return jsonify({'completed': calls_completed})
-
+# protect with decorator
 
 # more detailed campaign statistics
-# protect with decorator
 @api.route('/campaign/<int:campaign_id>/stats.json', methods=['GET'])
 @api_key_or_auth_required
 def campaign_stats(campaign_id):
@@ -301,6 +284,23 @@ def campaign_embed_code(campaign_id):
         campaign.embed = temp_params
     # don't save
     return render_template('api/embed_code.html', campaign=campaign)
+
+
+# simple call count
+@api.route('/campaign/<int:campaign_id>/count.json', methods=['GET'])
+@crossdomain(origin='*')
+def campaign_count(campaign_id):
+    campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
+
+    # number of calls completed in campaign
+    calls_completed = db.session.query(
+        func.Count(Call.id)
+    ).filter_by(
+        campaign_id=campaign.id,
+        status='completed'
+    ).scalar()
+
+    return jsonify({'completed': calls_completed})
 
 
 # route for twilio to get twiml response
