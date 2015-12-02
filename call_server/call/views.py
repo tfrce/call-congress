@@ -256,9 +256,11 @@ def create():
             timeout=current_app.config['TWILIO_TIMEOUT'],
             status_callback=url_for("call.complete_status", _external=True, **params))
 
-        # save call.sid to call_session.twilio_id?
-
-        result = jsonify(campaign=campaign.status, call=call.status, script=campaign.embed.get('script'))
+        if campaign.embed:
+            script = campaign.embed.get('script')
+        else:
+            script = ''
+        result = jsonify(campaign=campaign.status, call=call.status, script=script)
         result.status_code = 200 if call.status != 'failed' else 500
     except TwilioRestException, err:
         twilio_error = stripANSI(err.msg)
