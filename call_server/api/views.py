@@ -58,7 +58,7 @@ def configure_restless(app):
 # simple call count
 # NOT PROTECTED
 @api.route('/campaign/<int:campaign_id>/count.json', methods=['GET'])
-def campaign_stats(campaign_id):
+def campaign_count(campaign_id):
     campaign = Campaign.query.filter_by(id=campaign_id).first_or_404()
 
     # number of calls completed in campaign
@@ -192,6 +192,7 @@ def campaign_date_calls(campaign_id):
     return Response(json.dumps(sorted_dates), mimetype='application/json')
 
 
+# calls made by target
 @api.route('/campaign/<int:campaign_id>/target_calls.json', methods=['GET'])
 @api_key_or_auth_required
 def campaign_target_calls(campaign_id):
