@@ -217,6 +217,7 @@ def campaign_target_calls(campaign_id):
     subquery = query_calls.subquery('query_calls')
     query_targets = (
         db.session.query(
+            Target.title,
             Target.name,
             subquery.c.status,
             subquery.c.calls_count
@@ -232,11 +233,12 @@ def campaign_target_calls(campaign_id):
 
     for status in TWILIO_CALL_STATUS:
         # combine calls status for each target
-        for (target_name, call_status, count) in query_targets.all():
+        for (target_title, target_name, call_status, count) in query_targets.all():
+            target = '{} {}'.format(target_title, target_name)
             if call_status == status:
-                targets[target_name][call_status] = targets.get(target_name, {}).get(call_status, 0) + count
+                targets[target][call_status] = targets.get(target, {}).get(call_status, 0) + count
 
-        for (target_name, call_status, count) in calls_wo_targets.all():
+        for (target_title, target_name, call_status, count) in calls_wo_targets.all():
             if call_status == status:
                 targets['Unknown'][call_status] = targets.get('Unknown', {}).get(call_status, 0) + count
     return Response(json.dumps(targets), mimetype='application/json')
