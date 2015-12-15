@@ -188,7 +188,8 @@ class Target(db.Model):
             key = '%s:%s' % (prefix, uid)
         else:
             key = uid
-        t = Target.query.filter(Target.uid == key).first()
+        t = Target.query.filter(Target.uid == key) \
+            .order_by(Target.id.desc()).first()  # return most recently cached target
         cached = False
 
         if not t:
