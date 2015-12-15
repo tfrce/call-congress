@@ -234,7 +234,7 @@ def campaign_target_calls(campaign_id):
     for status in TWILIO_CALL_STATUS:
         # combine calls status for each target
         for (target_title, target_name, call_status, count) in query_targets.all():
-            target = '{} {}'.format(target_title, target_name)
+            target = u'{} {}'.format(target_title, target_name)
             if call_status == status:
                 targets[target][call_status] = targets.get(target, {}).get(call_status, 0) + count
 
