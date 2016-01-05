@@ -102,10 +102,9 @@ def form(campaign_id=None):
         # if allow_call_in, set call_in_allowed on phone_number_set
         if campaign.allow_call_in:
             for n in campaign.phone_number_set:
-                n.call_in_allowed = True
+                n.call_in_allowed = n.set_call_in(campaign)
                 db.session.add(n)
             db.session.commit()
-        # TODO, set app on twilio number 
         # TODO, allow_call_in on just one number?
 
         if edit:

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import current_app
+from flask import current_app, url_for
 from sqlalchemy_utils.types import phone_number, JSONType
 from flask_store.sqla import FlaskStoreType
 from sqlalchemy import UniqueConstraint
@@ -223,10 +223,39 @@ class TwilioPhoneNumber(db.Model):
         return self.number.__unicode__()
 
     @classmethod
-    def available_numbers(cls, limit=None):
-        # returns all numbers which do not have call_in_allowed
-        #return TwilioPhoneNumber.query.filter_by(call_in_allowed=False).limit(limit)
-        return TwilioPhoneNumber.query.limit(limit)
+    def available_numbers(*args, **kwargs):
+        # returns all existing numbers
+        return TwilioPhoneNumber.query
+        # should filter_by(call_in_allowed=False), and also include numbers for this campaign
+
+    def set_call_in(self, campaign):
+        twilio_client = current_app.config.get('TWILIO_CLIENT')
+        twilio_app_name = 'CallPower (%s)' % campaign.name
+
+        # set app VoiceUrl post to campaign url
+        campaign_call_url = (url_for('call.incoming', _external=True) +
+            '?campaignId=' + str(campaign.id))
+
+        # get or create twilio app by campaign name
+        apps = twilio_client.applications.list(friendly_name=twilio_app_name)
+        if apps:
+            app_sid = apps[0].sid  # there can be only one!
+            app = twilio_client.applications.update(app_sid,
+                                              friendly_name=twilio_app_name,
+                                              voice_url=campaign_call_url,
+                                              voice_method="POST")
+        else:
+            app = twilio_client.applications.create(friendly_name=twilio_app_name,
+                                              voice_url=campaign_call_url,
+                                              voice_method="POST")
+
+        success = (app.voice_url == campaign_call_url)
+
+        # set twilio number to use app
+        twilio_client.phone_numbers.update(self.twilio_sid, voice_application_sid=app.sid)
+        self.twilio_app = app.sid
+
+        return success
 
 
 class AudioRecording(db.Model):
