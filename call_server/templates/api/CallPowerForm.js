@@ -29,7 +29,7 @@ var CallPowerForm = function (formSelector, $) {
 
 CallPowerForm.prototype = function($) {
   // prototype variables
-  var createCallURL = '{{url_for("call.create", campaign_id=campaign.id, _external=True)}}';
+  var createCallURL = '{{url_for("call.create", _external=True)}}';
   var campaignId = "{{campaign.id}}";
 
   var getCountry = function() {
@@ -134,6 +134,6 @@ CallPowerForm.prototype = function($) {
     phone: cleanPhone,
     onError: onError,
     onSuccess: onSuccess,
-    makeCall: makeCall,
+    makeCall: makeCall
   };
 } (jQuery);
