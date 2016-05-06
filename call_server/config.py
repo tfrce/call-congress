@@ -88,7 +88,14 @@ class ProductionConfig(DefaultConfig):
     STORE_S3_REGION = os.environ.get('STORE_S3_REGION')
     STORE_S3_ACCESS_KEY = os.environ.get('S3_ACCESS_KEY')
     STORE_S3_SECRET_KEY = os.environ.get('S3_SECRET_KEY')
-    STORE_DOMAIN = 'https://%s.s3-%s.amazonaws.com/' % (STORE_S3_BUCKET, STORE_S3_REGION)
+    STORE_DOMAIN = os.environ.get('STORE_DOMAIN')
+    if not STORE_DOMAIN and STORE_S3_REGION:
+        # set external store domain per AWS regions
+        # http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region
+        if STORE_S3_REGION is 'us-east-1':
+            STORE_DOMAIN = 'https://%s.s3.amazonaws.com/' % (STORE_S3_BUCKET)
+        else:
+            STORE_DOMAIN = 'https://%s.s3-%s.amazonaws.com/' % (STORE_S3_BUCKET, STORE_S3_REGION)
 
 
 class HerokuConfig(ProductionConfig):
