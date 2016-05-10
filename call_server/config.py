@@ -92,10 +92,12 @@ class ProductionConfig(DefaultConfig):
     if not STORE_DOMAIN and STORE_S3_REGION:
         # set external store domain per AWS regions
         # http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region
+        # use path-style urls, in case bucket name is DNS incompatible (uses periods, or mixed case
+        # http://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
         if STORE_S3_REGION is 'us-east-1':
-            STORE_DOMAIN = 'https://%s.s3.amazonaws.com/' % (STORE_S3_BUCKET)
+            STORE_DOMAIN = 'https://s3.amazonaws.com/%s/' % (STORE_S3_BUCKET)
         else:
-            STORE_DOMAIN = 'https://%s.s3-%s.amazonaws.com/' % (STORE_S3_BUCKET, STORE_S3_REGION)
+            STORE_DOMAIN = 'https://s3-%s.amazonaws.com/%s/' % (STORE_S3_REGION, STORE_S3_BUCKET)
 
 
 class HerokuConfig(ProductionConfig):
