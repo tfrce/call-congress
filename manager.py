@@ -60,6 +60,9 @@ def loadpoliticaldata():
         n = political_data.load_data(cache)
     print "loaded %d objects" % n
     print "done"
+    if app.config.get('ENVIRONMENT') is "Heroku":
+        print "don't worry about the KeyError"
+        # http://stackoverflow.com/questions/8774958/keyerror-in-module-threading-after-a-successful-py-test-run/12639040#12639040
 
 @manager.command
 def alembic():
