@@ -63,10 +63,10 @@ class USStateData(DataProvider):
 
     def get_legid(self, legid):
         cache_key = self.KEY_OPENSTATES.format(id=legid)
-        return self.get_key(cache_key)
+        return self.get_key(cache_key) or {}
 
     def get_uid(self, key):
-        return self.cache.get(key)
+        return self.cache.get(key) or {}
 
     def get_governor(self, state):
         cache_key = self.KEY_GOVERNOR.format(state=state)
@@ -79,10 +79,14 @@ class USStateData(DataProvider):
         """ Find all state legistlators for a location, as comma delimited (lat,lon)
             Returns a list of cached openstate keys in specified order.
         """
-        try:
-            (lat, lon) = latlon.split(',')
-        except ValueError:
-            raise ValueError('USStateData requires location as lat,lon')
+        if type(latlon) == tuple:
+            lat = latlon[0]
+            lon = latlon[1]
+        else:
+            try:
+                (lat, lon) = latlon.split(',')
+            except ValueError:
+                raise ValueError('USStateData requires location as lat,lon')
 
         legislators = openstates.legislator_geo_search(lat, lon)
         targets = []
