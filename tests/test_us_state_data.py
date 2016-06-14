@@ -83,7 +83,7 @@ class TestData(BaseTestCase):
         self.assertEqual(len(uids), 0)
 
     def test_50_governors(self):
-        NO_GOV = ['AS', 'GU', 'MP', 'PR', 'VI', '']
+        NO_GOV = ['AS', 'GU', 'MP', 'PR', 'VI', 'DC', '']
         for (abbr, state) in US_STATES:
             gov = self.us_state_data.get_governor(abbr)
             if not gov:
@@ -94,5 +94,5 @@ class TestData(BaseTestCase):
 
     def test_ca_governor(self):
         gov = self.us_state_data.get_governor('CA')
-        self.assertEqual(gov['name'], 'Edmund G. (Jerry) Brown Jr.')
-        self.assertEqual(gov['phone'], '18008076755')
+        self.assertEqual(gov['name'], 'Jerry Brown')
+        self.assertEqual(gov['phone'], '916-445-2841')
