@@ -114,6 +114,15 @@
       var type = $('select#campaign_type').val();
       var subtype = $('select#campaign_subtype').val();
 
+      // state
+      if (type === 'state') {
+        if (subtype === 'exec') {
+          $('#target-search input[name="target-search"]').attr('placeholder', 'search US NGA');
+        } else {
+          $('#target-search input[name="target-search"]').attr('placeholder', 'search OpenStates');
+        }
+      }
+
       // congress: show/hide target_ordering values upper_first and lower_first
       if ((type === 'congress' && subtype === 'both') ||
           (type === 'state' && subtype === 'both')) {

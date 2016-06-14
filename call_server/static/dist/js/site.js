@@ -440,6 +440,15 @@ $(document).ready(function () {
       var type = $('select#campaign_type').val();
       var subtype = $('select#campaign_subtype').val();
 
+      // state
+      if (type === 'state') {
+        if (subtype === 'exec') {
+          $('#target-search input[name="target-search"]').attr('placeholder', 'search US NGA');
+        } else {
+          $('#target-search input[name="target-search"]').attr('placeholder', 'search OpenStates');
+        }
+      }
+
       // congress: show/hide target_ordering values upper_first and lower_first
       if ((type === 'congress' && subtype === 'both') ||
           (type === 'state' && subtype === 'both')) {
@@ -1229,7 +1238,16 @@ $(document).ready(function () {
         });
       }
 
-      if (campaign_type === 'state') {
+      if (campaign_type === 'state' && chamber === 'exec') {
+        // search scraped us_governors_contact, pass full json to search on client
+        $.ajax({
+          url: 'https://raw.githubusercontent.com/spacedogXYZ/us_governors_contact/master/data.json',
+          dataType: 'json',
+          success: _.bind(self.clientSideSearch, self),
+          error: self.errorSearchResults,
+        });
+
+      } else {
         // hit Sunlight OpenStates
 
         // TODO, request state metadata
@@ -1244,11 +1262,25 @@ $(document).ready(function () {
             chamber: chamber,
             last_name: query // NB, we can't do generic query for OpenStates, let user select field?
           },
-          beforeSend: function(jqXHR, settings) { console.log(settings.url); },
           success: self.renderSearchResults,
           error: self.errorSearchResults,
         });
       }
+    },
+
+    clientSideSearch: function(response) {
+      var query = $('input[name="target-search"]').val();
+
+      results = _.filter(response, function(item) {
+        // simple case insensitive OR search on first, last or state name
+        if (item.first_name.toLowerCase().includes(query.toLowerCase()) ||
+            item.last_name.toLowerCase().includes(query.toLowerCase()) ||
+            item.state_name.toLowerCase().includes(query.toLowerCase())
+           ) {
+          return true;
+        }
+      });
+      return this.renderSearchResults(results);
     },
 
     renderSearchResults: function(response) {
