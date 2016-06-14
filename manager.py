@@ -9,7 +9,7 @@ from flask.ext.assets import ManageAssets
 
 from call_server.app import create_app
 from call_server.extensions import assets, db, cache
-from call_server.political_data import countries
+from call_server import political_data
 from call_server.user import User, USER_ADMIN, USER_ACTIVE
 
 app = create_app()
@@ -39,9 +39,8 @@ def runserver(external=None):
         app.config['SERVER_NAME'] = external
         app.config['STORE_DOMAIN'] = "http://" + external # needs to have scheme, so urlparse is fully absolute
         print "serving from %s" % app.config['SERVER_NAME']
-    app.us_data = countries.us.USData(cache)
-    app.us_data.load_data()
-    
+    political_data.load_data(cache)
+
     host = (os.environ.get('APP_HOST') or '127.0.0.1')
     app.run(debug=True, use_reloader=True, host=host)
 
@@ -51,8 +50,7 @@ def loadpoliticaldata():
     """Load political data into persistent cache"""
     with app.app_context():
         cache.clear()
-        app.us_data = countries.us.USData(cache)
-        app.us_data.load_data()
+        political_data.load_data(cache)
 
 
 @manager.command
