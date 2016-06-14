@@ -53,6 +53,8 @@ class USStateData(DataProvider):
         else:
             raise AttributeError('cache does not appear to be dict-like')
 
+        return len(governors)
+
     def cache_set(self, key, val):
         if hasattr(self.cache, 'set'):
             self.cache.set(key, val)

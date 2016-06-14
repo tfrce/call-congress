@@ -53,9 +53,12 @@ def loadpoliticaldata():
         gevent.monkey.patch_thread()
     except ImportError:
         print "unable to apply gevent monkey.patch_thread"
+
+    print "loading political data"
     with app.app_context():
         cache.clear()
-        political_data.load_data(cache)
+        n = political_data.load_data(cache)
+    print "loaded %d objects" % n
     print "done"
 
 @manager.command

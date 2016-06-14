@@ -82,6 +82,8 @@ class USData(DataProvider):
         else:
             raise AttributeError('cache does not appear to be dict-like')
 
+        return len(districts) + len(legislators)
+
     # convenience methods for easy house, senate, district access
     def get_house_member(self, state, district):
         key = self.KEY_HOUSE.format(state=state, district=district)
