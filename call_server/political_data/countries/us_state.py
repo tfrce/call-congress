@@ -32,13 +32,12 @@ class USStateData(DataProvider):
             reader = csv.DictReader(f)
 
             for l in reader:
-                state_abbr = US_STATE_NAME_DICT[l['state']]
-                direct_key = self.KEY_GOVERNOR.format(**{'state': state_abbr})
+                direct_key = self.KEY_GOVERNOR.format(**{'state': l['state']})
                 d = {
                     'title': 'Governor',
                     'name': l.get('name'),
                     'phone': l.get('phone'),
-                    'state': state_abbr
+                    'state': l.get('state')
                 }
                 governors[direct_key] = d
         return governors
