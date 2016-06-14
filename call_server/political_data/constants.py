@@ -57,3 +57,5 @@ US_STATES = (
     ('WI', 'Wisconsin'),
     ('WY', 'Wyoming'),
 )
+US_STATE_ABBR_DICT = {abbr: name for (abbr, name) in US_STATES}
+US_STATE_NAME_DICT = {name: abbr for (abbr, name) in US_STATES}

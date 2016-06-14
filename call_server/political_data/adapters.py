@@ -8,6 +8,9 @@ def adapt_to_target(data, key_prefix):
     elif key_prefix == "us_state:openstates":
         adapter = OpenStatesData()
         return adapter.adapt(data)
+    elif key_prefix == "us_state:governor":
+        adapter = GovernorAdapter()
+        return adapter.adapt(data)
     else:
         return data
     # TODO add for other countries
@@ -43,4 +46,14 @@ class OpenStatesData(object):
             mapped['number'] = None
         mapped['uid'] = data['leg_id']
 
+        return mapped
+
+
+class GovernorAdapter(object):
+    def adapt(self, data):
+        mapped = {}
+        mapped['name'] = data['name']
+        mapped['title'] = data['title']
+        mapped['number'] = data['phone']
+        mapped['uid'] = data['state']
         return mapped
