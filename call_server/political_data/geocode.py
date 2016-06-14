@@ -9,7 +9,12 @@ import os
 class Location(dict):
     @property
     def state(self):
-        return self.get('address_components', {}).get('state')
+        if 'state' in self:
+            return self.get('state')
+        elif 'address_components' in self.keys():
+            return self.get('address_components', {}).get('state')
+        else:
+            return None
 
     @property
     def location(self):
@@ -24,6 +29,19 @@ class Geocoder(object):
             # get keys from os.environ, because we may not have current_app context
             API_KEY = os.environ.get('GEOCODE_API_KEY')
         self.client = GeocodioClient(API_KEY)
+
+    def zipcode(self, zipcode, cache=None):
+        if cache:
+            districts = cache.get_district(zipcode)
+            if len(districts) == 1:
+                d = districts[0]
+                d['source'] = 'local district cache'
+                return Location(d)
+            else:
+                # TODO, how to handle districts that span states?
+                return self.geocode(zipcode)
+        else:
+            return self.geocode(zipcode)
 
     def geocode(self, address):
         results = self.client.geocode(address).get('results')
