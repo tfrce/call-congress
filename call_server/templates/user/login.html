@@ -7,4 +7,6 @@
 {% block body %}
 <h2>{{ _('Sign in') }}</h2>
 {{ render_form(url_for('user.login'), form)}}
+
+<a href="/user/reset_password">Forgot your password?</a>
 {% endblock %}
