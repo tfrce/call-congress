@@ -128,15 +128,23 @@
         if (person.title === 'Sen')  { person.title = 'Senator'; }
         if (person.title === 'Rep')  { person.title = 'Representative'; }
 
-        person.uid = 'us:bioguide:'+person.bioguide_id;
+        if (person.bioguide_id) {
+          person.uid = 'us:bioguide:'+person.bioguide_id;
+        } else if (person.leg_id) {
+          person.uid = 'us_state:openstates:'+person.leg_id;
+        } else if (person.title === 'Governor') {
+          person.uid = 'us_state:governor:'+person.state
+        }
+
+        // if person has multiple phones, use only the first office
+        if (person.phone === undefined && person.offices) {
+          if (person.offices) {
+            person.phone = person.offices[0].phone;
+          }
+        }
 
         // render display
         var li = renderTemplate("#search-results-item-tmpl", person);
-
-        // if person has multiple phones, show only the first office
-        if (person.phone === undefined && person.offices) {
-          if (person.offices) { li.find('span.phone').html(person.offices[0].phone); }
-        }
         dropdownMenu.append(li);
       });
       $('.input-group .search-results').append(dropdownMenu);

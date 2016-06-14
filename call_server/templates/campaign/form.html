@@ -171,7 +171,7 @@
                           "number":"<%= data.phone %>",
                           "uid": "<%= data.uid %>"
                         }'>
-            <span class="text"><%= data.title %> <%= data.first_name %> <%= data.last_name %> (<%= data.party %>-<%= data.state %>)</span>
+            <span class="text"><%= data.title %> <%= data.first_name %> <%= data.last_name %> (<% if (data.party) { data.party + '- ' } %><%= data.state.toUpperCase() %>)</span>
             <span class="phone"><%= data.phone %></span>
         </a>
     </li>
