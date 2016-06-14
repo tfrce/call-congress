@@ -48,18 +48,30 @@ def locate_targets(location, campaign):
             geocoded = GEOCODER.geocode(location)
         elif campaign.locate_by == LOCATION_LATLON:
             geocoded = GEOCODER.reverse(location)
-        if not geocoded:
-            return []
+        else:
+            geocoded = False
 
         if campaign.campaign_subtype == TARGET_EXECUTIVE:
-            return data.locate_governor(state=geocoded.state)
+            if campaign.campaign_state:
+                # default to specified campaign state specified
+                return data.locate_governor(state=campaign.campaign_state)
+            else:
+                # if no state specified, route via geocoding
+                if geocoded:
+                    return data.locate_governor(state=geocoded.state)
+                else:
+                    return []
 
         if campaign.campaign_subtype in (TARGET_CHAMBER_BOTH, TARGET_CHAMBER_UPPER, TARGET_CHAMBER_LOWER):
-            # state-level legislator data from sunlight
-            return data.locate_targets(latlon=geocoded.location,
-                chambers=campaign.campaign_subtype,
-                order=campaign.target_ordering,
-                state=campaign.campaign_state)
+            # need full location for state-level legislator lookup at Sunlight
+            if geocoded:
+                return data.locate_targets(latlon=geocoded.location,
+                    chambers=campaign.campaign_subtype,
+                    order=campaign.target_ordering,
+                    state=campaign.campaign_state)
+            else:
+                return []
+
         else:
             raise NotImplementedError('invalid campaign subtype: %s' % campaign.campaign_subtype)
     else:
