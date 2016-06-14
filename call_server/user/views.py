@@ -138,7 +138,7 @@ def change_password():
     if user is None:
         abort(403)
 
-    form = ChangePasswordForm(activation_key=user.activation_key)
+    form = ChangePasswordForm(email=user.email, activation_key=user.activation_key)
 
     if form.validate_on_submit():
         user.password = form.password.data
