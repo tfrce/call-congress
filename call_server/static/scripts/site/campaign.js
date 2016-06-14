@@ -219,7 +219,9 @@
       var isValid = validator(formGroup);
 
       // put message in last help-block
-      $('.help-block', formGroup).last().text((!isValid) ? message : '');
+      if (!isValid) {
+        $('.help-block', formGroup).last().text(message).addClass('has-error');
+      }
 
       // toggle error states
       formGroup.parents('fieldset').find('legend').toggleClass('has-error', !isValid);
