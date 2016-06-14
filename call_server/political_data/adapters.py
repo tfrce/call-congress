@@ -52,7 +52,7 @@ class OpenStatesData(object):
 class GovernorAdapter(object):
     def adapt(self, data):
         mapped = {}
-        mapped['name'] = data['name']
+        mapped['name'] = '{first_name} {last_name}'.format(**data)
         mapped['title'] = data['title']
         mapped['number'] = data['phone']
         mapped['uid'] = data['state']

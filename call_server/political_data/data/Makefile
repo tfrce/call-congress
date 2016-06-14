@@ -10,4 +10,4 @@ us_districts.csv:
 	curl -k "http://assets.sunlightfoundation.com/data/districts.csv" -o "us_districts.csv"
 
 us_states.csv:
-	curl -k "https://morph.io/spacedogXYZ/us_governors_contact/data.csv?key=YgVMV7rh4ZvcTriaeNXX&query=select+%2A+from+%27data%27" -o "us_states.csv"
+	curl -k "https://raw.githubusercontent.com/spacedogXYZ/us_governors_contact/master/data.csv" -o "us_states.csv"
