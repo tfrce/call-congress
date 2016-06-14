@@ -49,12 +49,14 @@ def runserver(external=None):
 def loadpoliticaldata():
     """Load political data into persistent cache"""
     try:
-        with app.app_context():
-            cache.clear()
-            political_data.load_data(cache)
-    except KeyError, e:
-        print "KeyError", e
-
+        import gevent.monkey
+        gevent.monkey.patch_thread()
+    except ImportError:
+        print "unable to apply gevent monkey.patch_thread"
+    with app.app_context():
+        cache.clear()
+        political_data.load_data(cache)
+    print "done"
 
 @manager.command
 def alembic():
