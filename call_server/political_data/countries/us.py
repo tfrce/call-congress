@@ -97,6 +97,11 @@ class USData(DataProvider):
     def get_bioguide(self, uid):
         return self.cache.get(self.KEY_BIOGUIDE.format(bioguide_id=uid)) or {}
 
+    def get_executive(self):
+        # return Whitehouse comment line
+        return [{'office': 'Whitehouse Comment Line',
+                'number': '12024561111'}]
+
     def get_uid(self, key):
         return self.cache.get(key) or {}
 
