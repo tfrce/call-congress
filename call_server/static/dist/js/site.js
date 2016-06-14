@@ -493,8 +493,15 @@ $(document).ready(function () {
 
     validateState: function(formGroup) {
       var campaignType = $('select#campaign_type').val();
+      var campaignSubtype = $('select#campaign_subtype').val();
       if (campaignType === "state") {
-        return !!$('select[name="campaign_state"] option:selected').val();
+        if (campaignSubtype === "exec") {
+          // governor campaigns can cross states
+          return true;
+        } else {
+          // other types require a state to be selected
+          return !!$('select[name="campaign_state"] option:selected').val();
+        }
       } else {
         return true;
       }
@@ -518,16 +525,6 @@ $(document).ready(function () {
       } else {
         return true;
       }
-    },
-
-    validateStateLocateByLatLon: function(formGroup) {
-      // if campaignType is state and segmentBy is location, locate_by must be latlon
-      var campaignType = $('select#campaign_type').val();
-      var segmentBy = $('input[name="segment_by"]:checked').val();
-      if (campaignType === "state" && segmentBy === "location") {
-        return $('input[name="locate_by"][value="latlon"]:checked').length;
-      }
-      return true;
     },
 
     validateTargetList: function(f) {
@@ -567,7 +564,6 @@ $(document).ready(function () {
       // campaign segmentation
       isValid = this.validateField($('.form-group.segment_by'), this.validateSegmentBy, 'Campaign type requires custom targeting') && isValid;
       isValid = this.validateField($('.form-group.locate_by'), this.validateLocateBy, 'Please pick a location attribute') && isValid;
-      isValid = this.validateField($('.form-group.locate_by'), this.validateStateLocateByLatLon, 'State campaigns must locate by lat / lon') && isValid;
       
       // campaign targets
       isValid = this.validateField($('.form-group#set-targets'), this.validateTargetList, 'Add a custom target') && isValid;
