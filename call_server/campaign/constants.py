@@ -56,11 +56,13 @@ SEGMENT_BY_CHOICES = (
 )
 
 LOCATION_POSTAL = 'postal'
-LOCATION_LATLNG = 'latlon'
+LOCATION_ADDRESS = 'address'
+LOCATION_LATLON = 'latlon'
 LOCATION_CHOICES = (
     ('', 'None'),
     (LOCATION_POSTAL, 'ZIP / Postal Code'),
-    (LOCATION_LATLNG, 'Lat / Lon')
+    (LOCATION_ADDRESS, 'Street Address'),
+    (LOCATION_LATLON, 'Lat / Lon')
 )
 
 ORDER_IN_ORDER = 'in-order'

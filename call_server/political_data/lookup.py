@@ -1,16 +1,20 @@
-from ..campaign.constants import (TYPE_CONGRESS, TYPE_STATE,
-    LOCATION_POSTAL, LOCATION_LATLNG,
+from ..campaign.constants import (TYPE_CONGRESS, TYPE_STATE, TYPE_EXECUTIVE,
+    TARGET_EXECUTIVE, TARGET_CHAMBER_BOTH, TARGET_CHAMBER_UPPER, TARGET_CHAMBER_LOWER,
+    LOCATION_POSTAL, LOCATION_ADDRESS, LOCATION_LATLON,
     ORDER_IN_ORDER, ORDER_SHUFFLE, ORDER_UPPER_FIRST, ORDER_LOWER_FIRST)
 
 from ..extensions import cache
 from countries.us import USData
 from countries.us_state import USStateData
+from geocode import Geocoder
 
 # initialize data for all relevant countries
 COUNTRY_DATA = {
     'US': USData(cache),
     'USState': USStateData(cache, api_cache='localmem')  # TODO, wrap sunlight cache for flask
 }
+
+GEOCODER = Geocoder()
 
 
 def locate_targets(location, campaign):
@@ -25,24 +29,38 @@ def locate_targets(location, campaign):
             return data.locate_targets(zipcode=location,
                 chambers=campaign.campaign_subtype,
                 order=campaign.target_ordering)
-        # elif campaign.locate_by == LOCATION_LATLNG:
-        #    TODO lookup target from latlng
+        # elif campaign.locate_by == LOCATION_LATLON:
+        #    TODO lookup target from latlon
         #    return data.locate_member_ids(latlon=location, order=campaign.target_ordering)
         else:
             raise NotImplementedError('campaign has unknown locate_by value: %s' % campaign.locate_by)
 
     # elif campaign.campaign_type == TYPE_EXECUTIVE
         # Whitehouse number?
+
     elif campaign.campaign_type == TYPE_STATE:
         data = COUNTRY_DATA['USState']
-        # state-level data from sunlight
-        if campaign.locate_by == LOCATION_LATLNG:
-            return data.locate_targets(latlon=location,
+
+        if campaign.locate_by == LOCATION_POSTAL:
+            geocoded = GEOCODER.geocode(location)
+        elif campaign.locate_by == LOCATION_ADDRESS:
+            geocoded = GEOCODER.geocode(location)
+        elif campaign.locate_by == LOCATION_LATLON:
+            geocoded = GEOCODER.reverse(location)
+        if not geocoded:
+            return []
+
+        if campaign.campaign_subtype == TARGET_EXECUTIVE:
+            return data.locate_governor(state=geocoded.state)
+
+        if campaign.campaign_subtype in (TARGET_CHAMBER_BOTH, TARGET_CHAMBER_UPPER, TARGET_CHAMBER_LOWER):
+            # state-level legislator data from sunlight
+            return data.locate_targets(latlon=geocoded.location,
                 chambers=campaign.campaign_subtype,
                 order=campaign.target_ordering,
                 state=campaign.campaign_state)
         else:
-            raise NotImplementedError('state campaigns, invalid locate_by value: %s' % campaign.locate_by)
+            raise NotImplementedError('invalid campaign subtype: %s' % campaign.campaign_subtype)
     else:
         # not yet implemented
         return []

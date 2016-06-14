@@ -44,6 +44,7 @@ class DefaultConfig(object):
 
     SECRET_KEY = os.environ.get('SECRET_KEY')
 
+    GEOCODE_API_KEY = os.environ.get('GEOCODE_API_KEY')
     SUNLIGHT_API_KEY = os.environ.get('SUNLIGHT_API_KEY')
     if not SUNLIGHT_API_KEY:
         SUNLIGHT_API_KEY = os.environ.get('SUNLIGHT_KEY')

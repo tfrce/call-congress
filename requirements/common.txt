@@ -29,6 +29,7 @@ intervals==0.3.1
 itsdangerous==0.23
 mimerender==0.5.5
 phonenumbers==7.0.4
+pygeocodio==0.5.0
 pystache==0.5.3
 python-dateutil==2.2
 python-mimeparse==0.1.4
