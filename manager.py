@@ -48,9 +48,12 @@ def runserver(external=None):
 @manager.command
 def loadpoliticaldata():
     """Load political data into persistent cache"""
-    with app.app_context():
-        cache.clear()
-        political_data.load_data(cache)
+    try:
+        with app.app_context():
+            cache.clear()
+            political_data.load_data(cache)
+    except KeyError, e:
+        print "KeyError", e
 
 
 @manager.command
