@@ -7,8 +7,6 @@ try:
 except ImportError:
     print "unable to apply gevent monkey.patch_all"
 
-from call_server import sslwrap_patch
-
 import os
 
 from werkzeug.contrib.fixers import ProxyFix
