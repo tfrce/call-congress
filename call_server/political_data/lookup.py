@@ -43,7 +43,7 @@ def locate_targets(location, campaign):
         data = COUNTRY_DATA['USState']
 
         if campaign.locate_by == LOCATION_POSTAL:
-            geocoded = GEOCODER.zipcode(location, COUNTRY_DATA['US'])
+            geocoded = GEOCODER.zipcode(location)
         elif campaign.locate_by == LOCATION_ADDRESS:
             geocoded = GEOCODER.geocode(location)
         elif campaign.locate_by == LOCATION_LATLON:
