@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{%block title%}Campaign Feed{%endblock%}
+
+{%block head_scripts%}
+  <script src="static/js/jquery.timeago.js"></script>
+  <script src="static/js/live-calls.js"></script>
+{%endblock%}
+
+{%block body%}
+  <div class="content-container">
+    <div>
+      <h1 id="campaign">Recent Calls</h1>
+      <script type="text/template" id="header">
+      Recent Calls for <%= campaign %>
+      </script>
+    </div>
+    <div class="box">
+      <ul id="calls">
+      </ul>
+    </div>
+
+      <script type="text/template" id="recent-calls-template">
+        <% _.forEach(calls, function(call) { %>
+          <li><%= call.number %> called <%= call.member.title %> <%= call.member.name %> 
+          <abbr class="timeago" title="<%= call.timestamp %>"></abbr></li>
+        <% }); %>
+      </script>
+  </div>
+{%endblock%}

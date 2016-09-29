@@ -1,0 +1,85 @@
+{% from "macros/_form.html" import render_form %}
+
+{% set page_title = _("System") %}
+
+{% extends "layouts/base_admin.html" %}
+
+{% block body %}
+<h1>System Settings</h1>
+
+<div class="container" id="system">
+    <fieldset class="border">
+    <legend>Twilio Account</legend>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="control-label">Account SID:</label>
+            <input type="text" class="form-control" value="{{twilio_account}}" readonly />
+        </div>
+        <div class="col-sm-6">
+            <label class="control-label">&nbsp;</label>
+            <div class="form-group"><a class="btn btn-success" href="https://www.twilio.com/user/account/voice-sms-mms" target="_blank">Login</a></div>
+        </div>
+    </div>
+
+    <br>
+    <label>{{ _('Purchased Numbers') }}</label>
+    <table class='table table-bordered table-hover'>
+        <thead>
+            <tr>
+                <th>{{ _('Number') }}</th>
+                <th>{{ _('Campaign') }}</th>
+                <th>{{ _('Dial In') }}</th>
+            </tr>
+        </thead>
+        {% for p in twilio_numbers %}
+        <tr>
+            <td>{{ p.number }} </td>
+            <td>{% for c in p.campaigns %}{{c.name}}{%if not loop.last%}, {%endif%}{%endfor%}</td>
+            <td>{% for c in p.campaigns%}{{c.allow_call_in }}{%if not loop.last%}, {%endif%}{%endfor%}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <form class="form-inline pull-right" method="POST" action="{{url_for('admin.twilio_resync')}}">
+        <input id="csrf_token" name="csrf_token" type="hidden" value="{{csrf_token()}}">
+        <div class="form-group"><button type="submit" class="btn btn-warning">Refresh</button>
+        <a class="btn btn-success" href="https://www.twilio.com/user/account/phone-numbers/search" target="_blank">Buy Another</a></div>
+    </form>
+    </fieldset>
+
+
+    <fieldset class="border">
+    <legend>Default Messages</legend>
+    <table class='table table-bordered table-hover'>
+        <thead>
+            <tr>
+                <th>{{ _('Type') }}</th>
+                <th>{{ _('Message') }}</th>
+            </tr>
+        {% for msg_key,msg_text in message_defaults.items() %}
+            <tr>
+                <td>{{msg_key}}</td>
+                <td>{{msg_text}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <span class="help-block">Edit these defaults in <samp>APPLICATION_ROOT/instance/campaign_msg_defaults.yaml</samp></span>
+    </fieldset>
+
+    {% if admin_api_key %}
+    <fieldset class="border">
+    <legend>Integration API</legend>
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="control-label">API Key:</label>
+            <div class="input-group">
+                <input type="password" class="form-control" value="{{admin_api_key}}" readonly />
+                <span class="input-group-btn">
+                    <button class="btn btn-default reveal" type="button"><i class="glyphicon glyphicon-eye-open"></i></button>
+              </span>
+            </div>
+        </div>
+    </div>
+    </fieldset>
+    {% endif %}
+</div>
+{% endblock %}

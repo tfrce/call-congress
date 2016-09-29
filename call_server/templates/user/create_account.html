@@ -1,0 +1,10 @@
+{% from "macros/_form.html" import render_form %}
+
+{% set page_title = _('Create Account') %}
+
+{% extends "layouts/base_admin.html" %}
+
+{% block body %}
+<h2>{{ _('Create Account') }}</h2>
+{{ render_form(next, form) }}
+{% endblock %}

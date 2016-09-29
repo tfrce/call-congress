@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{%block title%}Campaign Stats{%endblock%}
+
+{%block head_scripts%}
+{%endblock%}
+
+{%block body%}
+  <div class="content-container">
+    <div>
+      <h1 id="campaign">Campaign Stats: {{stats.campaign}}</h1>
+    </div>
+    <div class="box">
+      <ul id="stats">
+        <li>Total Calls Completed: {{stats.calls.total}}
+      </ul>
+      <ul id="reps">
+        {% for (repId,count) in stats.calls.reps.items() %}
+          {% with member = reps[repId] %}
+            <li>{{member['title'].decode('utf-8')}} {{member['name'].decode('utf-8')}}: {{count}}</li>
+          {% endwith %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{%endblock%}

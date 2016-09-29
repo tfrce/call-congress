@@ -1,0 +1,3 @@
+-r production.txt
+newrelic==2.12.0.10
+raven==4.0.4

@@ -1,0 +1,27 @@
+<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span>
+            </button>
+          <h4 class="modal-title"><%= modal.name %> Recording Versions</h4>
+        </div>
+        <div class="modal-body">
+            <table class="table table-bordered versions">
+                <thead>
+                    <tr>
+                        <th>Campaign</th>
+                        <th>Version</th>
+                        <th>Description</th>
+                        <th>Audio</th>
+                        <th>Select</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <label><input class="filter" type="checkbox" name="show_all_campaigns"/> Show All Campaigns</label>
+            <label><input class="filter" type="checkbox" name="show_hidden"/> Show Hidden</label>
+        </div>
+    </div>
+</div>

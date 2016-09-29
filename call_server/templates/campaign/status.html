@@ -1,0 +1,7 @@
+  {% from "macros/_form.html" import render_form %}
+  {% set page_title = "Change Status" %}
+  {% extends "layouts/base_admin.html" %}
+
+  {% block body %}
+  {{ render_form(url_for('campaign.status', campaign_id=campaign.id), form, legend=("Change Status - "+campaign.name)) }}
+  {% endblock %}

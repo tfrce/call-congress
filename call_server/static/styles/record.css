@@ -1,0 +1,106 @@
+button .text { display: block; }
+button .text.inline { display: inline; }
+
+/* allow nav-tabs to be centered instead of floated left */
+.nav-tabs.center > li {
+    float:none;
+    display:inline-block;
+    *display:inline; /* ie7 fix */
+     zoom:1; /* hasLayout ie7 trigger */
+}
+
+.nav-tabs.center {
+    text-align:center;
+}
+
+/* tab-content vertical spacing */
+.tab-content {
+    margin-bottom: 20px;
+}
+
+/* tab-pane match border from the nav */
+.tab-content .tab-pane {
+    padding: 20px 0;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+.playback {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.meter { 
+    display: inline-block;
+    margin-left: 30px;
+}
+.meter canvas {
+    display: inline-block;
+    vertical-align: middle;
+    width: 100%;
+    padding: 0;
+    border: 1px solid #ddd;
+    background: #eee;
+}
+
+.microphone.modal audio {
+    vertical-align: middle;
+}
+
+@-webkit-keyframes recording {
+    0% {color: black;}
+    100% {color: red;}
+}
+
+.status.active {
+	-webkit-animation: recording 0.75s ease-in-out alternate infinite;
+}
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+@keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+.glyphicon-spin {
+    -webkit-animation: spin 1000ms infinite linear;
+    animation: spin 1000ms infinite linear;
+}
+
+/* make btn-file look all bootstrappy
+* from http://www.abeautifulsite.net/whipping-file-inputs-into-shape-with-bootstrap-3/
+*/
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}

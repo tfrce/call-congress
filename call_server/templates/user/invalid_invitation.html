@@ -1,0 +1,10 @@
+{% from "macros/_form.html" import render_form %}
+
+{% set page_title = _('Invalid Invitation') %}
+
+{% extends "layouts/base.html" %}
+
+{% block body %}
+<h2>Error: Invalid Invitation Key</h2>
+<p>Please check your email, or contact <a href="mailto:{{email}}?Subject={{sitename}} Account Invitation">your administrator</a>.</p>
+{% endblock %}

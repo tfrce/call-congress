@@ -1,0 +1,11 @@
+{% set page_title = _("") %}
+
+{% extends "layouts/base.html" %}
+
+
+{% block body %}
+<div class="jumbotron">
+    <h2 class="align-center">Connecting people to power through their phones</h2>
+    <p>A project of <a href="https://taskforce.is">Taskforce.is</a>{% if INSTALLED_ORG %}, {%else%} and {%endif%} the <a href="https://www.eff.org">Electronic Frontier Foundation</a>{% if INSTALLED_ORG %}, and {{ INSTALLED_ORG }}{%endif%}.</p>
+</div>
+{% endblock %}
