@@ -1,12 +1,17 @@
 FROM ubuntu
-RUN apt-get update
-RUN apt-get -y install python-pip python-dev npm git
+RUN apt-get update && apt-get -y install python-pip python-dev npm git uwsgi libpq-dev
 
 WORKDIR /opt
 
+# We need to remove the os version of setuptools
+# It's incompatible with a dependency in gevent-psycopg2
+RUN easy_install -m setuptools
+RUN rm -r /usr/lib/python2.7/dist-packages/setuptools*
+RUN pip install setuptools
+
 ADD requirements.txt ./
 ADD requirements ./requirements
-RUN pip install -r requirements/production.txt
+RUN pip install -r requirements/production.txt -r requirements/development.txt
 
 ADD bower.json ./
 RUN npm install -g bower
