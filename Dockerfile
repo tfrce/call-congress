@@ -26,5 +26,4 @@ ADD call_server ./call_server/
 ADD alembic ./alembic/
 ADD instance ./instance/
 
-CMD ["bash", "-l", "-c", "uwsgi uwsgi.ini"]
 ENTRYPOINT ["/opt/entrypoint.sh"]
