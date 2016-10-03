@@ -35,7 +35,7 @@ class USStateData(DataProvider):
                 direct_key = self.KEY_GOVERNOR.format(**{'state': l['state']})
                 d = {
                     'title': 'Governor',
-                    'name': l.get('name'),
+                    'name': ' '.join([l.get('first_name'), l.get('last_name')]),
                     'phone': l.get('phone'),
                     'state': l.get('state')
                 }
