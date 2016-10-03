@@ -14,6 +14,7 @@ ADD requirements ./requirements
 RUN pip install -r requirements/production.txt -r requirements/development.txt
 
 ADD bower.json ./
+ADD .bowerrc ./
 RUN npm install -g bower
 RUN ln -s /usr/bin/nodejs /usr/bin/node
 RUN bower --allow-root --config.interactive=false install
