@@ -1,6 +1,7 @@
 calltool:
   build: .    
   environment:
+    FLASK_ENV:
     SUNLIGHT_API_KEY:
     TWILIO_DEV_ACCOUNT_SID:
     TWILIO_ACCOUNT_SID:

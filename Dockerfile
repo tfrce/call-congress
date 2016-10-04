@@ -1,5 +1,11 @@
 FROM ubuntu
-RUN apt-get update && apt-get -y install python-pip python-dev npm git uwsgi libpq-dev
+RUN apt-get update && apt-get -y install python-pip python-dev npm git uwsgi libpq-dev curl unzip
+
+RUN  mkdir /ngrok && \
+     cd /ngrok && \
+     curl -sLo ngrok.zip https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip && \
+     unzip ngrok.zip ngrok -d /bin && \
+     rm -r /ngrok
 
 WORKDIR /opt
 
