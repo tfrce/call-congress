@@ -1,0 +1,23 @@
+{% strip %}
+
+{% if campaign.embed.type == 'iframe' %}
+	{# display widget in iframe #}
+	<style>iframe{width:100%}</style>
+	<iframe src="{{ url_for('api.campaign_embed_iframe', campaign_id=campaign.id, _external=True) }}" frameBorder="0" scrolling="no" id="CallPowerFrame"></iframe>
+	<script src="{{ url_for('static', filename='embed/iframeResizer.min.js', _external=True) }}"></script>
+	<script type="text/javascript">iFrameResize({checkOrigin: false}, '#CallPowerFrame');</script>
+{% elif campaign.embed.type == 'custom' %}
+	{# custom embed config object #}
+	<script type="text/javascript">
+	    var CallPowerOptions = {};
+	        CallPowerOptions.form = jQuery("{{campaign.embed.form_sel|default('#call_form', True)}}");
+	        CallPowerOptions.phoneField = jQuery("{{campaign.embed.phone_sel|default('#phone_id', True)}}");
+	        CallPowerOptions.locationField = jQuery("{{campaign.embed.location_sel|default('#location_id', True)}}");
+	        CallPowerOptions.scriptDisplay = "{{campaign.embed.script_display|default('overlay', True)}}";
+	        {% if campaign.embed.custom_css%}CallPowerOptions.customCSS = "{{campaign.embed.custom_css}}";{%endif%}
+	        {% if campaign.embed.custom_js%}CallPowerOptions.customJS = "{{campaign.embed.custom_js|safe}}";{%endif%}
+	</script>
+	<script type="text/javascript" src="{{url_for('api.campaign_embed_js', campaign_id=campaign.id, _external=True)}}"></script>
+{% endif %}
+
+{% endstrip %}

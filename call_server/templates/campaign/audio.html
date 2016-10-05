@@ -1,0 +1,131 @@
+{% from "macros/_form.html" import render_button %}
+{% from "macros/_audio.html" import render_audio with context %}
+
+{% set label_width = 'col-sm-2' %}
+{% set control_width = 'col-sm-6 col-xs-12' %}
+{% macro render_audio_default(field, offset='', control_class=control_width, group_class='', field_class='') %}
+    {%if offset%}{% set control_class = control_width+' '+offset %}{%endif%}
+    {{ render_audio(field, class_={'label': label_width,
+                                   'control': control_class,
+                                   'group': group_class,
+                                   'field': field_class}
+                    ) }}
+{% endmacro %}
+
+{% extends "layouts/base_admin.html" %}
+
+{% block body %}
+<h3>Campaign Audio</h3>
+
+<form class="form-horizontal" id="audio" method="POST" action="" >
+    {{ form.hidden_tag() }}
+    <input type="hidden" value="{{campaign.id}}" name="campaign_id" />
+    <fieldset class="border">
+        <legend>Record</legend>
+
+        <div class="form-group">
+            <label class="col-sm-2 text-right">Campaign Name</label>
+            <div class="col-sm-2" id="campaign_name">{{campaign.name}}</div>
+
+            <label class="col-sm-2">Campaign ID</label>
+            <div class="col-sm-2" id="campaign_name">{{campaign.id}}</div>
+        </div>
+
+        {{ render_audio_default(form.msg_intro) }}
+        {{ render_audio_default(form.msg_intro_confirm) }}
+        {{ render_audio_default(form.msg_location) }}
+
+        <div class="input-group col-sm-2">
+            <button type="button" class="btn btn-link btn-sm" data-toggle="collapse" data-target="#location">additional</button>
+        </div>
+        <div class="panel panel-info collapse {% if not campaign.allow_call_in %}out{%endif%}" id="location">
+            {# hide these fields by default #}
+            <div class="panel-heading">
+                <h3 class="panel-title">Additional Location</h3>
+            </div>
+
+            <div class="panel-body">
+                {{ render_audio_default(form.msg_intro_location) }}
+                {{ render_audio_default(form.msg_unparsed_location) }}
+                {{ render_audio_default(form.msg_invalid_location) }}
+                {# {{ render_audio_default(form.msg_choose_target) }} #}
+            </div>
+            </div>
+        
+        {{ render_audio_default(form.msg_call_block_intro) }}
+        {{ render_audio_default(form.msg_target_intro) }}
+        {{ render_audio_default(form.msg_target_busy) }}
+        {{ render_audio_default(form.msg_between_calls) }}
+        {{ render_audio_default(form.msg_final_thanks) }}
+
+    </fieldset>
+
+    <div class="form-group container">
+        <div class="form-actions">
+            
+            <div class="pull-left">
+                <a href="{{url_for('campaign.form', campaign_id=campaign.id)}}" class="btn btn-primary btn-warning">
+                <span class="glyphicon glyphicon-arrow-left"></span> Back
+                </a>
+            </div>
+
+            <div class="pull-right">
+                {{render_button(form.submit, {'field':'btn-success', 'icon':'arrow-right'}) }}
+            </div>
+        </div>
+    </div>
+
+</form>
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/template" id="microphone-modal-tmpl">
+{% include "campaign/microphone.html" %}
+</script>
+
+<script type="text/template" id="meter-canvas-tmpl">
+    <canvas id="meter" class="col-xs-6" height="<%= HEIGHT %>"></canvas>
+</script>
+
+<script type="text/template" id="recording-modal-tmpl">
+{% include "campaign/versions.html" %}
+</script>
+
+<script type="text/template" id="recording-item-tmpl">
+    <td><%= data.campaign_names %> </td>
+    <td><%= data.version %></td>
+    <td><%= data.description %></td>
+    <td>
+        <% if (data.text_to_speech) { %>
+        <code><%= data.text_to_speech %></code>
+        <% } else { %>
+        <audio controls>
+            <source type="audio/mpeg" src="<%= data.file_url %>" preload="none"></source>
+        </audio>
+        <% } %>
+    </td>
+    <td><% if (_.contains(data.selected_campaign_ids, data.campaign_id)) { %>
+            <button type="button" class="btn btn-default disabled"><span class="glyphicon glyphicon-ok-sign"></span></button>
+        <% } else { %>
+            <button type="button" class="btn btn-default select"><span class="glyphicon glyphicon-ok-circle"></span></button>
+        <% } %>
+        <% if (data.hidden) { %>
+            <button type="button" class="btn btn-default undelete"><span class="glyphicon glyphicon-eye-open"></span></button>
+        <% } else { %>
+            <button type="button" class="btn btn-default delete"><span class="glyphicon glyphicon-remove-circle"></span></button>
+        <% } %>
+    </td>
+</script>
+
+<script type="text/javascript" src="//static.twilio.com/libs/twiliojs/1.1/twilio.min.js"></script>
+
+{% assets "audio_js" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+
+{# define encoding assets in template instead of creating a bunch of bundles #}
+<!-- define worker assets, but do not insert script tags -->
+{% assets output="dist/js/lib/lame.all.js", "bower_components/audioRecord/src/lame.all.js" %}{%endassets%}
+{% assets output="dist/js/lib/recorderWorker.js", "bower_components/audioRecord/src/recorderWorker.js" %}{%endassets%}
+{% endblock %}

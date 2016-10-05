@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+
+  <title>{%block title%}{{SITENAME|default('Call Power')}} | {{ page_title }}{%endblock%}</title>
+  <!-- Chrome Frame for browsers that support it -->
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% block extra_meta %}{% endblock %}
+
+  <link rel="shortcut icon" type="image/ico" href="static/images/favicon.png">
+
+  {% assets "vendor_css" %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}">
+  {% endassets %}
+
+  {% assets "site_css" %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}">
+  {% endassets %}
+
+  {%block styles%}{%endblock%}
+ </head>
+
+ <body id="callpower">
+  <div id="global_message_container"></div>
+  {%block navbar%}
+  <div class="container-fluid">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">{{SITENAME|default('Call Power')}}</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            {% if current_user.is_authenticated() %}
+            <li><a href="{{ url_for('admin.dashboard') }}">{{ _('Admin') }}</a></li>
+            {% else %}
+            <li><a href="{{ url_for('user.login') }}">{{ _('Login') }}</a></li>
+            {% endif %}
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+    </nav>
+  {%endblock%}
+
+    {% block flash_message %}
+      <div class="container">
+          <div id='flash_message_container'>
+      {% with messages = get_flashed_messages(with_categories=True) %}
+            {% for category, msg in messages %}
+              <div class="alert alert-{%if category == 'message'%}info{%else%}{{ category }}{%endif%}">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                  {{ msg }}
+              </div>
+            {% endfor %}
+      {% endwith %}
+          </div>
+      </div>
+    {% endblock %}
+
+    <div class="container">
+    {%block body%}{%endblock%}
+    </div>
+ </body>
+  {%block before_scripts %}{% endblock %}
+
+  {% assets "vendor_js" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+
+  {% assets "site_js" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+
+  {%block scripts %}{% endblock %}
+</html>

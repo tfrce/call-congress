@@ -1,0 +1,112 @@
+{% from "macros/_form.html" import render_form %}
+
+{% set page_title = _("Statistics") %}
+
+{% extends "layouts/base_admin.html" %}
+
+{% block body %}
+<div class="container" id="statistics">
+<fieldset class="border">
+    <legend>Statistics</legend>
+
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="form-group">
+                <label>Campaign</label>
+    			<select name="campaigns">
+                    <option value="">select one</option>
+    			{% for c in campaigns%}
+    				<option value="{{c.id}}">{{c.name}}</option>
+    			{% endfor %}
+    			</select>
+            </div>
+
+            <div class="form-group">
+                <label>Group by</label>
+                <div class="input-group inline">
+                    <select name="timespan">
+                    {% for t in timespans %}
+                        <option value="{{t}}" {% if t == 'day' %}selected{%endif%} data-format="{{t[1]}}">{{t}}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                <div class="input-group inline input-daterange">
+                    <span class="add-on">from</span>
+        		    <input type="text" name="start" placeholder="start" value="{{default_start}}"/>
+        		    <span class="add-on">to</span>
+        		    <input type="text" name="end" placeholder="end" value="{{default_end}}"/>
+        		</div>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <table class="table-condensed" id="campaign_data"></table>
+        </div>
+    </div>
+
+	<div id="calls_for_campaign" style="height: 250px;">
+        <div class="alert alert-info"> Please select a campaign </div>   
+    </div>
+
+    <div class="row hide-initial" id="target_counts">
+        <div class="col-sm-12">
+            <label>Call Counts</label>
+            <table class="table table-condensed table-striped" id="target_data"></table>
+        </div>
+    </div>
+
+</fieldset>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {% assets "graph_js" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+
+  <script type="text/template" id="campaign-data-tmpl">
+    <tr>
+        <td class="col-sm-6"><input id="calls_completed" class="col-sm-12" value="<%= data.calls_completed %>" readonly/></td>
+        <td class="col-sm-6"><label class="inline" for="calls_completed">Calls Completed</label></td>
+    </tr>
+    <tr>
+        <td class="col-sm-6"><input id="conversion_rate" class="col-sm-12" value="<%= data.conversion_rate %>" readonly/></td>
+        <td class="col-sm-6"><label class="inline" for="conversion_rate">Conversion Rate</label></td>
+    </tr>
+    <tr>
+        <td class="col-sm-6"><input id="calls_per_session" class="col-sm-12" value="<%= data.calls_per_session %>" readonly/></td>
+        <td class="col-sm-6"><label class="inline" for="calls_per_session">Session Median</label></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td class="col-sm-12">
+            <a href="/admin/campaign/<%= data.id %>/calls">call log</a>
+        </td>
+    </tr>
+  </script>
+
+  <script type="text/template" id="target-data-tmpl">
+    <thead><tr>
+        <th>Target</th>
+        <th>Completed</th>
+        <th>Busy</th>
+        <th>Failed</th>
+        <th>No Answer</th>
+        <th>Canceled</th>
+        <th>Unknown</th>
+    </tr></thead>
+    <tbody>
+    <% _.each(targets, function(data, name) { %> 
+    <tr>
+        <td><%= name %></td>
+        <td><%= data.completed %></td>
+        <td><%= data.busy %></td>
+        <td><%= data.failed %></td>
+        <td><%= data['no-answer'] %></td>
+        <td><%= data.canceled %></td>
+        <td><%= data.unknown %></td>
+    </tr>
+    <% }); %>
+    </tbody>
+  </script>
+{% endblock %}

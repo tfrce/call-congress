@@ -1,120 +1,65 @@
-Call Congress
+Call Power
 ==============
 
-A simple flask server that connects calls between citizens and their congress person using the Twilio API.
+Connecting people to power through their phones.
 
-The server handles two cases:
+The admin interface lets activists:
 
-* A phone call made to the campaign number
-* A web-initiated call to connect a user's phone number to congress
-    * can specify congress person(s) in the api call
-    * can have the user punch in their zip code and look up their congressional members
+* Create and edit campaigns
+* Adjust call targets and phone numbers
+* Record audio prompts and select versions
+* Easily embed campaign forms on their website
+* View campaign statistics and system analytics
 
-### Incoming phone calls
-Each new campaign's Twilio phone number needs to be [configured](http://twilio.com/user/account/phone-numbers/incoming) to point to:
+The server lets callers:
 
-    /incoming_call?campaignId=abc-1234
-
-The user will be prompted to punch in their zip code, the server will locate their members of congress using the [Sunlight Labs locate data](http://sunlightlabs.github.io/congress/index.html#bulk-data/zip-codes-to-congressional-districts), and dial them.
-
-### Web-initiated connection calls
-These calls are made from a web form where the user enters their phone number to be connected to Congress (will be prompted for zip code):
-
-    /create?campaignId=abc-123&userPhone=1234567890
-
-or a specific member of congress:
-
-    /create?campaignId=abc-123&userPhone=1234567890&repIds=P000197
-
-or to member(s) based on zip code:
-
-    /create?campaignId=abc-123&userPhone=1234567890&zipcode=98102
-
-Required Params:
-
-* **userPhone**
-* **campaignId**
-
-Optional Params: *(either or)*
-
-* **zipcode**
-* **repIds**: identifiers (can be more than one) from the Sunlight API's [**bioguide_id**](http://sunlightlabs.github.io/congress/legislators.html#fields/identifiers) field
+* Dial in directly to the campaign number
+* Fill out a web form and get a call back on their phone
+    * specifying a target directly
+    * or entering their zip code to look up their location
+* Reference a script during the call
 
 
 Campaign Configuration
 ----------------------
-Currently stored in ``/data/campaigns.yaml``, each campaign has the following optional fields. Defaults are given by the ``default`` campaign.
 
-* **id**
-* **number** (Twilio phone number)
-* **target_house** include house members in lookups by location
-* **target_senate** include senators in lookups by location
-* **target_house_first** allows the campaign to target house members before senate members (default: target senate first)
-* **repIds** (optional) list of rep. IDs to target
+1) Create a campaign with one of several types, to determine how callers are matched to targets.
 
-Messages: Can be urls for recorded message to play or text for the robot to read. Text can be rendered as a mustache template. The following messages are the defaults and will be inherited by new campaigns unless overwritten.
+* _Executive_ connects callers to the Whitehouse Switchboard, or to a specific office if known
+* _Congress_ connects callers to their Senators, Representative, or both. Uses data from the Sunlight Foundation.
+* _State_ connects callers to their Governor or State Legislators. Uses the OpenStates API.
+* _Local_ connects callers to a local official. Campaigners must enter these numbers in advance.
+* _Custom_ can connect callers to corporate offices, local officals, or any other phone number entered in advance.
 
-* msg_intro: Hi. Welcome to call congress.
-* msg_ask_zip: Please enter your zip code so we can lookup your Congress person.
-* msg_invalid_zip: "Sorry, that zip code didn't work. Please try again."
-* msg_call_block_intro: "We'll now connect you to {{n_reps}} representatives. Press # for next rep."
-* msg_rep_intro: "We're now connecting you to {{name}}"
-* msg_between_thanks: You're doing great - here's the next call.
-* msg_final_thanks: Thank you!
+2) Choose targets by segmenting on user location (determined by zipcode or lat/lon), and order by legislative chamber or random shuffle. For local and custom campaigns, campaigners can set a specific order by drag-and-drop.
+
+3) Record audio prompts in the browser (Firefox/Chrome only), or edit with another program and upload as MP3 files. For dynamic prompts, you can also text-to-speech templates. Reuse versions between campaigns, or adjust your prompts as the campaign evolves.
+
+4) Review the campaign setup, place a test call to yourself, and get the script to embed in your action platform. 
 
 
-Account Keys
+Action Integration
+------------------
+For most uses, you can just place the `<script>` tag provided in the launch page into your action platform. This will add a post-submit callback to your action form to connect the caller, and optionally display the script in a lightbox.
+
+For more complex integrations, Call Power provides [javascript embeds](INTEGRATION_JS.md) and a full [json API](INTEGRATION_API.md).
+
+Installation Instructions
+-------------------
+This application should be easy to host on Heroku, with Docker, or directly on any WSGI-compatible server. Requires Python, flask, a SQL database (we recommend Postgres, but Mysql should work), Redis or Memcache, and an SMTP server.
+
+Read detailed instrustions at [INSTALLATION.md](INSTALLATION.md)
+
+
+Political Data
+--------------
+
+Political data is downloaded from Sunlight as CSV files stored in this repository. These are read on startup and saved in a memory cache for fast local lookup.
+
+To update these files with new data after elections, run `cd call_server/political_data/data && make clean && make`, and `python manager.py load_political_data`
+
+
+Code License
 ------------
 
-The app uses environment variables to store account keys. For development you will need to set:
-
-* SUNLIGHTLABS_KEY
-* TWILIO_DEV_ACCOUNT_SID
-* TWILIO_DEV_AUTH_TOKEN
-* TW_NUMBER
-
-and for production:
-
-* SUNLIGHTLABS_KEY
-* TWILIO_ACCOUNT_SID
-* TWILIO_AUTH_TOKEN
-* APPLICATION_ROOT (url for application server)
-* TASKFORCE_KEY (used for querying statistics)
-
-Development mode
--------------------
-To install locally and run in debug mode use:
-
-    # create ENV variables
-    virtualenv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
-
-    python app.py
-    # for testing twilio, need internet-visible urls to do call handling
-    ngrok -subdomain="1cf55a5a" 5000
-
-When the dev server is running, the demo front-end will be accessible at [http://localhost:5000/demo](http://localhost:5000/demo).
-
-Unit tests can also be run, using:
-
-    python test_server.py
-
-Production server
-------------------
-To run in production:
-
-    # create ENV variables
-    # open correct port
-    iptables -A INPUT -p tcp --dport 80 -j ACCEPT
-    # initialize the database
-    python models.py
-    # run server - will charge real $ and connect real calls
-    foreman start
-
-Updating for changes in congress
---------------------------------
-Just download the latest data from Sunlight Congress API using:
-
-    cd data && make -B
-    git commit data/districts.csv data/legislators.csv
+See the [license](LICENSE) file for licensing information under the GNU AGPL. This license is applicable to the entire project, sans any 3rd party libraries that may be included.

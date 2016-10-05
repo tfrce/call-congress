@@ -1,0 +1,29 @@
+.hide-initial {
+    display: none;
+    /* because bootstrap's default .hide and .hidden use !important
+    * which we can't easily override later with js */
+}
+
+.align-center {
+    text-align: center;
+}
+
+.voffset-2 { margin-top: 2px; }
+.voffset-5 { margin-top: 5px; }
+.voffset-10 { margin-top: 10px; }
+.voffset-15 { margin-top: 15px; }
+.voffset-30 { margin-top: 30px; }
+.voffset-40 { margin-top: 40px; }
+.voffset-60 { margin-top: 60px; }
+.voffset-80 { margin-top: 80px; }
+.voffset-100 { margin-top: 100px; }
+.voffset-150 { margin-top: 150px; }
+
+.limit-height-50 { max-height: 50px; overflow:auto; }
+
+#global_message_container {
+    display: none;
+    position: absolute;
+    z-index: 9000;
+    width: 100%;
+}

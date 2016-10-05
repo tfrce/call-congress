@@ -1,0 +1,35 @@
+{
+  "name": "Call Power",
+  "version": "0.0.0",
+  "homepage": "https://github.com/EFForg/call-congress",
+  "description": "Connecting people to power through their phones",
+  "authors": [
+    "Josh Levinger <josh@spacedog.xyz>",
+    "Sina Khanifar <sina.khanifar@gmail.com>",
+    "Beau Gunderson <beau@beaugunderson.com>",
+    "Adam Greenhall <hello@adamgreenhall.com>",
+    "Thomas Davis <thomasalwyndavis@gmail.com>"
+  ],
+  "main": "call_server/app.py",
+  "license": "AGPL",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "call_server/bower_components"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "backbone": "~1.1.2",
+    "html.sortable": "0.2.8",
+    "volume-meter": "https://github.com/cwilso/volume-meter.git",
+    "audioRecord": "https://github.com/sb2702/audioRecord.js.git",
+    "backbone-filtered-collection": "~0.4.0",
+    "highcharts": "~4.1.7",
+    "chartkick": "~1.4.0",
+    "bootstrap-datepicker": "~1.4.0"
+  }
+}

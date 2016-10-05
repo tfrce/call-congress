@@ -1,0 +1,37 @@
+{% set page_title = "Manage Campaigns" %}
+{% extends "layouts/base_admin.html" %}
+
+{% block body %}
+<div class="container">
+    <h2 class="pull-left">{{ _('Manage Campaigns') }}</h2>
+    <div class="pull-right">
+        <a class="btn btn-success" href="{{ url_for('campaign.form') }}"><strong>{{ _('Add') }} +</strong></a>
+    </div>
+    <table class="table" id="campaigns-list">
+        <thead>
+            <tr>
+                <th class="col-sm-2">Title</th>
+                <th class="col-sm-2">Type</th>
+                <th class="col-sm-4">Targets</th>
+                <th class="col-sm-1">Calls</th>
+                <th class="col-sm-1">Status</th>
+                <th class="col-sm-2"></th>
+            </tr>
+        </thead>
+        {% for c in campaigns %}
+        <tr>
+            <td>{{c.name}}</td>
+            <td>{{c.campaign_type_display()}}</td>
+            <td><div class="limit-height-50">{{c.targets_display()|safe}}</div></td>
+            <td>{{calls[c.id] }}</td>
+            <td><span class="glyphicon {% if c.status == 'live' %}glyphicon-play text-success{%elif c.status=='paused'%}glyphicon-pause text-warning{%else%}glyphicon-stop text-danger{%endif%}"></td>
+            <td><a href="{{url_for('campaign.form', campaign_id=c.id)}}">edit</a> /
+                <a href="{{url_for('campaign.copy', campaign_id=c.id)}}">copy</a> / 
+                <a href="{{url_for('campaign.launch', campaign_id=c.id)}}">test</a> /
+                <a href="{{url_for('campaign.calls', campaign_id=c.id)}}">log</a>
+            </td>
+        </tr>
+        {%endfor%}
+    </table>
+</div>
+{% endblock %}

@@ -5,3 +5,8 @@ venv
 *.db
 .env
 gunicorn.log
+call_server/static/bower_components
+call_server/static/.webassets-cache
+*.swp
+/docker-compose.yml
+instance/uploads

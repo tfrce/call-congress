@@ -1,0 +1,148 @@
+{% macro render_label(field, class_='') %}
+<label class="control-label {{class_}} {%if field.flags.required%}required{%endif%}"
+        for="{{ field.id }}">
+        {{ field.label.text }}
+    </label>
+{% endmacro %}
+
+{% macro render_checkbox(field, class_={}) %}
+{# for checkbox, label comes before field #}
+<div class="form-group {{class_.get('group', '')}} {{field.id}} {% if field.errors %}error{% endif %}">
+    <div class="controls {{class_.get('control', '')}}">
+        {{ field(class_ = 'form-control inline '+class_.get('field', '')) }}
+        {{ render_label(field, "inline") }}
+        {% if field.description %}
+        <div class="description">
+            <span class="glyphicon glyphicon-info-sign info small"></span>
+            <span class="help-inline">
+                {% if descriptions and descriptions.get(field.id) %}
+                {{ descriptions.get(field.id)|safe }}
+                {% else %} {{ field.description|safe }} {% endif %}
+            </span>
+        </div>
+        {%- endif %}
+        {% if field.errors -%}
+            {% for error in field.errors -%}
+            <span class="help-block error">{{ error|e }}</span>
+            {%- endfor %}
+        {%- endif %}
+        <span class="help-block"></span>
+    </div>
+</div>
+{% endmacro%}
+
+{% macro render_radio(field, class_={}) %}
+<div class="form-group {{class_.get('group', '')}} {{field.id}} {% if field.errors %}error{% endif %}">
+    {{ render_label(field, class_.get('label', '')) }}
+    <div class="controls {{class_.get('control', '')}}">
+        {% for subfield in field -%}
+        <label for="{{ subfield.id }}" class="radio-inline">
+            {{ subfield(class_ = 'form-control '+class_.get('field', '')) }} {{ subfield.label.text }}
+        </label>
+        {%- endfor %}
+        {% if class_.get('clear', False)%}
+            <a class="btn btn-link btn-xs clear" title="clear choices">
+                <span class="glyphicon glyphicon-remove-circle"></span>
+            </a>
+        {%endif%}
+        {% if field.description %}
+        <div class="description">
+            <span class="glyphicon glyphicon-info-sign info small"></span>
+            <span class="help-inline">
+                {% if descriptions and descriptions.get(field.id) %}
+                {{ descriptions.get(field.id)|safe }}
+                {% else %} {{ field.description|safe }} {% endif %}
+            </span>
+        </div>
+        {%- endif %}
+        {% if field.errors -%}
+            {% for error in field.errors -%}
+            <span class="help-block error">{{ error }}</span>
+            {%- endfor %}
+        {%- endif %}
+        <span class="help-block"></span>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro render_input(field, class_={}) %}
+<div class="form-group {{class_.get('group', '')}} {{field.id}} {% if field.errors %}error{% endif %}">
+    {{ render_label(field, class_.get('label', '')) }}
+    <div class="controls {{class_.get('control', '')}}">
+        {{ field(class_ = 'form-control '+class_.get('field', '')) }}
+        {% if field.description %}
+        <div class="description">
+            <span class="glyphicon glyphicon-info-sign info small"></span>
+            <span class="help-inline">
+                {% if descriptions and descriptions.get(field.id) %}
+                {{ descriptions.get(field.id)|safe }}
+                {% else %} {{ field.description|safe }} {% endif %}
+            </span>
+        </div>
+        {%- endif %}
+        {% if field.errors -%}
+            {% for error in field.errors -%}
+            <span class="help-block error">{{ error }}</span>
+            {%- endfor %}
+        {%- endif %}
+        <span class="help-block"></span>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro render_action(field, class_={}) %}
+<div class="form-group {{class_.get('group', '')}}">
+    <div class="form-actions">
+        <button class="btn btn-primary {{class_.get('field', '')}}" name="{{field.name}}">
+            {{field.label.text}}
+            {% if class_.get('icon','') %}
+                <span class="glyphicon glyphicon-{{class_.get('icon')}}"></span>
+            {% endif %}
+        </button>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro render_button(field, class_={}) %}
+    <button class="btn btn-primary {{class_.get('field', '')}}" name="{{field.name}}" value="{{field.name}}">
+        {{field.label.text}}
+        {% if class_.get('icon','') %}
+            <span class="glyphicon glyphicon-{{class_.get('icon')}}"></span>
+        {% endif %}
+    </button>
+{% endmacro %}
+
+{% macro render_field(field, class_={}) %}
+    {% if field.type != "HiddenField" and field.type != "CSRFTokenField"%}
+
+        {% if field.type == "RadioField" %}
+            {{ render_radio(field, class_) }}
+        {% elif field.type == "BooleanField" %}
+            {{ render_checkbox(field, class_) }}
+        {% elif field.type == "SubmitField" %}
+            {{ render_action(field, class_) }}
+        {% else %}
+            {{ render_input(field, class_) }}
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+
+
+{% macro render_form(url, form, skip_fields=[], horizontal=False, legend=None, confirm_msg=None) %}
+<form class="{% if horizontal %}form-horizontal{% endif %}" method="POST" action="{{ url }}"
+    {% if confirm_msg %}onsubmit='return confirm("{{ confirm_msg }}");' {% endif %} 
+    {% if form.multipart %}enctype="multipart/form-data"{% endif %} >
+    {{ form.hidden_tag() }}
+    <fieldset {% if legend%}class="border"{%endif%}>
+        {% if legend %}
+        <legend>{{ legend|safe }}</legend>
+        {% endif %}
+        {% set focus = True %}
+        {% for field in form %}
+            {% if field.name not in skip_fields%}
+            {{ render_field(field) }}
+            {%endif%}
+        {% endfor %}
+    </fieldset>
+</form>
+{% endmacro %}

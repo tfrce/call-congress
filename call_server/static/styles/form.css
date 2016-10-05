@@ -1,0 +1,183 @@
+/* FORM STYLES */
+
+/* Bordered Fieldsets */
+fieldset.border {
+    border: 1px groove #ddd;
+    padding: 0 1.4em 1.4em 1.4em;
+    margin: 0 0 1.5em 0;
+}
+
+fieldset.border legend {
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: left;
+    width:auto;
+    padding:0 10px;
+    border-bottom:none;
+}
+
+/* Generic input controls */
+.control-label.required:after { 
+   content:"*";
+   color:red;
+}
+
+.form-horizontal div.controls {
+    display: inline-block;
+}
+
+label.inline, input.inline {
+    display: inline-block;
+    width: auto;
+    height: auto;
+    vertical-align: middle;
+    font-weight:normal;
+}
+
+.control-group {
+    display: inline-block;
+}
+
+.input-group.left {
+    float: left;
+    padding-right: 10px;
+}
+
+.input-group.right {
+    float: right;
+}
+
+.input-group.inline {
+    display: inline-table;
+}
+
+.form-control.inline {
+    width: auto;
+    display: inline-block;
+}
+
+input.form-control[type="radio"] {
+    height: auto;
+    width: auto;
+}
+
+.input-group-addon.glyphicon { 
+    top: 0;
+}
+
+.radio-inline, .checkbox-inline {
+    vertical-align: bottom;
+}
+
+/* Specific input overrides */
+textarea.medium {
+    height: 5em;
+}
+textarea.tall {
+    height: 10em;
+}
+
+/* Field description tooltips */
+.description {
+    display: inline-block;
+    margin-left: 5px;
+}
+span.help-inline {
+    display: none;
+}
+span.info:hover + span.help-inline {
+    display: inline-block;
+    z-index: 10;
+    position: absolute;
+    top: 0;
+    min-width: 250px;
+    margin-left: 10px;
+
+    border: 1px groove #ddd;
+    background: white;
+    padding: 7px 10px;
+    font-style: italic;
+    color: gray;
+}
+
+/* Field status indicators */
+span.status {
+    display: block;
+}
+span.status.inline {
+    display: inline-block;
+}
+span.status.valid, span.status.success {
+    color: green;
+}
+span.status.error {
+    color: red;
+}
+span.help-block.has-error {
+    color: red;
+}
+
+select.block {
+    display: block;
+}
+
+
+/* Buttons */
+.btn[disabled] {
+    pointer-events: auto;
+}
+.btn .glyphicon {
+    pointer-events: none;
+}
+
+.btn.radio-inline {
+    padding-top: 0; /* reset bootstrap .radio-inline */
+    margin-top: 7px; 
+}
+
+
+/* Search Results */
+.search-results .close {
+    font-size: 14px;
+    padding-top: 0;
+}
+
+.search-results .result span {
+    /* let js events pass through */
+    pointer-events: none;
+}
+
+/* Target List */
+.target-list { padding-top: 10px; }
+.target-list .list-group-item {
+    display: list-item;
+}
+.target-list li.error .message {
+    color: red;
+    font-style: italic;
+    font-size: small;
+    float: right;
+}
+.target-list li .btn {
+    cursor: pointer;
+    visibility: hidden;
+}
+.target-list li:hover .btn  {
+    visibility: visible;
+}
+
+[contenteditable] {
+    border-bottom: 1px dotted lightblue;
+}
+[contenteditable]:hover, [contenteditable]:focus {
+    background: #FFFFD3;
+    border-bottom: none;
+    cursor: text;
+}
+[contenteditable]:focus {
+    padding: 5px;
+}
+[contenteditable].placeholder {
+    color: gray;
+    font-style: italic;
+}

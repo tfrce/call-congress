@@ -1,0 +1,24 @@
+campaign_type: This campaign targets which type of decision-makers?
+segment_by: Segment callers to targets by which attribute?
+locate_by: Determine location by which attribute?
+target_set: Search for target phone numbers, or add them directly.
+target_ordering: |
+    Calls will be placed as ordered above. Shuffle is re-done for every caller.
+
+msg_intro: Introduce yourself and the campaign briefly. First thing the caller hears when they start the call.
+msg_intro_confirm: Ask the caller to get started by pressing the star key. Used to screen out voicemails.
+msg_intro_location: Introduce yourself and the campaign briefly, and also the need to enter their location. Used if the caller dialed in directly.
+msg_location: Ask the caller to enter their location by zipcode.
+msg_invalid_location: If their location is not within the campaign area, let them know about alternatives.
+msg_unparsed_location: If we could not understand their location entry, ask them to try again.
+msg_call_block_intro: Before beginning a block of calls, let the caller know what to expect.
+msg_target_intro: When we are about to connect them, remind the caller who they are going to speak with.
+msg_target_busy: If the target is busy, let the caller know when to call again.
+msg_between_calls: Between calls, encourage the caller to keep going and remind them of any specific instructions.
+msg_final_thanks: When all calls are complete, thank the caller for taking action.
+
+embed_script: Enter the suggested call script here as HTML.
+embed_script_display: How should the script display on the action page? Replace the form, in a modal overlay, or something custom.
+embed_type: How will this form embed into your action page?
+embed_code: Copy and paste this javascript into your action page.
+embed_custom_js: Javascript that will run after the success callback. Eval'ed directly, so be careful.
