@@ -1,13 +1,16 @@
-calltool:
-  build: .    
-  environment:
-    FLASK_ENV:
-    SUNLIGHT_API_KEY:
-    TWILIO_DEV_ACCOUNT_SID:
-    TWILIO_ACCOUNT_SID:
-    TWILIO_DEV_AUTH_TOKEN:
-    TWILIO_AUTH_TOKEN:
-    SECRET_KEY:
-    APP_HOST: 0.0.0.0
-  ports:
-    - "5000:5000"
+version: '2'
+
+services:
+  calltool:
+    build: .
+    environment:
+      FLASK_ENV:
+      SUNLIGHT_API_KEY:
+      TWILIO_DEV_ACCOUNT_SID:
+      TWILIO_ACCOUNT_SID:
+      TWILIO_DEV_AUTH_TOKEN:
+      TWILIO_AUTH_TOKEN:
+      SECRET_KEY:
+      APP_HOST: 0.0.0.0
+    ports:
+      - "5000:5000"
