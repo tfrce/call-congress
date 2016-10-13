@@ -41,7 +41,7 @@ class USData(DataProvider):
                     "first_name":  info["name"]["first"],
                     "last_name":   info["name"]["last"],
                     "bioguide_id": info["id"]["bioguide"],
-                    "title":       "Sen" if term["type"] == "sen" else "Rep",
+                    "title":       "Senator" if term["type"] == "sen" else "Representative",
                     "phone":       term["phone"],
                     "current":     datetime.now().strftime("%Y-%m-%d") <= term["end"],
                     "chamber":     "senate" if term["type"] == "sen" else "house",
