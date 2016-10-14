@@ -11,7 +11,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from ..extensions import csrf, db
 
 from .models import Call, Session
-from ..campaign.constants import ORDER_SHUFFLE, LOCATION_POSTAL
+from ..campaign.constants import ORDER_SHUFFLE, LOCATION_POSTAL, LOCATION_DISTRICT
 from ..campaign.models import Campaign, Target
 from ..political_data.lookup import locate_targets
 
@@ -284,7 +284,7 @@ def connection():
     if not params or not campaign:
         return abortJSON(404)
 
-    if campaign.locate_by == LOCATION_POSTAL and not params['userLocation']:
+    if campaign.locate_by in [LOCATION_POSTAL, LOCATION_DISTRICT] and not params['userLocation']:
         return intro_location_gather(params, campaign)
     else:
         return intro_wait_human(params, campaign)
@@ -308,7 +308,7 @@ def incoming():
     # pull user phone from Twilio incoming request
     params['userPhone'] = request.values.get('From')
 
-    if campaign.locate_by == LOCATION_POSTAL:
+    if campaign.locate_by in [LOCATION_POSTAL, LOCATION_DISTRICT]:
         return intro_location_gather(params, campaign)
     else:
         return intro_wait_human(params, campaign)
@@ -317,7 +317,7 @@ def incoming():
 @call.route("/location_parse", methods=call_methods)
 def location_parse():
     """
-    Handle location (usually zipcode) entered by the user.
+    Handle location entered by the user.
     Required Params: campaignId, Digits
     """
     params, campaign = parse_params(request)
@@ -326,6 +326,10 @@ def location_parse():
         abort(400)
 
     location = request.values.get('Digits', '')
+
+    # Override location method so locate_targets knows we're passing a zip
+    # This allows call-ins to be made for campaigns which otherwise use district locate_by
+    campaign.locate_by = LOCATION_POSTAL
     target_ids = locate_targets(location, campaign)
 
     if current_app.debug:
