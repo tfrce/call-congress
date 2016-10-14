@@ -37,6 +37,8 @@ class USData(DataProvider):
                 if term["start"] < "2011-01-01":
                     continue # don't get too historical
 
+                district = str(term["district"]) if term.has_key("district") else None
+
                 record = {
                     "first_name":  info["name"]["first"],
                     "last_name":   info["name"]["last"],
@@ -46,7 +48,7 @@ class USData(DataProvider):
                     "current":     datetime.now().strftime("%Y-%m-%d") <= term["end"],
                     "chamber":     "senate" if term["type"] == "sen" else "house",
                     "state":       term["state"],
-                    "district":    term.get("district", None),
+                    "district":    district,
                     "bioguide_id": info["id"]["bioguide"]
                 }
 
