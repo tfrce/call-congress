@@ -1,6 +1,6 @@
 from ..campaign.constants import (TYPE_CONGRESS, TYPE_STATE, TYPE_EXECUTIVE,
     TARGET_EXECUTIVE, TARGET_CHAMBER_BOTH, TARGET_CHAMBER_UPPER, TARGET_CHAMBER_LOWER,
-    LOCATION_POSTAL, LOCATION_ADDRESS, LOCATION_LATLON,
+    LOCATION_POSTAL, LOCATION_ADDRESS, LOCATION_DISTRICT, LOCATION_LATLON,
     ORDER_IN_ORDER, ORDER_SHUFFLE, ORDER_UPPER_FIRST, ORDER_LOWER_FIRST)
 
 from ..extensions import cache
@@ -25,7 +25,12 @@ def locate_targets(location, campaign):
 
     if campaign.campaign_type == TYPE_CONGRESS:
         data = COUNTRY_DATA['US']
-        if campaign.locate_by == LOCATION_POSTAL:
+        if campaign.locate_by == LOCATION_DISTRICT:
+            (state, district) = location.split("-")
+            return data.locate_targets(state=state, district=district,
+                chambers=campaign.campaign_subtype,
+                order=campaign.target_ordering)
+        elif campaign.locate_by == LOCATION_POSTAL:
             return data.locate_targets(zipcode=location,
                 chambers=campaign.campaign_subtype,
                 order=campaign.target_ordering)

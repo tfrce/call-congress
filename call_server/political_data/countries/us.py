@@ -121,27 +121,37 @@ class USData(DataProvider):
     def get_uid(self, key):
         return self.cache.get(key) or {}
 
-    def locate_targets(self, zipcode, chambers=TARGET_CHAMBER_BOTH, order=ORDER_IN_ORDER):
-        """ Find all congressional targets for a zipcode, crossing state boundaries if necessary.
+    def locate_targets(self, state=None, district=None, zipcode=None, chambers=TARGET_CHAMBER_BOTH, order=ORDER_IN_ORDER):
+        """ Find all congressional targets for state/district (or just zipcode).
         Returns a list of cached bioguide keys in specified order.
         """
 
-        districts = self.cache.get(self.KEY_ZIPCODE.format(zipcode=zipcode))
-        if not districts:
-            return None
-
-        states = set(d['state'] for d in districts)  # yes, there are zipcodes that cross states
-        if not states:
-            return None
-
         senators = []
         house_reps = []
-        for state in states:
+        if zipcode:
+            districts = self.cache.get(self.KEY_ZIPCODE.format(zipcode=zipcode))
+            if not districts:
+                return None
+
+            states = set(d['state'] for d in districts)  # there are zipcodes that cross states
+            if not states:
+                return None
+
+            for state in states:
+                for senator in self.get_senators(state):
+                    senators.append(self.KEY_BIOGUIDE.format(**senator))
+
+            for d in districts:
+                rep = self.get_house_member(d['state'], d['house_district'])[0]
+                house_reps.append(self.KEY_BIOGUIDE.format(**rep))
+        elif state and district:
             for senator in self.get_senators(state):
                 senators.append(self.KEY_BIOGUIDE.format(**senator))
-        for d in districts:
-            rep = self.get_house_member(d['state'], d['house_district'])[0]
+
+            rep = self.get_house_member(state, district)[0]
             house_reps.append(self.KEY_BIOGUIDE.format(**rep))
+        else:
+            raise ValueError("state and district, or zipcode, must be provided")
 
         targets = []
         if chambers == TARGET_CHAMBER_UPPER:
