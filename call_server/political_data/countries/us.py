@@ -2,6 +2,9 @@ import csv
 import collections
 import random
 
+from datetime import datetime
+import yaml
+
 from . import DataProvider
 
 from ...campaign.constants import (TARGET_CHAMBER_BOTH, TARGET_CHAMBER_UPPER, TARGET_CHAMBER_LOWER,
@@ -28,24 +31,35 @@ class USData(DataProvider):
         """
         legislators = collections.defaultdict(list)
 
-        with open('call_server/political_data/data/us_legislators.csv') as f:
-            reader = csv.DictReader(f)
+        with open('call_server/political_data/data/legislators-current.yaml') as f:
+            for info in yaml.load(f):
+                term = info["terms"][-1]
+                if term["start"] < "2011-01-01":
+                    continue # don't get too historical
 
-            for l in reader:
-                if l['in_office'] != '1':
-                    # skip if out of office
-                    continue
+                district = str(term["district"]) if term.has_key("district") else None
 
-                direct_key = self.KEY_BIOGUIDE.format(**l)
-                legislators[direct_key].append(l)
+                record = {
+                    "first_name":  info["name"]["first"],
+                    "last_name":   info["name"]["last"],
+                    "bioguide_id": info["id"]["bioguide"],
+                    "title":       "Senator" if term["type"] == "sen" else "Representative",
+                    "phone":       term["phone"],
+                    "current":     datetime.now().strftime("%Y-%m-%d") <= term["end"],
+                    "chamber":     "senate" if term["type"] == "sen" else "house",
+                    "state":       term["state"],
+                    "district":    district,
+                    "bioguide_id": info["id"]["bioguide"]
+                }
 
-                if l['senate_class']:
-                    l['chamber'] = 'senate'
-                    chamber_key = self.KEY_SENATE.format(**l)
+                direct_key = self.KEY_BIOGUIDE.format(**record)
+                if record["chamber"] == "senate":
+                    chamber_key = self.KEY_SENATE.format(**record)
                 else:
-                    l['chamber'] = 'house'
-                    chamber_key = self.KEY_HOUSE.format(**l)
-                legislators[chamber_key].append(l)
+                    chamber_key = self.KEY_HOUSE.format(**record)
+
+                legislators[direct_key].append(record)
+                legislators[chamber_key].append(record)
 
         return legislators
 
