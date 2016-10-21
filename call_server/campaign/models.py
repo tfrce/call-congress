@@ -217,7 +217,10 @@ class TwilioPhoneNumber(db.Model):
     twilio_sid = db.Column(db.String(TWILIO_SID_LENGTH))
     twilio_app = db.Column(db.String(TWILIO_SID_LENGTH))
     call_in_allowed = db.Column(db.Boolean, default=False)
+    call_in_campaign_id = db.Column(db.Integer, db.ForeignKey('campaign_campaign.id'))
     number = db.Column(phone_number.PhoneNumberType())
+
+    call_in_campaign = db.relationship('Campaign', foreign_keys=[call_in_campaign_id])
 
     def __unicode__(self):
         return self.number.__unicode__()
@@ -254,6 +257,7 @@ class TwilioPhoneNumber(db.Model):
         # set twilio number to use app
         twilio_client.phone_numbers.update(self.twilio_sid, voice_application_sid=app.sid)
         self.twilio_app = app.sid
+        self.call_in_campaign_id = campaign.id
 
         return success
 
