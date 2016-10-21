@@ -17,7 +17,7 @@ MarkupSafe==0.18
 PyYAML==3.10
 SQLAlchemy==1.0.6
 SQLAlchemy-Utils==0.30.12
-WTForms==2.0.2
+WTForms==2.1
 WTForms-Components==0.9.7
 Werkzeug==0.10.4
 alembic==0.7.5.post2
