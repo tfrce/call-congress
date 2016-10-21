@@ -16,6 +16,10 @@
       // call limit
       'change input[name="call_limit"]': 'changeCallLimit',
 
+      // phone numbers
+      'change select#phone_number_set': 'checkForCallInCollisions',
+      'change input#allow_call_in': 'checkForCallInCollisions',
+
       'submit': 'submitForm'
     },
 
@@ -38,6 +42,15 @@
 
       // load existing items from hidden inputs
       this.targetListView.loadExistingItems();
+
+      $("#phone_number_set").parents(".controls").after(
+        $('<div id="call_in_collisions" class="panel alert-warning col-sm-4 hidden">').append(
+          "<p>This will override call in settings for these campaigns:</p>",
+          $("<ul>")
+        )
+      );
+
+      this.checkForCallInCollisions();
     },
 
     changeCampaignType: function() {
@@ -164,6 +177,23 @@
         callMaxGroup.hide();
         $('input[name="call_maximum"]').val('');
       }
+    },
+
+    checkForCallInCollisions: function(event) {
+      var collisions = [];
+      var taken = $("select#phone_number_set").data("call_in_map");
+      $("select#phone_number_set option:selected").each(function() {
+        if (taken[this.value] && collisions.indexOf(taken[this.value]) == -1)
+          collisions.push(taken[this.value]);
+      });
+
+      var list = $("#call_in_collisions ul").empty();
+      list.append($.map(collisions, function(name) { return $("<li>").text(name) }));
+
+      if ($("#allow_call_in").is(":checked") && collisions.length)
+        $("#call_in_collisions").removeClass("hidden");
+      else
+        $("#call_in_collisions").addClass("hidden");
     },
 
     validateNestedSelect: function(formGroup) {
