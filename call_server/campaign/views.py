@@ -2,6 +2,7 @@ import datetime
 
 from flask import (Blueprint, render_template, current_app, request,
                    flash, url_for, redirect, session, abort, jsonify)
+from flask.json import JSONEncoder
 from flask.ext.login import login_required
 from flask_store.providers.temp import TemporaryStore
 
@@ -14,7 +15,7 @@ from ..extensions import db
 from ..utils import choice_items, choice_keys, choice_values_flat, duplicate_object
 
 from .constants import CAMPAIGN_NESTED_CHOICES, CUSTOM_CAMPAIGN_CHOICES, EMPTY_CHOICES, STATUS_LIVE
-from .models import Campaign, Target, CampaignTarget, AudioRecording, CampaignAudioRecording
+from .models import Campaign, Target, CampaignTarget, AudioRecording, CampaignAudioRecording, TwilioPhoneNumber
 from ..call.models import Call
 from .forms import (CampaignForm, CampaignAudioForm, AudioRecordingForm,
                     CampaignLaunchForm, CampaignStatusForm, TargetForm)
@@ -54,6 +55,12 @@ def form(campaign_id=None):
         campaign = Campaign()
         form = CampaignForm()
         campaign_id = None
+
+    call_in_map = {}
+    for number in TwilioPhoneNumber.available_numbers().filter_by(call_in_allowed=True):
+        if campaign.id != number.call_in_campaign.id:
+            call_in_map[number.id] = number.call_in_campaign.name
+    form.phone_number_set.render_kw = { "data-call_in_map": JSONEncoder().encode(call_in_map) }
 
     # for fields with dynamic choices, set to empty here in view
     # will be updated in client
