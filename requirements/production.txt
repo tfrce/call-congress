@@ -6,3 +6,4 @@ greenlet==0.4.10
 psycopg2==2.6.1
 redis==2.10.3
 uWSGI==2.0.14
+raven==4.0.4
