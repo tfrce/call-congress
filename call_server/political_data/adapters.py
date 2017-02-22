@@ -19,7 +19,7 @@ def adapt_to_target(data, key_prefix):
 class UnitedStatesData(object):
     def adapt(self, data):
         mapped = {}
-        mapped['name'] = '{first_name} {last_name}'.format(**data)
+        mapped['name'] = u'{first_name} {last_name}'.format(**data)
         mapped['number'] = data['phone']
         mapped['title'] = data['title']
         mapped['uid'] = data['bioguide_id']
@@ -49,7 +49,7 @@ class OpenStatesData(object):
 class GovernorAdapter(object):
     def adapt(self, data):
         mapped = {}
-        mapped['name'] = '{first_name} {last_name}'.format(**data)
+        mapped['name'] = u'{first_name} {last_name}'.format(**data)
         mapped['title'] = data['title']
         mapped['number'] = data['phone']
         mapped['uid'] = data['state']

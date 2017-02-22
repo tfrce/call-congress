@@ -177,7 +177,7 @@ class Target(db.Model):
         return self.uid
 
     def full_name(self):
-        return unicode("{} {}".format(self.title, self.name), 'utf8')
+        return u'{} {}'.format(self.title, self.name)
 
     def phone_number(self):
         return self.number.e164
