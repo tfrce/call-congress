@@ -100,7 +100,7 @@ class USData(DataProvider):
 
     # convenience methods for easy house, senate, district access
     def get_house_member(self, state, district):
-        key = self.KEY_HOUSE.format(state=state, district=district)
+        key = self.KEY_HOUSE.format(state=state, district=int(district))
         return self.cache.get(key)
 
     def get_senators(self, state):
