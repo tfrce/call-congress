@@ -101,7 +101,7 @@ class USData(DataProvider):
     # convenience methods for easy house, senate, district access
     def get_house_member(self, state, district):
         key = self.KEY_HOUSE.format(state=state, district=int(district))
-        return self.cache.get(key)
+        return self.cache.get(key) or []
 
     def get_senators(self, state):
         key = self.KEY_SENATE.format(state=state)
@@ -142,14 +142,16 @@ class USData(DataProvider):
                     senators.append(self.KEY_BIOGUIDE.format(**senator))
 
             for d in districts:
-                rep = self.get_house_member(d['state'], d['house_district'])[0]
-                house_reps.append(self.KEY_BIOGUIDE.format(**rep))
+                rep = self.get_house_member(d['state'], d['house_district'])
+                if rep:
+                    house_reps.append(self.KEY_BIOGUIDE.format(**rep[0]))
         elif state and district:
             for senator in self.get_senators(state):
                 senators.append(self.KEY_BIOGUIDE.format(**senator))
 
-            rep = self.get_house_member(state, district)[0]
-            house_reps.append(self.KEY_BIOGUIDE.format(**rep))
+            rep = self.get_house_member(state, district)
+            if rep:
+                house_reps.append(self.KEY_BIOGUIDE.format(**rep[0]))
         else:
             raise ValueError("state and district, or zipcode, must be provided")
 
