@@ -27,7 +27,9 @@ def locate_targets(location, campaign):
         data = COUNTRY_DATA['US']
         if campaign.locate_by == LOCATION_DISTRICT:
             (state, district) = location.split("-")
-            return data.locate_targets(state=state, district=district,
+            district = "0" if district is "AL"
+
+            return data.locate_targets(state=state, district=int(district),
                 chambers=campaign.campaign_subtype,
                 order=campaign.target_ordering)
         elif campaign.locate_by == LOCATION_POSTAL:
