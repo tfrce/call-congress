@@ -145,7 +145,7 @@ class USData(DataProvider):
                 rep = self.get_house_member(d['state'], d['house_district'])
                 if rep:
                     house_reps.append(self.KEY_BIOGUIDE.format(**rep[0]))
-        elif state and district:
+        elif state and (district is not None):
             for senator in self.get_senators(state):
                 senators.append(self.KEY_BIOGUIDE.format(**senator))
 
