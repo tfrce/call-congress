@@ -22,6 +22,7 @@ start_ngrok() {
 
 case "$FLASK_ENV" in
     "production")
+        python manager.py loadpoliticaldata
         exec bash -l -c "uwsgi uwsgi.ini"
         ;;
 
