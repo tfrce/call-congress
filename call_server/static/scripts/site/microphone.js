@@ -253,7 +253,7 @@
       }
 
       var isValid = validator(parentGroup);
-      
+
       // put message in last help-block
       $('.help-block', parentGroup).last().text((!isValid) ? message : '');
 
@@ -298,7 +298,7 @@
       // submit file via ajax with html5 FormData
       // probably will not work in old IE
       var formData = new FormData();
-      
+
       // add inputs individually, so we can control how we add files
       var formItems = $('form.modal-body', this.$el).find('input[type!="file"], select, textarea');
       _.each(formItems, function(item) {
