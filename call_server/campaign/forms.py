@@ -1,3 +1,4 @@
+import magic
 from flask.ext.wtf import Form
 from flask.ext.babel import gettext as _
 from wtforms import (HiddenField, SubmitField, TextField,
@@ -93,8 +94,16 @@ class AudioRecordingForm(Form):
     description = TextField(_('Description'), [Optional()])
 
     def validate_file_storage(form, field):
-        if field.data and field.data.mimetype not in ["audio/mp3", "audio/wav"]:
-            raise ValidationError("File type must be mp3 or wav.")
+        if not field.data:
+            return True
+
+        # Use Unix libmagic to check the file type.
+        mime = magic.from_buffer(field.data.read(1024), mime=True)
+        if mime in ["audio/wav", "audio/x-wav"] and field.data.mimetype == "audio/wav":
+            return True
+        if mime in ["audio/mp3", "audio/mpeg"] and field.data.mimetype == "audio/mp3":
+            return True
+        raise ValidationError("File type must be mp3 or wav, got {}.".format(mime))
 
 
 class CampaignLaunchForm(Form):
