@@ -92,6 +92,10 @@ class AudioRecordingForm(Form):
     text_to_speech = FileField(_('Text to Speech'), [Optional()])
     description = TextField(_('Description'), [Optional()])
 
+    def validate_file_storage(form, field):
+        if field.data and field.data.mimetype not in ["audio/mp3", "audio/wav"]:
+            raise ValidationError("File type must be mp3 or wav.")
+
 
 class CampaignLaunchForm(Form):
     next = HiddenField()

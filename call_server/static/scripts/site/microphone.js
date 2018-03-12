@@ -262,7 +262,6 @@
       return isValid;
     },
 
-
     validateForm: function() {
       var isValid = true;
       var self = this;
@@ -341,8 +340,10 @@
               self.saved = true;
               self.$el.modal('hide');
             } else {
-              console.error(response);
-              window.flashMessage(response.errors, 'error', true);
+              Object.keys(response.errors).forEach(field => {
+                var msg = response.errors[field];
+                self.validateField($('.tab-pane.active'), () => { false; }, msg);
+              });
             }
           },
           error: function(xhr, status, error) {
