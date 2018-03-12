@@ -20,6 +20,9 @@ from ..call.models import Call
 from .forms import (CampaignForm, CampaignAudioForm, AudioRecordingForm,
                     CampaignLaunchForm, CampaignStatusForm, TargetForm)
 
+from sndhdr import what
+import os
+
 campaign = Blueprint('campaign', __name__, url_prefix='/admin/campaign')
 
 
@@ -189,7 +192,9 @@ def upload_recording(campaign_id):
         # save uploaded file to storage
         file_storage = request.files.get('file_storage')
         if file_storage:
-            file_storage.filename = "campaign_{}_{}_{}.mp3".format(campaign.id, message_key, recording.version)
+            extension = "mp3" if file_storage.content_type == "audio/mp3" else "wav"
+            file_storage.filename = "campaign_{}_{}_{}.{}" \
+                .format(campaign.id, message_key, recording.version, extension)
             recording.file_storage = file_storage
         else:
             # dummy file storage
