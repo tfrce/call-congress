@@ -2,8 +2,8 @@
 try:
     from gevent.monkey import patch_all
     patch_all()
-    import gevent_psycopg2
-    gevent_psycopg2.monkey_patch()
+    import psycogreen.gevent
+    psycogreen.gevent.patch_psycopg()
 except ImportError:
     print "unable to apply gevent monkey.patch_all"
 
