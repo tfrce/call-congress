@@ -189,7 +189,7 @@ def upload_recording(campaign_id):
         # save uploaded file to storage
         file_storage = request.files.get('file_storage')
         if file_storage:
-            extension = "mp3" if file_storage.content_type == "audio/mp3" else "wav"
+            extension = "mp3" if file_storage.mimetype == "audio/mp3" else "wav"
             file_storage.filename = "campaign_{}_{}_{}.{}" \
                 .format(campaign.id, message_key, recording.version, extension)
             recording.file_storage = file_storage
