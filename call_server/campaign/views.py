@@ -20,9 +20,6 @@ from ..call.models import Call
 from .forms import (CampaignForm, CampaignAudioForm, AudioRecordingForm,
                     CampaignLaunchForm, CampaignStatusForm, TargetForm)
 
-from sndhdr import what
-import os
-
 campaign = Blueprint('campaign', __name__, url_prefix='/admin/campaign')
 
 
