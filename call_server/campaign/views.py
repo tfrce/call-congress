@@ -189,7 +189,11 @@ def upload_recording(campaign_id):
         # save uploaded file to storage
         file_storage = request.files.get('file_storage')
         if file_storage:
-            file_storage.filename = "campaign_{}_{}_{}.mp3".format(campaign.id, message_key, recording.version)
+            original_extension = "." in file_storage.filename and \
+                    file_storage.filename.rsplit('.', 1)[1].lower()
+            extension = original_extension or "mp3" # default to mp3, eg for uploaded blobs
+            file_storage.filename = "campaign_{}_{}_{}.{}" \
+                .format(campaign.id, message_key, recording.version, extension)
             recording.file_storage = file_storage
         else:
             # dummy file storage

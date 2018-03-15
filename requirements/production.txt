@@ -1,7 +1,7 @@
 -r common.txt
 boto==2.38.0
 gevent==1.1.1
-gevent-psycopg2==0.0.3
+psycogreen==1.0
 greenlet==0.4.10
 psycopg2==2.6.1
 redis==2.10.3
