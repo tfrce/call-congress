@@ -1,4 +1,5 @@
 import magic
+from tempfile import NamedTemporaryFile
 from flask.ext.wtf import Form
 from flask.ext.babel import gettext as _
 from wtforms import (HiddenField, SubmitField, TextField,
@@ -98,7 +99,9 @@ class AudioRecordingForm(Form):
             return True
 
         # Use Unix libmagic to check the file type.
-        mime = magic.from_buffer(field.data.read(1024), mime=True)
+        with NamedTemporaryFile() as tmp:
+            field.data.save(tmp)
+            mime = magic.from_file(tmp.name, mime=True)
         if mime in ["audio/wav", "audio/x-wav"] and field.data.mimetype == "audio/wav":
             return True
         if mime in ["audio/mp3", "audio/mpeg"] and field.data.mimetype == "audio/mp3":
