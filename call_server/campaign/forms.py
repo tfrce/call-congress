@@ -104,7 +104,7 @@ class AudioRecordingForm(Form):
             mime = magic.from_file(tmp.name, mime=True)
         if mime in ["audio/wav", "audio/x-wav"] and field.data.mimetype == "audio/wav":
             return True
-        if mime in ["audio/mp3", "audio/mpeg"] and field.data.mimetype == "audio/mp3":
+        if mime in ["audio/mp3", "audio/mpeg"] and field.data.mimetype in ["audio/mp3", "audio/mpeg"]:
             return True
         raise ValidationError("File type must be mp3 or wav, got {}.".format(mime))
 
