@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:xenial
 RUN apt-get update && apt-get -y install python-pip python-dev npm git uwsgi libpq-dev curl unzip
 
 RUN  mkdir /ngrok && \
