@@ -159,11 +159,10 @@ def reset_password():
     form = RecoverPasswordForm()
 
     if form.validate_on_submit():
+        flash(_('If that address is associated with an account you\'ll receive a password reset email shortly.'), 'error')
+
         user = User.query.filter_by(email=form.email.data).first()
-
         if user:
-            flash(_('Please check your email for instructions on how to access your account'), 'success')
-
             user.activation_key = str(uuid4())
             db.session.add(user)
             db.session.commit()
@@ -180,10 +179,6 @@ def reset_password():
                 body=body,
                 recipients=[user.email])
             mail.send(message)
-
-            return render_template('user/reset_password.html', form=form)
-        else:
-            flash(_('Sorry, no user found for that email address'), 'error')
 
     return render_template('user/reset_password.html', form=form)
 
