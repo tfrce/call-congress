@@ -1,3 +1,12 @@
+# TODO, figure out how to load gevent monkey patch cleanly in production
+try:
+    from gevent.monkey import patch_all
+    patch_all()
+    import psycogreen.gevent
+    psycogreen.gevent.patch_psycopg()
+except ImportError:
+    print "unable to apply gevent monkey.patch_all"
+
 import os
 
 from werkzeug.contrib.fixers import ProxyFix
