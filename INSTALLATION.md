@@ -10,7 +10,7 @@ At a minimum, you will need to set:
 
 * SECRET_KEY, to secure login sessions cryptographically
     * This will be created for you automatically if you use the deploy to Heroku button, or you can generate one using with this Javascript one-liner: `chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-=!@#$%^&*()_+:<>{}[]".split(''); key = ''; for (i = 0; i < 50; i++) key += chars[Math.floor(Math.random() * chars.length)]; alert(key);`
-* SUNLIGHT_API_KEY, to do Congressional lookups. Sign up for one at [SunlightFoundation.com](https://sunlightfoundation.com/api/accounts/register/)
+* OPENSTATES_API_KEY, to do Congressional lookups. Sign up for one at [OpenStates.org](https://openstates.org/accounts/signup/)
 * TWILIO_ACCOUNT_SID, for an account with at least one purchased phone number
 * TWILIO_AUTH_TOKEN, for the same account
 * INSTALLED_ORG, displayed on the site homepage

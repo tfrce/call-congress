@@ -94,7 +94,7 @@
         $('#target-search input[name="target-search"]').attr('placeholder', 'search OpenStates');
       } else {
         $('select[name="campaign_state"]').hide();
-        $('#target-search input[name="target-search"]').attr('placeholder', 'search Sunlight');
+        $('#target-search input[name="target-search"]').attr('placeholder', 'search OpenStates');
       }
 
       // local or custom: no segment, location or search, show custom target_set

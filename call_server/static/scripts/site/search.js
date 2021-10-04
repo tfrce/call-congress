@@ -29,7 +29,7 @@
 
     doTargetSearch: function(event) {
       var self = this;
-      // search the Sunlight API for the named target
+      // search the OpenStates API for the named target
       var query = $('input[name="target-search"]').val();
 
       var campaign_type = $('select[name="campaign_type"]').val();
@@ -37,7 +37,7 @@
       var chamber = $('select[name="campaign_subtype"]').val();
 
       if (campaign_type === 'congress') {
-        // hit Sunlight OpenCongress v3
+        // hit OpenStates
 
         //convert generic chamber names to House / Senate
         if (chamber === 'lower') {
@@ -51,9 +51,9 @@
         }
 
         $.ajax({
-          url: CallPower.Config.SUNLIGHT_CONGRESS_URL,
+          url: CallPower.Config.OPENSTATES_URL,
           data: {
-            apikey: CallPower.Config.SUNLIGHT_API_KEY,
+            apikey: CallPower.Config.OPENSTATES_API_KEY,
             in_office: true,
             chamber: chamber,
             query: query
@@ -74,15 +74,15 @@
         });
 
       } else {
-        // hit Sunlight OpenStates
+        // hit OpenStates
 
         // TODO, request state metadata
         // display latest_json_date to user
 
         $.ajax({
-          url: CallPower.Config.SUNLIGHT_STATES_URL,
+          url: CallPower.Config.OPENSTATES_URL,
           data: {
-            apikey: CallPower.Config.SUNLIGHT_API_KEY,
+            apikey: CallPower.Config.OPENSTATES_API_KEY,
             state: campaign_state,
             in_office: true,
             chamber: chamber,

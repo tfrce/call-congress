@@ -1,8 +1,10 @@
 import csv
 import collections
+import os
 import random
+import re
 
-from sunlight import openstates, response_cache
+from requests import Session
 from . import DataProvider
 
 from ..constants import US_STATE_NAME_DICT
@@ -16,8 +18,6 @@ class USStateData(DataProvider):
 
     def __init__(self, cache, api_cache=None):
         self.cache = cache
-        if api_cache:
-            response_cache.enable(api_cache)
 
     def _load_governors(self):
         """
@@ -77,7 +77,7 @@ class USStateData(DataProvider):
         return [self.KEY_GOVERNOR.format(state=state)]
 
     def locate_targets(self, latlon, chambers=TARGET_CHAMBER_BOTH, order=ORDER_IN_ORDER, state=None):
-        """ Find all state legistlators for a location, as comma delimited (lat,lon)
+        """ Find all state legislators for a location, as comma delimited (lat,lon)
             Returns a list of cached openstate keys in specified order.
         """
         if type(latlon) == tuple:
@@ -89,28 +89,39 @@ class USStateData(DataProvider):
             except ValueError:
                 raise ValueError('USStateData requires location as lat,lon')
 
-        legislators = openstates.legislator_geo_search(lat, lon)
+        params = dict(lat=float(lat), lng=float(lon))
+        s = Session()
+        s.headers.update({'X-Api-Key': os.environ.get('OPENSTATES_API_KEY')})
+        response = s.get("https://v3.openstates.org/people.geo", params=params)
+        if response.status_code != 200:
+            if response.status_code == 404:
+                raise NotFound("Not found: {0}".format(response.url))
+            else:
+                raise Exception(response.text)
+
+        # this 'results' json includes federal-level legislators
+        legislators = response.json()['results']
         targets = []
         senators = []
         house_reps = []
 
         # save full legislator data to cache
         # just uids to result list
+        regex = r'state:([\S]*)\/'
         for l in legislators:
-            if not l['active']:
-                # don't include inactive legislators
-                continue
-
-            if state and (state.upper() != l['state'].upper()):
+            parts = l['jurisdiction']['id'].partition('state:')
+            state_abbr = parts[2].partition("/")[0]
+            if state and (state.upper() != state_abbr.upper()):
                 # limit to one state
                 continue
 
             cache_key = self.KEY_OPENSTATES.format(**l)
             self.cache_set(cache_key, l)
 
-            if l['chamber'] == 'upper':
+            # limit to state legislators only
+            if l['current_role']['org_classification'] == 'upper' and l['jurisdiction']['classification'] == 'state':
                 senators.append(cache_key)
-            if l['chamber'] == 'lower':
+            if l['current_role']['org_classification'] == 'lower' and l['jurisdiction']['classification'] == 'state':
                 house_reps.append(cache_key)
 
         if chambers == TARGET_CHAMBER_UPPER:

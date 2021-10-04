@@ -20,9 +20,9 @@ class TestData(BaseTestCase):
         self.assertEqual(district['house_district'], '13')
 
     def test_district_multiple_states(self):
-        districts = self.us_data.get_district('53811')
-        # apparently this zipcode is in multiple states
-        self.assertEqual(len(districts), 4)
+        districts = self.us_data.get_district('42223')
+        # as of 09/27/2021 this zipcode is in multiple states (KY & TN)
+        self.assertEqual(len(districts), 2)
 
     def test_senate(self):
         senator = self.us_data.get_senators('CA')[0]

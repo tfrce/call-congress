@@ -190,8 +190,8 @@ def context_processors(app):
         return dict(SITENAME=app.config.get('SITENAME', 'CallPower'))
 
     @app.context_processor
-    def inject_sunlight_key():
-        return dict(SUNLIGHT_API_KEY=app.config.get('SUNLIGHT_API_KEY', ''))
+    def inject_openstates_key():
+        return dict(OPENSTATES_API_KEY=app.config.get('OPENSTATES_API_KEY', ''))
 
     # json filter
     app.jinja_env.filters['json'] = json_markup

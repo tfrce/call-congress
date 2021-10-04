@@ -66,7 +66,7 @@ class USData(DataProvider):
     def _load_districts(self):
         """
         Load US congressional district data from saved file
-        Returns a dictionary keyed by zipcode to cache for fast lookup
+        Returns a list of dictionaries keyed by zipcode to cache for fast lookup
 
         eg us:zipcode:94612 = [{'state':'CA', 'house_district': 13}]
         or us:zipcode:54409 = [{'state':'WI', 'house_district': 7}, {'state':'WI', 'house_district': 8}]
@@ -74,10 +74,14 @@ class USData(DataProvider):
         districts = collections.defaultdict(list)
 
         with open('call_server/political_data/data/us_districts.csv') as f:
-            reader = csv.DictReader(
-                f, fieldnames=['zipcode', 'state', 'house_district'])
+            reader = csv.DictReader(f)
 
-            for d in reader:
+            for row in reader:
+                d = {
+                    'state': row['state_abbr'],
+                    'zipcode': row['zcta'],
+                    'house_district': row['cd']
+                }
                 cache_key = self.KEY_ZIPCODE.format(**d)
                 districts[cache_key].append(d)
 

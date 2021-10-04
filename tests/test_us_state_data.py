@@ -8,7 +8,7 @@ from call_server.political_data.constants import US_STATES
 
 class TestData(BaseTestCase):
     def setUp(self):
-        # quiet sunlight cache logging
+        # quiet cache logging
         logging.getLogger('cache').setLevel(logging.WARNING)
         testCache = {}
         self.us_state_data = USStateData(testCache, 'localmem')
@@ -24,14 +24,12 @@ class TestData(BaseTestCase):
         self.assertEqual(len(uids), 2)
 
         senator = self.us_state_data.get_uid(uids[0])
-        self.assertEqual(senator['chamber'], 'upper')
-        self.assertEqual(senator['state'].upper(), 'CA')
-        self.assertEqual(senator['active'], True)
+        self.assertEqual(senator['current_role']['org_classification'], 'lower')
+        self.assertEqual(senator['jurisdiction']['name'].upper(), 'CALIFORNIA')
 
         house_rep = self.us_state_data.get_uid(uids[1])
-        self.assertEqual(house_rep['chamber'], 'lower')
-        self.assertEqual(house_rep['state'].upper(), 'CA')
-        self.assertEqual(house_rep['active'], True)
+        self.assertEqual(house_rep['current_role']['org_classification'], 'upper')
+        self.assertEqual(house_rep['jurisdiction']['name'].upper(), 'CALIFORNIA')
 
     def test_locate_targets_house_only(self):
         oakland_ca = "37.804417,-122.267747"
@@ -40,9 +38,8 @@ class TestData(BaseTestCase):
         self.assertEqual(len(uids), 1)
 
         house_rep = self.us_state_data.get_uid(uids[0])
-        self.assertEqual(house_rep['chamber'], 'lower')
-        self.assertEqual(house_rep['state'].upper(), 'CA')
-        self.assertEqual(house_rep['active'], True)
+        self.assertEqual(house_rep['current_role']['org_classification'], 'lower')
+        self.assertEqual(house_rep['jurisdiction']['name'].upper(), 'CALIFORNIA')
 
     def test_locate_targets_senate_only(self):
         oakland_ca = "37.804417,-122.267747"
@@ -51,9 +48,8 @@ class TestData(BaseTestCase):
         self.assertEqual(len(uids), 1)
 
         senator = self.us_state_data.get_uid(uids[0])
-        self.assertEqual(senator['chamber'], 'upper')
-        self.assertEqual(senator['state'].upper(), 'CA')
-        self.assertEqual(senator['active'], True)
+        self.assertEqual(senator['current_role']['org_classification'], 'upper')
+        self.assertEqual(senator['jurisdiction']['name'].upper(), 'CALIFORNIA')
 
     def test_locate_targets_ordered_house_first(self):
         oakland_ca = "37.804417,-122.267747"
@@ -61,10 +57,10 @@ class TestData(BaseTestCase):
         self.assertEqual(len(uids), 2)
 
         first = self.us_state_data.get_uid(uids[0])
-        self.assertEqual(first['chamber'], 'lower')
+        self.assertEqual(first['current_role']['org_classification'], 'lower')
 
         second = self.us_state_data.get_uid(uids[1])
-        self.assertEqual(second['chamber'], 'upper')
+        self.assertEqual(second['current_role']['org_classification'], 'upper')
 
     def test_locate_targets_ordered_senate_first(self):
         oakland_ca = "37.804417,-122.267747"
@@ -72,10 +68,10 @@ class TestData(BaseTestCase):
         self.assertEqual(len(uids), 2)
 
         first = self.us_state_data.get_uid(uids[0])
-        self.assertEqual(first['chamber'], 'upper')
+        self.assertEqual(first['current_role']['org_classification'], 'upper')
 
         second = self.us_state_data.get_uid(uids[1])
-        self.assertEqual(second['chamber'], 'lower')
+        self.assertEqual(second['current_role']['org_classification'], 'lower')
 
     def test_incorrect_state(self):
         boston_ma = "42.355662, -71.065483"

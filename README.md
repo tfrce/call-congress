@@ -26,7 +26,7 @@ Campaign Configuration
 1) Create a campaign with one of several types, to determine how callers are matched to targets.
 
 * _Executive_ connects callers to the Whitehouse Switchboard, or to a specific office if known
-* _Congress_ connects callers to their Senators, Representative, or both. Uses data from the Sunlight Foundation.
+* _Congress_ connects callers to their Senators, Representative, or both. Uses the OpenStates API.
 * _State_ connects callers to their Governor or State Legislators. Uses the OpenStates API.
 * _Local_ connects callers to a local official. Campaigners must enter these numbers in advance.
 * _Custom_ can connect callers to corporate offices, local officals, or any other phone number entered in advance.
@@ -54,7 +54,7 @@ Read detailed instrustions at [INSTALLATION.md](INSTALLATION.md)
 Political Data
 --------------
 
-Political data is downloaded from Sunlight as CSV files stored in this repository. These are read on startup and saved in a memory cache for fast local lookup.
+Political data is downloaded as CSV files stored in this repository. These are read on startup and saved in a memory cache for fast local lookup.
 
 To update these files with new data after elections, run `cd call_server/political_data/data && make clean && make`, and `python manager.py load_political_data`
 

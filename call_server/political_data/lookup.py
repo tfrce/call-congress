@@ -11,7 +11,7 @@ from geocode import Geocoder
 # initialize data for all relevant countries
 COUNTRY_DATA = {
     'US': USData(cache),
-    'USState': USStateData(cache, api_cache='localmem')  # TODO, wrap sunlight cache for flask
+    'USState': USStateData(cache, api_cache='localmem')
 }
 
 GEOCODER = Geocoder()
@@ -70,7 +70,6 @@ def locate_targets(location, campaign):
                     return []
 
         if campaign.campaign_subtype in (TARGET_CHAMBER_BOTH, TARGET_CHAMBER_UPPER, TARGET_CHAMBER_LOWER):
-            # need full location for state-level legislator lookup at Sunlight
             if geocoded:
                 return data.locate_targets(latlon=geocoded.location,
                     chambers=campaign.campaign_subtype,
